@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tek Dosya GPT Chat (Doğrudan API)</title>
+<style>
+  :root{--bg:#0b0f14;--panel:#111827;--line:#1f2937;--acc:#22d3ee;--muted:#9ca3af}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:#e5e7eb;font:16px/1.5 system-ui,Segoe UI,Roboto}
+  .wrap{max-width:880px;margin:0 auto;padding:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  header h1{font-size:16px;margin:0}
+  .row{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);background:#0e1520}
+  .row label{font-size:13px;color:var(--muted)}
+  input[type=text],select{flex:1;padding:8px 10px;border:1px solid #263244;border-radius:10px;background:#0b1320;color:#e6eef6}
+  #chat{height:60vh;overflow:auto;padding:12px}
+  .msg{display:flex;gap:10px;margin:8px 0}
+  .b{flex:0 0 36px;height:36px;border-radius:50%;display:grid;place-items:center}
+  .u{background:#374151}.a{background:#0f766e}
+  .bubble{padding:10px 12px;border-radius:12px;max-width:80%}
+  .user .bubble{background:#1f2937}.bot .bubble{background:#0b3b32}
+  form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#0e1520}
+  textarea{flex:1;resize:none;min-height:44px;max-height:160px;padding:10px 12px;border:1px solid #263244;border-radius:12px;background:#0b1320;color:#e6eef6}
+  button{background:var(--acc);border:0;color:#082f49;padding:0 16px;border-radius:12px;font-weight:700;cursor:pointer;height:44px}
+  small{color:var(--muted)} code{background:#0b1320;border:1px solid #263244;padding:2px 6px;border-radius:6px}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <header><h1>Tek Dosya GPT Chat</h1></header>
+
+    <div class="row">
+      <label>Model:</label>
+      <select id="model">
+        <option value="gpt-4o-mini" selected>gpt-4o-mini (önerilen)</option>
+        <option value="gpt-4o">gpt-4o</option>
+        <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label>System (isteğe bağlı):</label>
+      <input id="sys" type="text" placeholder="Örn: Kısa ve net cevap ver, Türkçe konuş." />
+    </div>
+
+    <div id="chat" aria-live="polite"></div>
+
+    <form id="f">
+      <textarea id="t" placeholder="Mesajını yaz... (Enter = Gönder, Shift+Enter = yeni satır)" required></textarea>
+      <button id="send" type="submit">Gönder</button>
+    </form>
+  </div>
+  <p><small>
+    <b>UYARI:</b> Bu sayfa OpenAI anahtarını dosyada tutar. Güvensizdir; herkes görebilir ve kullanabilir. Yalnızca deneme amaçlı.<br/>
+    API anahtarı oluşturma: OpenAI paneli &rarr; <em>API Keys</em> &rarr; <em>Create new secret key</em>. (Resmi doküman) :contentReference[oaicite:2]{index=2}
+  </small></p>
+</div>
+
+<script>
+/*** 1) BURAYA ANAHTARINI YAZ (**ÇOK RİSKLİ**) ***/
+const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE"; // <- kendi anahtarını yaz
+
+/*** 2) Basit durum ***/
+const el = (id)=>document.getElementById(id);
+const chat = el("chat"), ta = el("t"), form = el("f"), sendBtn = el("send");
+const modelSel = el("model"), sysInput = el("sys");
+
+const history = []; // Responses API'ye chat geçmişini input olarak vereceğiz
+
+function esc(s){ return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+
+function addMsg(role, text){
+  const row = document.createElement("div");
+  row.className = "msg " + (role === "user" ? "user" : "bot");
+  row.innerHTML = `
+    <div class="b ${role === "user" ? "u":"a"}">${role === "user" ? "👤":"🤖"}</div>
+    <div class="bubble">${esc(text).replace(/\n/g,"<br>")}</div>
+  `;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+let typingEl = null;
+function showTyping(){
+  typingEl = document.createElement("div");
+  typingEl.className = "msg bot";
+  typingEl.innerHTML = `
+    <div class="b a">🤖</div>
+    <div class="bubble"><span class="spin"></span> Yazıyor...</div>
+  `;
+  chat.appendChild(typingEl);
+  chat.scrollTop = chat.scrollHeight;
+}
+function hideTyping(){
+  if(typingEl){ typingEl.remove(); typingEl = null; }
+}
+
+async function ask(prompt){
+  const systemText = sysInput.value.trim();
+  const model = modelSel.value;
+
+  // Görünüm
+  addMsg("user", prompt);
+  sendBtn.disabled = true; ta.disabled = true; showTyping();
+
+  // Geçmişi güncelle
+  if(history.length === 0 && systemText){
+    history.push({ role: "system", content: systemText });
+  }
+  history.push({ role: "user", content: prompt });
+
+  try{
+    const res = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + OPENAI_API_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model,
+        // Responses API'ye "input" veriyoruz; chat geçmişini aynen gönderiyoruz
+        input: history
+      })
+    });
+
+    if(!res.ok){
+      hideTyping();
+      const text = await res.text().catch(()=> "");
+      addMsg("assistant", `⚠️ Hata ${res.status}: ${text || "İstek başarısız"}`);
+      // Hatalı isteği geçmişe eklemeyelim
+      return;
+    }
+
+    const data = await res.json();
+    // Responses API, özet metni "output_text" alanında döndürür (docs)
+    const answer =
+      (data && data.output_text) ||
+      // yedek çözüm: içerik ağaçlarından metin çek
+      (data.output && data.output[0] && data.output[0].content &&
+       data.output[0].content[0] && data.output[0].content[0].text &&
+       data.output[0].content[0].text.value) ||
+      "(boş yanıt)";
+
+    hideTyping();
+    addMsg("assistant", answer);
+
+    // Sohbet geçmişine asistan mesajını da ekleyelim
+    history.push({ role: "assistant", content: answer });
+
+  }catch(err){
+    hideTyping();
+    addMsg("assistant", "⚠️ İstek gönderilemedi: " + err.message);
+  }finally{
+    sendBtn.disabled = false; ta.disabled = false; ta.focus();
+  }
+}
+
+/*** Enter ile gönderme (Shift+Enter = yeni satır) ***/
+ta.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter" && !e.shiftKey){
+    e.preventDefault();
+    form.requestSubmit();
+  }
+});
+form.addEventListener("submit", (e)=>{
+  e.preventDefault();
+  const text = ta.value.trim();
+  if(!text) return;
+  ta.value = "";
+  ask(text);
+});
+
+// Karşılama
+addMsg("assistant", "Merhaba! Bu sayfa OpenAI Responses API ile doğrudan konuşur. Bir şey yazmayı dene. 🔑 Anahtarını dosyaya yazdığını unutma.");
+</script>
+</body>
+</html>
