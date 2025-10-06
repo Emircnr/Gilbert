@@ -1,90 +1,84 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>XENAI — Akıllı Sohbet</title>
-<meta name="theme-color" content="#0b0f14">
+<title>XENAI — Intelligent Assistant</title>
+<meta name="theme-color" content="#0b0f14" />
 <style>
   :root{
     --bg:#070b10; --panel:#0d1420; --panel2:#0b1220; --line:#162233;
-    --text:#e6eef6; --muted:#99a9bd; --acc:#22d3ee; --acc2:#7c3aed;
+    --text:#e6eef6; --muted:#9fb0c7; --acc:#22d3ee; --acc2:#7c3aed;
     --chip:#0b1320; --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; color:var(--text); background:
-      radial-gradient(1200px 800px at -10% -10%, rgba(34,211,238,.15), transparent 60%),
-      radial-gradient(1200px 800px at 110% 110%, rgba(124,58,237,.14), transparent 60%),
+    margin:0; color:var(--text);
+    background:
+      radial-gradient(1200px 800px at -10% -10%, rgba(34,211,238,.14), transparent 60%),
+      radial-gradient(1200px 800px at 110% 110%, rgba(124,58,237,.12), transparent 60%),
       linear-gradient(180deg, #090d13, #0a0f15);
     font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
   }
 
   /* Layout */
-  .shell{display:grid; grid-template-columns:300px 1fr; height:100%}
-  @media (max-width: 980px){ .shell{ grid-template-columns:1fr } .sidebar{display:none} .header .left .brand h1{display:none} }
-
-  .sidebar{
-    border-right:1px solid var(--line); background:rgba(13,20,32,.7); backdrop-filter: blur(8px);
-    display:flex; flex-direction:column; overflow:auto;
-  }
+  .shell{display:grid; grid-template-rows:64px 1fr 64px; height:100%}
   .header{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:12px 14px; border-bottom:1px solid var(--line);
+    padding:10px 14px; border-bottom:1px solid var(--line);
     background: linear-gradient(180deg, rgba(34,211,238,.06), transparent);
   }
-  .left{display:flex; align-items:center; gap:10px}
-  .brand{display:flex; align-items:center; gap:10px}
+  .brand{display:flex; align-items:center; gap:12px}
   .logo{
-    width:28px;height:28px;border-radius:10px;
-    background: conic-gradient(from 120deg, var(--acc), var(--acc2));
-    box-shadow: 0 0 24px rgba(34,211,238,.35), inset 0 0 14px rgba(0,0,0,.25);
+    width:36px; height:36px; border-radius:12px; position:relative;
+    background: conic-gradient(from 90deg, var(--acc), var(--acc2) 40%, #34d399 75%, var(--acc));
+    box-shadow: 0 0 28px rgba(34,211,238,.35), inset 0 0 18px rgba(0,0,0,.35);
+    overflow:hidden;
   }
-  .brand h1{font-size:15px;margin:0;letter-spacing:.25px}
+  .logo::after{
+    content:""; position:absolute; inset:6px; border-radius:10px;
+    background: radial-gradient(120px 60px at 40% 30%, rgba(255,255,255,.25), transparent 40%);
+    filter: blur(8px);
+  }
+  .brand h1{font-size:16px; letter-spacing:.3px; margin:0}
 
-  .controls{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  select, input[type=text]{
-    background:#0b1320; color:var(--text); border:1px solid #223249; border-radius:10px;
-    height:36px; padding:6px 10px; outline:none;
+  .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  select{
+    background:#0b1320; color:var(--text); border:1px solid #223249; border-radius:12px;
+    height:38px; padding:6px 12px; outline:none
   }
   .btn{
-    height:36px; padding:0 12px; border-radius:10px; font-weight:700; cursor:pointer; border:1px solid #234;
+    height:38px; padding:0 14px; border-radius:12px; font-weight:700; cursor:pointer; border:1px solid #234;
     color:#071a1a; background:linear-gradient(180deg,#27e0cc,#1bc2b5);
   }
   .btn.ghost{background:#0b1320; color:var(--text); border-color:#243247}
-  .btn.danger{background:#ef4444; color:#fff; border-color:#ef4444}
-  .btn.pill{border-radius:999px}
-  .badgelite{padding:4px 8px; border:1px solid #223047; border-radius:999px; background:#0b1320; color:var(--muted); font-size:12px}
+  .avatar{width:34px; height:34px; border-radius:50%; border:1px solid #263b56; object-fit:cover}
 
-  /* Sidebar */
-  .sidehead{padding:10px 12px; border-bottom:1px solid var(--line); display:flex; gap:8px}
-  .sidehead .btn{height:34px}
-  .chats{flex:1; overflow:auto; padding:10px}
-  .chatitem{
-    border:1px solid #1a2a40; background:#0b1320; border-radius:12px; padding:10px; margin-bottom:10px; cursor:pointer;
-  }
-  .chatitem.active{outline:2px solid var(--acc); background:#0a1524}
-  .chatitem .t{font-weight:700; font-size:14px; margin:0 0 4px 0}
-  .chatitem .m{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  /* Chat area */
+  .main{display:grid; grid-template-columns: minmax(0,1fr); height:100%}
+  #chatWrap{position:relative; height:100%; overflow:auto; scroll-behavior:smooth; padding:14px}
+  #chat{max-width:980px; margin:0 auto}
 
-  /* Main */
-  .main{display:flex; flex-direction:column; height:100%}
-  .toolbar{padding:10px; border-bottom:1px solid var(--line); display:flex; gap:8px; align-items:center; background:rgba(11,19,32,.6)}
-  .toolbar .chip{background:#0b1320; border:1px solid #223047; border-radius:999px; padding:6px 10px; font-size:12px; color:var(--muted)}
-  .toolbar .chip b{color:var(--text)}
-  .tips{display:flex; flex-wrap:wrap; gap:6px; margin-left:auto}
-  .tip{font-size:12px; border:1px dashed #2a3a55; padding:4px 8px; border-radius:999px; color:#b9c8dc}
-
-  #chat{flex:1; overflow:auto; padding:14px}
-  .msg{display:flex; gap:10px; margin:12px 0; align-items:flex-start}
-  .b{flex:0 0 38px; height:38px; border-radius:10px; display:grid; place-items:center; background:#0b1320; border:1px solid #213047}
-  .user .b{background:#192433} .bot .b{background:#0b3b32; border-color:#0b3b32}
-  .bubble{padding:12px 14px; border-radius:14px; max-width:80%; border:1px solid #1f2a3d; background:#0e1520}
-  .user .bubble{background:#131b2a} .bot .bubble{background:#0a2e27; border-color:#0a3a33}
+  .msg{display:flex; gap:12px; margin:12px 0; align-items:flex-start}
+  .b{flex:0 0 40px; height:40px; border-radius:12px; display:grid; place-items:center; background:#0b1320; border:1px solid #213047}
+  .user .b{background:#192433}
+  .bot .b{background:#0b3b32; border-color:#0b3b32}
+  .bubble{padding:12px 14px; border-radius:16px; max-width:82%;
+          border:1px solid #1f2a3d; background:#0e1520}
+  .user .bubble{background:#131b2a}
+  .bot .bubble{background:#0a2e27; border-color:#0a3a33}
   .meta{display:flex; gap:8px; align-items:center; color:#a2b5ca; font-size:12px; margin:6px 0 0 52px}
-  .act{display:flex; gap:6px; margin-top:6px}
+  .act{display:flex; gap:6px; margin-left:auto}
   .action{font-size:12px; padding:4px 8px; border-radius:8px; border:1px solid #264; background:#0d1b1a; color:#a7f3d0; cursor:pointer}
+
+  /* Composer */
+  .composer{display:flex; gap:10px; padding:12px; border-top:1px solid var(--line); background:#0e1520}
+  textarea{flex:1; min-height:52px; max-height:220px; resize:none; padding:12px; border-radius:14px;
+           background:#0b1320; color:var(--text); border:1px solid #243247; outline:none}
+  .send{min-width:140px}
+  .icbtn{height:44px; min-width:44px; display:grid; place-items:center; border-radius:12px;
+         border:1px solid #243247; background:#0b1320; color:#cce3ff; cursor:pointer}
 
   /* Code & markdown */
   pre{background:#0b1320; border:1px solid #243247; padding:10px; border-radius:10px; overflow:auto}
@@ -92,206 +86,168 @@
   .bubble h1,.bubble h2,.bubble h3{margin:.4em 0}
   .bubble ul{margin:.3em 0 .3em 1.2em}
   a{color:#7dd3fc; text-decoration:none} a:hover{text-decoration:underline}
-
-  /* Composer */
-  .composer{display:flex; gap:10px; padding:12px; border-top:1px solid var(--line); background:#0e1520}
-  textarea{
-    flex:1; min-height:48px; max-height:220px; resize:none; padding:12px; border-radius:14px;
-    background:#0b1320; color:var(--text); border:1px solid #243247; outline:none
-  }
-  .icbtn{height:44px; min-width:44px; display:grid; place-items:center; border-radius:12px; border:1px solid #243247; background:#0b1320; color:#cce3ff; cursor:pointer}
-  .send{min-width:130px}
-
   .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* Modal */
-  .modal{position:fixed; inset:0; background:rgba(3,6,10,.66); display:none; place-items:center}
+  /* Jump to latest */
+  #jump{position:sticky; bottom:12px; margin-top:-36px; display:none; z-index:2}
+  #jump button{margin:0 auto; display:block; background:#0b1320; border:1px solid #223047; color:#d2f3ff;
+               padding:8px 12px; border-radius:999px; cursor:pointer}
+
+  /* Auth modal */
+  .modal{position:fixed; inset:0; background:rgba(3,6,10,.66); display:none; place-items:center; z-index:20}
   .modal.show{display:grid}
-  .box{width:min(560px,92%); background:#0e1623; border:1px solid #203049; border-radius:16px; padding:16px}
-  .box h2{margin:0 0 10px 0; font-size:18px}
+  .box{width:min(520px,92%); background:#0e1623; border:1px solid #203049; border-radius:16px; padding:18px}
+  .box h2{margin:0 0 8px 0; font-size:18px}
   .row{display:flex; gap:10px; align-items:center; margin:10px 0}
-  .row input[type=password], .row input[type=text]{flex:1; background:#0b1320; color:var(--text); border:1px solid #243247; border-radius:10px; padding:10px}
-  .hint{font-size:13px; color:var(--muted)}
-  .kbd{border:1px solid #2a3b55; background:#0b1320; color:#c3d5ea; border-radius:6px; padding:2px 6px}
-  .right{margin-left:auto}
+  .note{font-size:13px; color:var(--muted)}
+  .sep{height:1px; background:#1e2b40; margin:10px 0}
 </style>
 </head>
 <body>
 <div class="shell">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidehead">
-      <button class="btn pill" id="newChatBtn">+ Yeni Sohbet</button>
-      <button class="btn ghost pill" id="exportBtn">Dışa Aktar</button>
-      <button class="btn ghost pill" id="keyBtn">API Anahtarı</button>
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <h1>XENAI — Intelligent Assistant</h1>
     </div>
-    <div class="chats" id="chatList"></div>
-  </aside>
+    <div class="controls">
+      <select id="model">
+        <option value="xen-5.1" selected>XEN 5.1 (Fast)</option>
+        <option value="xen-5.2">XEN 5.2 (Balanced)</option>
+        <option value="xen-5.3">XEN 5.3 (Advanced)</option>
+      </select>
+      <button class="btn ghost" id="resetBtn" title="Start fresh">Reset</button>
+      <img id="avatar" class="avatar" src="" alt="" style="display:none" />
+      <button class="btn" id="signinBtn">Sign in</button>
+      <button class="btn ghost" id="signoutBtn" style="display:none">Sign out</button>
+    </div>
+  </header>
 
-  <!-- Main -->
+  <!-- Chat -->
   <main class="main">
-    <div class="header">
-      <div class="left">
-        <div class="brand"><div class="logo"></div><h1>XENAI — Akıllı Sohbet</h1></div>
-        <span class="badgelite">v1</span>
-      </div>
-      <div class="controls">
-        <select id="model">
-          <option value="gpt-4o-mini" selected>gpt-4o-mini</option>
-          <option value="gpt-4o">gpt-4o</option>
-          <option value="gpt-4.1-mini">gpt-4.1-mini</option>
-        </select>
-        <input id="system" type="text" placeholder="Sistem yönergesi (örn: Türkçe, kısa ve net, tablo kullan)" />
-        <button class="btn ghost" id="clearBtn">Temizle</button>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <span class="chip">Model: <b id="mdlBadge">gpt-4o-mini</b></span>
-      <span class="chip">Akış: <b id="streamBadge">Açık</b></span>
-      <div class="tips">
-        <span class="tip">⌘/Ctrl + Enter → Gönder</span>
-        <span class="tip">Shift + Enter → Satır</span>
-        <span class="tip">/new, /clear, /summarize</span>
-      </div>
-    </div>
-
-    <div id="chat" aria-live="polite"></div>
-
-    <div class="composer">
-      <button class="icbtn" id="micBtn" title="Dikte (beta)">🎙️</button>
-      <textarea id="input" placeholder="Mesajını yaz…"></textarea>
-      <button class="btn send" id="sendBtn">Gönder</button>
+    <div id="chatWrap">
+      <div id="chat" aria-live="polite"></div>
+      <div id="jump"><button id="jumpBtn">Jump to latest ↓</button></div>
     </div>
   </main>
+
+  <!-- Composer -->
+  <footer class="composer">
+    <textarea id="input" placeholder="Type your message…" autocomplete="off"></textarea>
+    <button class="btn send" id="sendBtn">Send</button>
+  </footer>
 </div>
 
-<!-- API Key Modal -->
-<div class="modal" id="keyModal">
+<!-- Auth Modal -->
+<div class="modal" id="authModal">
   <div class="box">
-    <h2>OpenAI API Anahtarı</h2>
+    <h2>Welcome to XENAI</h2>
+    <p class="note">Sign in to sync your conversations across devices. You can also continue as a guest.</p>
     <div class="row">
-      <input id="apiKeyInput" type="password" placeholder="ör. sk-proj-..." />
-      <button class="btn" id="saveKeyBtn">Kaydet</button>
-      <button class="btn ghost" id="closeKeyBtn">Kapat</button>
+      <button class="btn" id="googleBtn">Continue with Google</button>
+      <button class="btn ghost" id="anonBtn">Continue as Guest</button>
     </div>
-    <div class="hint">İpucu: <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">Enter</span> ile kaydedebilirsin.</div>
+    <div class="sep"></div>
+    <p class="note">By continuing you agree to our basic usage terms. You can sign out anytime.</p>
   </div>
 </div>
 
-<script>
-/* ====================== XENAI Core ====================== */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
+<script type="module">
+/* ================== Firebase (Auth + Firestore + Analytics) ================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { getFirestore, enableIndexedDbPersistence, collection, addDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-/* Elements */
-const chatEl = $("#chat");
-const inputEl = $("#input");
-const sendBtn = $("#sendBtn");
-const clearBtn = $("#clearBtn");
-const newChatBtn = $("#newChatBtn");
-const exportBtn = $("#exportBtn");
-const modelSel = $("#model");
-const systemEl = $("#system");
-const mdlBadge = $("#mdlBadge");
-const streamBadge = $("#streamBadge");
-const micBtn = $("#micBtn");
-
-/* Key Modal */
-const keyModal = $("#keyModal");
-const apiKeyInput = $("#apiKeyInput");
-const saveKeyBtn = $("#saveKeyBtn");
-const closeKeyBtn = $("#closeKeyBtn");
-const keyBtn = $("#keyBtn");
-
-/* Sidebar list */
-const chatList = $("#chatList");
-
-/* Local Storage keys */
-const LS_API_KEY = "xenai_api_key";
-const LS_CHATS = "xenai_chats_v1";
-const LS_ACTIVE = "xenai_active_id";
-
-/* App State */
-let state = {
-  chats: {},      // id: { id, title, sys, model, msgs: [ {role, content, ts} ] }
-  activeId: null,
-  streaming: true
+/* ====== CONFIG: Replace with your Firebase project (provided) ====== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDXQlb8jReShQmtOuCWPKg4G5ctO0kXE9E",
+  authDomain: "xenai-cf2ce.firebaseapp.com",
+  projectId: "xenai-cf2ce",
+  storageBucket: "xenai-cf2ce.firebasestorage.app",
+  messagingSenderId: "492168745931",
+  appId: "1:492168745931:web:32c153a356794621abdc4e",
+  measurementId: "G-EC555NNNY4"
 };
 
-/* ===== Utils ===== */
-function uuid(){ return "c"+Math.random().toString(36).slice(2)+Date.now().toString(36) }
-function esc(s){ return s.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]) ) }
-function cleanKey(k){ return (k||"").replace(/[^\x20-\x7E]/g,"").replace(/\s+/g,"").replace(/\.$/,"") }
-function getKey(){ return cleanKey(localStorage.getItem(LS_API_KEY)||"") }
-function setKey(k){ localStorage.setItem(LS_API_KEY, cleanKey(k)) }
-function saveState(){
-  localStorage.setItem(LS_CHATS, JSON.stringify(state.chats));
-  localStorage.setItem(LS_ACTIVE, state.activeId || "");
-}
-function loadState(){
-  try{ state.chats = JSON.parse(localStorage.getItem(LS_CHATS)||"{}") }catch{ state.chats={} }
-  state.activeId = localStorage.getItem(LS_ACTIVE) || null;
-  if(!state.activeId || !state.chats[state.activeId]){
-    const id = createChat("Yeni Sohbet");
-    setActive(id);
-  }
-  renderChatList();
-}
-function formatTime(ts){ try{ return new Date(ts).toLocaleString() }catch{ return "" } }
+const app = initializeApp(firebaseConfig);
+try { getAnalytics(app); } catch(e) { /* analytics optional in some envs */ }
 
-/* ===== Markdown-lite render ===== */
+const auth = getAuth(app);
+const db = getFirestore(app);
+enableIndexedDbPersistence(db).catch(()=>{});
+
+/* ================== OpenAI Call (stream) ================== */
+/* Replace the key below in CODE (no UI for key input) */
+const OPENAI_API_KEY = "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";
+
+/* Model mapping: never show real model names in UI */
+const MODEL_MAP = {
+  "xen-5.1": "gpt-4o-mini",
+  "xen-5.2": "gpt-4o",
+  "xen-5.3": "gpt-4.1-mini"
+};
+
+/* Hidden system behavior (not shown in UI) */
+const SYSTEM_DEFAULT = "You are XENAI. Reply in clear, helpful English. Use Markdown when it improves readability. Be concise.";
+
+/* ================== DOM refs ================== */
+const $ = s => document.querySelector(s);
+const chatWrap = $("#chatWrap");
+const chat = $("#chat");
+const input = $("#input");
+const sendBtn = $("#sendBtn");
+const modelSel = $("#model");
+const resetBtn = $("#resetBtn");
+const signinBtn = $("#signinBtn");
+const signoutBtn = $("#signoutBtn");
+const avatarImg = $("#avatar");
+const authModal = $("#authModal");
+const googleBtn = $("#googleBtn");
+const anonBtn = $("#anonBtn");
+const jump = $("#jump"), jumpBtn = $("#jumpBtn");
+
+/* ================== App State ================== */
+let uid = null;
+let messages = []; // {role, content, ts}
+let unsub = null;
+let isStreaming = false;
+
+/* ================== Utils ================== */
+function esc(s){ return (s||"").replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
 function mdLite(t){
-  // triple backticks code blocks
+  t = (t||"");
   t = t.replace(/```([\s\S]*?)```/g, (_, code)=> `<pre><code>${esc(code)}</code></pre>`);
-  // inline code
   t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
-  // bold/italic
   t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   t = t.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-  // lists
   t = t.replace(/^\s*[-•]\s+(.*)$/gm, "<li>$1</li>");
   t = t.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
-  // links
   t = t.replace(/(https?:\/\/[^\s)]+)|(www\.[^\s)]+)/g, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
-  // newlines
   t = t.replace(/\n/g, "<br>");
   return t;
 }
-
-/* ===== UI Builders ===== */
-function addMsg(role, content, opts={}){
+function addMsg(role, content){
   const row = document.createElement("div");
   row.className = "msg " + (role === "user" ? "user" : "bot");
   row.innerHTML = `
     <div class="b">${role==="user"?"🧑":"🤖"}</div>
     <div class="bubble">${mdLite(content||"")}</div>
   `;
-  chatEl.appendChild(row);
-  chatEl.scrollTop = chatEl.scrollHeight;
-
-  // meta + actions
+  chat.appendChild(row);
+  smartScroll();
   const meta = document.createElement("div");
   meta.className = "meta";
-  meta.innerHTML = `<span>${role==="user"?"Kullanıcı":"XENAI"}</span> • <span>${formatTime(Date.now())}</span>`;
-  const acts = document.createElement("div"); acts.className = "act";
-  const copy = document.createElement("button"); copy.className="action"; copy.textContent="Kopyala";
-  copy.onclick = () => navigator.clipboard.writeText(content||"");
-  acts.appendChild(copy);
-
-  if(role==="assistant"){
-    const regen = document.createElement("button"); regen.className="action"; regen.textContent="Yeniden Üret";
-    regen.onclick = () => regenerateLast();
-    acts.appendChild(regen);
-    const speak = document.createElement("button"); speak.className="action"; speak.textContent="Seslendir";
-    speak.onclick = () => speakText(content||"");
-    acts.appendChild(speak);
-  }
-
-  meta.appendChild(acts);
-  chatEl.appendChild(meta);
-  chatEl.scrollTop = chatEl.scrollHeight;
+  const actions = document.createElement("div"); actions.className = "act";
+  const copy = document.createElement("button"); copy.className="action"; copy.textContent="Copy";
+  copy.onclick = ()=> navigator.clipboard.writeText(content||"");
+  actions.appendChild(copy);
+  meta.innerHTML = `<span>${role==="user"?"You":"XENAI"}</span>`;
+  meta.appendChild(actions);
+  chat.appendChild(meta);
+  smartScroll();
   return row;
 }
 let typingRow = null;
@@ -300,280 +256,207 @@ function showTyping(){
   typingRow.className = "msg bot";
   typingRow.innerHTML = `
     <div class="b">🤖</div>
-    <div class="bubble"><span class="spin"></span> Yazıyor…</div>
+    <div class="bubble"><span class="spin"></span> Typing…</div>
   `;
-  chatEl.appendChild(typingRow);
-  chatEl.scrollTop = chatEl.scrollHeight;
+  chat.appendChild(typingRow);
+  smartScroll();
 }
 function updateTyping(html){
   if(!typingRow) return;
   typingRow.querySelector(".bubble").innerHTML = html;
-  chatEl.scrollTop = chatEl.scrollHeight;
+  smartScroll();
 }
 function hideTyping(){ if(typingRow){ typingRow.remove(); typingRow=null } }
 
-/* ===== Chats ===== */
-function createChat(title="Yeni Sohbet"){
-  const id = uuid();
-  state.chats[id] = { id, title, sys:"", model:modelSel.value, msgs:[] };
-  return id;
+/* Smart scroll: stick only if near bottom; show "Jump to latest" otherwise */
+function nearBottom(){
+  const delta = chatWrap.scrollHeight - chatWrap.scrollTop - chatWrap.clientHeight;
+  return delta < 120;
 }
-function setActive(id){
-  state.activeId = id;
-  const ch = state.chats[id];
-  modelSel.value = ch.model || "gpt-4o-mini";
-  systemEl.value = ch.sys || "";
-  mdlBadge.textContent = modelSel.value;
-  renderChatList();
-  renderChat();
-  saveState();
+function smartScroll(){
+  if(nearBottom()){ chatWrap.scrollTop = chatWrap.scrollHeight; jump.style.display="none"; }
+  else { jump.style.display="block"; }
 }
-function renderChat(){
-  chatEl.innerHTML = "";
-  const ch = state.chats[state.activeId];
-  if(!ch) return;
-  if(ch.msgs.length === 0){
-    addMsg("assistant", "Merhaba! Ben <strong>XENAI</strong>. Sağ üstten <em>API anahtarını</em> gir, model/sistem ayarını yap ve mesaj yaz. Başlangıç için fikirler:<br>- “Bana 7 günlük beslenme planı oluştur (kalori hedefi 2200).”<br>- “Bu metni kısa ve profesyonel hale getir.”<br>- “B1 seviyesinde 12 repliklik diyalog yaz: restoran rezervasyon.”");
-  }else{
-    for(const m of ch.msgs){ addMsg(m.role, m.content) }
-  }
-  chatEl.scrollTop = chatEl.scrollHeight;
-}
-function renameActive(title){
-  const ch = state.chats[state.activeId];
-  if(!ch) return;
-  ch.title = title || ch.title;
-  saveState(); renderChatList();
-}
-function renderChatList(){
-  chatList.innerHTML = "";
-  const ids = Object.keys(state.chats);
-  for(const id of ids){
-    const ch = state.chats[id];
-    const item = document.createElement("div");
-    item.className = "chatitem"+(id===state.activeId?" active":"");
-    item.innerHTML = `<div class="t">${esc(ch.title||"Sohbet")}</div><div class="m">${esc((ch.msgs[ch.msgs.length-1]?.content||"").slice(0,80))}</div>`;
-    item.onclick = () => setActive(id);
-    chatList.appendChild(item);
-  }
-}
-
-/* ===== Speech (browser) ===== */
-let recog=null, recogOn=false;
-function initSpeech(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ micBtn.disabled = true; micBtn.title = "Tarayıcın desteklemiyor"; return }
-  recog = new SR(); recog.lang = "tr-TR"; recog.interimResults = true; recog.continuous = true;
-  recog.onresult = e=>{
-    let t = ""; for(const r of e.results){ t += r[0].transcript }
-    inputEl.value = t.trim();
-  };
-  recog.onend = ()=>{ if(recogOn){ recog.start() } }
-}
-function toggleRec(){
-  if(!recog) return;
-  recogOn = !recogOn;
-  if(recogOn){ recog.start(); micBtn.textContent="🛑"; micBtn.title="Dikteyi durdur" }
-  else { recog.stop(); micBtn.textContent="🎙️"; micBtn.title="Dikte (beta)" }
-}
-function speakText(t){
-  try{
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang = "tr-TR";
-    speechSynthesis.speak(u);
-  }catch{}
-}
-
-/* ===== OpenAI Calls ===== */
-async function sendMessage(text){
-  // Commands
-  if(/^\/new/.test(text)){ const id=createChat("Yeni Sohbet"); setActive(id); return }
-  if(/^\/clear/.test(text)){ const ch=state.chats[state.activeId]; ch.msgs=[]; renderChat(); saveState(); return }
-  if(/^\/summarize/.test(text)){ summarizeChat(); return }
-
-  const ch = state.chats[state.activeId];
-  const sys = (systemEl.value||"").trim();
-  if(ch.msgs.length===0 && sys){ ch.sys = sys }
-
-  // Push user message
-  ch.msgs.push({ role:"user", content:text, ts:Date.now() });
-  addMsg("user", text);
-  saveState();
-
-  // Build messages for Chat Completions
-  const messages = [];
-  const systemText = ch.sys || "Türkçe yanıtla. Kısa ve net ol; gerekiyorsa tablo/başlık kullan.";
-  messages.push({ role:"system", content: systemText });
-  for(const m of ch.msgs){
-    messages.push({ role: m.role, content: m.content });
-  }
-
-  // Call OpenAI
-  const key = getKey();
-  if(!key || !key.startsWith("sk-")){ addMsg("assistant","⚠️ API anahtarını gir: sol taraftaki **API Anahtarı** butonundan.",""); return }
-  const model = modelSel.value;
-  const stream = state.streaming;
-
-  showTyping();
-  try{
-    // Prefer Chat Completions (stabil) with stream; fallback to Responses
-    const ccBody = { model, messages, temperature:0.7, stream };
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method:"POST",
-      headers:{ "Authorization":"Bearer "+key.trim(), "Content-Type":"application/json" },
-      body: JSON.stringify(ccBody)
-    });
-
-    if(!res.ok){
-      // fallback non-stream CC or Responses
-      hideTyping();
-      const txt = await res.text().catch(()=> "");
-      addMsg("assistant", `⚠️ Hata ${res.status}<br><code>${esc(txt.slice(0,600))}</code>`);
-      return;
-    }
-
-    if(stream){
-      await streamCC(res, ch);
-    }else{
-      const data = await res.json();
-      const answer = data?.choices?.[0]?.message?.content || "(boş)";
-      hideTyping();
-      addAssistant(answer, ch);
-    }
-  }catch(err){
-    hideTyping();
-    addMsg("assistant", "⚠️ Ağ/istemci hatası: "+esc(err.message||String(err)));
-  }
-}
-
-async function streamCC(res, ch){
-  // SSE-ish event stream for chat/completions
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder("utf-8");
-  let done = false, buffer = "", acc = "";
-
-  updateTyping("<span class='spin'></span> Yazıyor…");
-  while(!done){
-    const {value, done:doneNow} = await reader.read();
-    done = doneNow;
-    if(value){
-      buffer += decoder.decode(value, {stream:true});
-      const parts = buffer.split("\n\n");
-      buffer = parts.pop() || "";
-      for(const p of parts){
-        const line = p.trim();
-        if(!line.startsWith("data:")) continue;
-        const jsonStr = line.slice(5).trim();
-        if(jsonStr === "[DONE]") continue;
-        try{
-          const evt = JSON.parse(jsonStr);
-          const delta = evt?.choices?.[0]?.delta?.content || "";
-          if(delta){
-            acc += delta;
-            updateTyping(mdLite(acc));
-          }
-        }catch{}
-      }
-    }
-  }
-  hideTyping();
-  if(acc.trim()){
-    addAssistant(acc, ch);
-  }else{
-    addMsg("assistant","(boş yanıt) — Lütfen tekrar deneyin.");
-  }
-}
-
-function addAssistant(answer, ch){
-  addMsg("assistant", answer);
-  ch.msgs.push({ role:"assistant", content:answer, ts:Date.now() });
-  // title auto
-  if((ch.title||"Yeni Sohbet")==="Yeni Sohbet"){
-    const first = (ch.msgs.find(m=>m.role==="user")?.content||"").slice(0,40);
-    renameActive(first || "XENAI Sohbeti");
-  }
-  saveState();
-}
-
-/* ===== Regenerate last ===== */
-async function regenerateLast(){
-  const ch = state.chats[state.activeId];
-  if(!ch || ch.msgs.length===0) return;
-  const lastUserIdx = [...ch.msgs].map((m,i)=>({m,i})).reverse().find(x=>x.m.role==="user")?.i;
-  if(lastUserIdx==null) return;
-  const text = ch.msgs[lastUserIdx].content;
-  // remove trailing assistant(s)
-  ch.msgs = ch.msgs.slice(0, lastUserIdx+1);
-  renderChat();
-  await sendMessage(text);
-}
-
-/* ===== Summarize chat ===== */
-async function summarizeChat(){
-  const ch = state.chats[state.activeId];
-  if(!ch || ch.msgs.length===0){ addMsg("assistant","Özetlenecek mesaj yok."); return }
-  const plain = ch.msgs.map(m=>`${m.role.toUpperCase()}: ${m.content}`).join("\n");
-  await sendMessage("Bu konuşmayı 10 madde ve 5 aksiyonla özetle:\n\n"+plain.slice(-5000));
-}
-
-/* ===== Export ===== */
-function exportChat(){
-  const ch = state.chats[state.activeId];
-  if(!ch) return;
-  const lines = [];
-  lines.push(`# XENAI Sohbet: ${ch.title}`);
-  lines.push(`Model: ${ch.model}  |  Tarih: ${new Date().toLocaleString()}`);
-  lines.push(`Sistem: ${ch.sys||"(varsayılan)"}`);
-  lines.push(`---\n`);
-  for(const m of ch.msgs){
-    lines.push(`**${m.role.toUpperCase()}** — ${new Date(m.ts).toLocaleString()}\n\n${m.content}\n`);
-  }
-  const blob = new Blob([lines.join("\n")], {type:"text/markdown"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = `xenai_${Date.now()}.md`; a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* ====================== Events ====================== */
-sendBtn.onclick = () => {
-  const t = inputEl.value.trim(); if(!t) return;
-  inputEl.value = "";
-  sendMessage(t);
-};
-inputEl.addEventListener("keydown", e=>{
-  if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); sendBtn.click() }
-  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendBtn.click() }
+chatWrap.addEventListener("scroll", ()=>{
+  if(nearBottom()) jump.style.display="none";
 });
-clearBtn.onclick = ()=>{ const ch=state.chats[state.activeId]; if(!ch) return; ch.msgs=[]; renderChat(); saveState() };
-newChatBtn.onclick = ()=>{ const id=createChat("Yeni Sohbet"); setActive(id) };
-exportBtn.onclick = exportChat;
-modelSel.onchange = ()=>{ const ch=state.chats[state.activeId]; if(!ch) return; ch.model=modelSel.value; mdlBadge.textContent=modelSel.value; saveState() };
-systemEl.onchange = ()=>{ const ch=state.chats[state.activeId]; if(!ch) return; ch.sys=systemEl.value; saveState() };
-micBtn.onclick = toggleRec;
+jumpBtn.onclick = ()=>{ chatWrap.scrollTop = chatWrap.scrollHeight; };
 
-/* Key Modal */
-function openKeyModal(){ keyModal.classList.add("show"); apiKeyInput.value=getKey(); apiKeyInput.focus() }
-function closeKeyModal(){ keyModal.classList.remove("show") }
-keyBtn.onclick = openKeyModal; saveKeyBtn.onclick = ()=>{ setKey(apiKeyInput.value); closeKeyModal() }; closeKeyBtn.onclick = closeKeyModal;
-apiKeyInput.addEventListener("keydown", e=>{ if((e.key==="Enter")&&(e.metaKey||e.ctrlKey)) saveKeyBtn.click() });
+/* ================== OpenAI Streaming ================== */
+async function askXENAI(modelKey, msgs){
+  const apiModel = MODEL_MAP[modelKey] || MODEL_MAP["xen-5.1"];
+  const headers = { "Authorization":"Bearer "+OPENAI_API_KEY, "Content-Type":"application/json" };
+  const body = {
+    model: apiModel,
+    messages: [{ role:"system", content: SYSTEM_DEFAULT }, ...msgs],
+    temperature: 0.7,
+    stream: true
+  };
 
-/* First run */
-(function init(){
-  loadState();
-  initSpeech();
-  if(!getKey()) openKeyModal();
-  addKeyboardToggles();
-})();
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method:"POST", headers, body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    const txt = await res.text().catch(()=> "");
+    throw new Error("HTTP "+res.status+" — "+txt.slice(0,300));
+  }
+  return res.body.getReader();
+}
 
-/* Convenience: toggle streaming with double-click on model badge */
-function addKeyboardToggles(){
-  mdlBadge.addEventListener("dblclick", ()=>{
-    state.streaming = !state.streaming;
-    streamBadge.textContent = state.streaming ? "Açık" : "Kapalı";
+/* ================== Firestore helpers ================== */
+function userPath(){
+  if(!uid) return null;
+  return {
+    convRef: doc(db, "users", uid, "conversations", "main"),
+    msgsRef: collection(db, "users", uid, "conversations", "main", "messages")
+  };
+}
+async function ensureUser(){
+  const u = auth.currentUser;
+  if(!u) return;
+  const userRef = doc(db, "users", u.uid);
+  const docSnap = await getDoc(userRef);
+  if(!docSnap.exists()){
+    await setDoc(userRef, { createdAt: serverTimestamp() });
+  }
+  const { convRef } = userPath();
+  const convSnap = await getDoc(convRef);
+  if(!convSnap.exists()){
+    await setDoc(convRef, { title: "Main", createdAt: serverTimestamp() });
+  }
+}
+async function appendToFirestore(role, content){
+  if(!uid) return;
+  const { msgsRef } = userPath();
+  await addDoc(msgsRef, { role, content, ts: serverTimestamp() });
+}
+function startListening(){
+  if(!uid) return;
+  const { msgsRef } = userPath();
+  const q = query(msgsRef, orderBy("ts","asc"), limit(200));
+  unsub = onSnapshot(q, snap=>{
+    chat.innerHTML = "";
+    messages = [];
+    snap.forEach(d=>{
+      const m = d.data();
+      messages.push({ role: m.role, content: m.content, ts: m.ts?.toMillis?.() || Date.now() });
+    });
+    if(messages.length===0){
+      addMsg("assistant", "Hello, I'm <strong>XENAI</strong>. Ask me anything or paste your content. I’ll respond with clear, structured answers when helpful.");
+    }else{
+      for(const m of messages) addMsg(m.role==="user"?"user":"assistant", m.content);
+    }
   });
 }
+
+/* ================== Auth ================== */
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    uid = user.uid;
+    avatarImg.style.display = user.photoURL ? "inline-block" : "none";
+    if(user.photoURL){ avatarImg.src = user.photoURL; avatarImg.alt = user.displayName||"User"; }
+    signinBtn.style.display = "none";
+    signoutBtn.style.display = "inline-block";
+    authModal.classList.remove("show");
+    await ensureUser();
+    if(unsub) unsub();
+    startListening();
+  }else{
+    uid = null;
+    avatarImg.style.display = "none";
+    signinBtn.style.display = "inline-block";
+    signoutBtn.style.display = "none";
+    authModal.classList.add("show");
+    // clear local display (not Firestore)
+    chat.innerHTML = "";
+    messages = [];
+    addMsg("assistant", "Welcome to <strong>XENAI</strong>. Sign in or continue as guest to begin.");
+  }
+});
+
+signinBtn.onclick = ()=> authModal.classList.add("show");
+signoutBtn.onclick = ()=> signOut(auth);
+googleBtn.onclick = async ()=>{
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(auth, provider);
+};
+anonBtn.onclick = async ()=>{ await signInAnonymously(auth); };
+
+/* ================== Send flow ================== */
+sendBtn.onclick = async ()=>{
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = "";
+
+  // local echo
+  addMsg("user", text);
+  appendToFirestore("user", text).catch(()=>{});
+
+  // build message history (limited)
+  const hist = [...messages, { role:"user", content:text }].slice(-20).map(m=>({ role: m.role==="assistant"?"assistant":"user", content:m.content }));
+
+  // call
+  showTyping();
+  isStreaming = true;
+  try{
+    const reader = await askXENAI(modelSel.value, hist);
+    const decoder = new TextDecoder("utf-8");
+    let done = false, buffer = "", acc = "";
+    while(!done){
+      const { value, done:doneNow } = await reader.read();
+      done = doneNow;
+      if(value){
+        buffer += decoder.decode(value, {stream:true});
+        const chunks = buffer.split("\n\n");
+        buffer = chunks.pop() || "";
+        for(const ch of chunks){
+          const line = ch.trim();
+          if(!line.startsWith("data:")) continue;
+          const jsonStr = line.slice(5).trim();
+          if(jsonStr === "[DONE]") continue;
+          try{
+            const evt = JSON.parse(jsonStr);
+            const delta = evt?.choices?.[0]?.delta?.content || "";
+            if(delta){
+              acc += delta;
+              updateTyping(mdLite(acc));
+            }
+          }catch{}
+        }
+      }
+    }
+    hideTyping();
+    if(!acc.trim()) acc = "(no content)";
+    addMsg("assistant", acc);
+    appendToFirestore("assistant", acc).catch(()=>{});
+  }catch(err){
+    hideTyping();
+    addMsg("assistant", "⚠️ Error<br><code>"+esc(err.message||String(err))+"</code>");
+  }finally{
+    isStreaming = false;
+  }
+};
+
+/* Enter shortcuts */
+input.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); sendBtn.click(); }
+  else if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendBtn.click(); }
+});
+
+/* Reset conversation (UI only + Firestore new thread) */
+resetBtn.onclick = async ()=>{
+  // Soft-clear UI
+  chat.innerHTML = "";
+  messages = [];
+  addMsg("assistant", "New conversation started. How can I help?");
+  // Persist a separator message (optional)
+  appendToFirestore("assistant", "— Conversation reset —").catch(()=>{});
+};
+
+/* Initial greet (if not signed) */
+addMsg("assistant", "Welcome to <strong>XENAI</strong>. Sign in to sync your chats, or continue as guest.");
+
+/* If user is already authenticated (e.g., returning) the listener will render messages */
 </script>
 </body>
 </html>
-
