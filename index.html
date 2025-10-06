@@ -3,439 +3,577 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hazır Etiketli GPT – Tek Dosya</title>
+<title>XENAI — Akıllı Sohbet</title>
+<meta name="theme-color" content="#0b0f14">
 <style>
   :root{
-    --bg:#0b0f14; --panel:#0f172a; --line:#1e293b; --text:#e6eef6; --muted:#93a4b8;
-    --acc:#22d3ee; --acc2:#34d399; --badge:#1f2937; --chip:#0b1320;
+    --bg:#070b10; --panel:#0d1420; --panel2:#0b1220; --line:#162233;
+    --text:#e6eef6; --muted:#99a9bd; --acc:#22d3ee; --acc2:#7c3aed;
+    --chip:#0b1320; --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0;color:var(--text);
-    background:
-      radial-gradient(1000px 700px at -10% -10%, rgba(34,211,238,.18), transparent 60%),
-      radial-gradient(1000px 700px at 110% 110%, rgba(52,211,153,.16), transparent 60%),
-      linear-gradient(180deg, #0a0f15, #0b1118);
-    font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+    margin:0; color:var(--text); background:
+      radial-gradient(1200px 800px at -10% -10%, rgba(34,211,238,.15), transparent 60%),
+      radial-gradient(1200px 800px at 110% 110%, rgba(124,58,237,.14), transparent 60%),
+      linear-gradient(180deg, #090d13, #0a0f15);
+    font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
   }
-  .app{max-width:1180px;margin:0 auto;padding:18px}
-  .card{background:rgba(15,23,42,.72);backdrop-filter:blur(8px);border:1px solid var(--line);
-        border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;
-         padding:14px 16px;border-bottom:1px solid var(--line)}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:30px;height:30px;border-radius:10px;background:conic-gradient(from 120deg,#0ea5e9,#22c55e)}
-  h1{font-size:16px;margin:0;letter-spacing:.3px}
-  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  select, input[type=text]{background:#0b1320;color:var(--text);border:1px solid #243247;border-radius:12px;padding:8px 10px;height:38px;outline:none}
-  .btn{height:38px;border:1px solid #234;color:#052f2b;background:linear-gradient(180deg,#27e0cc,#1bc2b5);
-       border-radius:12px;padding:0 12px;font-weight:700;cursor:pointer}
-  .btn.sec{background:#0b1320;color:var(--text);border-color:#243247;font-weight:600}
-  .btn.warn{background:#ef4444;border-color:#ef4444;color:#fff}
-  .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;padding:12px}
-  /* Left: tags + search */
-  .tags{border-right:1px solid var(--line)}
-  .search{display:flex;gap:8px;align-items:center;margin:10px 0}
-  .search input{flex:1}
-  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  @media (min-width:1100px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr));} }
-  .tag{
-    background:var(--chip);border:1px solid #223047;border-radius:14px;padding:10px;cursor:pointer;
-    display:flex;gap:10px;align-items:flex-start;transition:transform .06s ease, background .2s;
-    min-height:82px
+
+  /* Layout */
+  .shell{display:grid; grid-template-columns:300px 1fr; height:100%}
+  @media (max-width: 980px){ .shell{ grid-template-columns:1fr } .sidebar{display:none} .header .left .brand h1{display:none} }
+
+  .sidebar{
+    border-right:1px solid var(--line); background:rgba(13,20,32,.7); backdrop-filter: blur(8px);
+    display:flex; flex-direction:column; overflow:auto;
   }
-  .tag:hover{transform:translateY(-1px);background:#0d1626}
-  .tag .ic{font-size:20px;line-height:1.2}
-  .tag .txt{flex:1}
-  .tag .title{font-weight:700;margin:0 0 4px 0}
-  .tag .desc{color:var(--muted);font-size:13px;margin:0}
-  .fav{margin-left:auto;background:#142032;border:1px solid #263b56;border-radius:10px;padding:2px 6px;font-size:12px;cursor:pointer}
-  .fav.active{background:#0a2e27;color:#a7f3d0;border-color:#2a5}
-  .hint{color:var(--muted);font-size:13px;margin:8px 0}
-  /* Right: chat */
-  #chat{height:62vh;overflow:auto;padding:12px}
-  .msg{display:flex;gap:10px;margin:10px 0;align-items:flex-start}
-  .b{flex:0 0 38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#0b1320;border:1px solid #213047}
-  .user .b{background:#18212f}.bot .b{background:#0b3b32;border-color:#0b3b32}
-  .bubble{padding:10px 12px;border-radius:14px;max-width:78%;border:1px solid #1f2a3d;background:#0e1520}
-  .user .bubble{background:#141c2a}.bot .bubble{background:#0a2e27;border-color:#0a3a33}
-  .actions{margin-top:6px;display:flex;gap:6px}
-  .action{font-size:12px;padding:4px 8px;border-radius:8px;border:1px solid #264;background:#0d1b1a;color:#a7f3d0;cursor:pointer}
-  form{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);background:#0e1520}
-  textarea{flex:1;min-height:44px;max-height:180px;resize:none;padding:12px;border-radius:14px;background:#0b1320;color:var(--text);border:1px solid #243247;outline:none}
-  .send{min-width:120px}
-  .muted{color:var(--muted)}
+  .header{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 14px; border-bottom:1px solid var(--line);
+    background: linear-gradient(180deg, rgba(34,211,238,.06), transparent);
+  }
+  .left{display:flex; align-items:center; gap:10px}
+  .brand{display:flex; align-items:center; gap:10px}
+  .logo{
+    width:28px;height:28px;border-radius:10px;
+    background: conic-gradient(from 120deg, var(--acc), var(--acc2));
+    box-shadow: 0 0 24px rgba(34,211,238,.35), inset 0 0 14px rgba(0,0,0,.25);
+  }
+  .brand h1{font-size:15px;margin:0;letter-spacing:.25px}
+
+  .controls{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  select, input[type=text]{
+    background:#0b1320; color:var(--text); border:1px solid #223249; border-radius:10px;
+    height:36px; padding:6px 10px; outline:none;
+  }
+  .btn{
+    height:36px; padding:0 12px; border-radius:10px; font-weight:700; cursor:pointer; border:1px solid #234;
+    color:#071a1a; background:linear-gradient(180deg,#27e0cc,#1bc2b5);
+  }
+  .btn.ghost{background:#0b1320; color:var(--text); border-color:#243247}
+  .btn.danger{background:#ef4444; color:#fff; border-color:#ef4444}
+  .btn.pill{border-radius:999px}
+  .badgelite{padding:4px 8px; border:1px solid #223047; border-radius:999px; background:#0b1320; color:var(--muted); font-size:12px}
+
+  /* Sidebar */
+  .sidehead{padding:10px 12px; border-bottom:1px solid var(--line); display:flex; gap:8px}
+  .sidehead .btn{height:34px}
+  .chats{flex:1; overflow:auto; padding:10px}
+  .chatitem{
+    border:1px solid #1a2a40; background:#0b1320; border-radius:12px; padding:10px; margin-bottom:10px; cursor:pointer;
+  }
+  .chatitem.active{outline:2px solid var(--acc); background:#0a1524}
+  .chatitem .t{font-weight:700; font-size:14px; margin:0 0 4px 0}
+  .chatitem .m{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+  /* Main */
+  .main{display:flex; flex-direction:column; height:100%}
+  .toolbar{padding:10px; border-bottom:1px solid var(--line); display:flex; gap:8px; align-items:center; background:rgba(11,19,32,.6)}
+  .toolbar .chip{background:#0b1320; border:1px solid #223047; border-radius:999px; padding:6px 10px; font-size:12px; color:var(--muted)}
+  .toolbar .chip b{color:var(--text)}
+  .tips{display:flex; flex-wrap:wrap; gap:6px; margin-left:auto}
+  .tip{font-size:12px; border:1px dashed #2a3a55; padding:4px 8px; border-radius:999px; color:#b9c8dc}
+
+  #chat{flex:1; overflow:auto; padding:14px}
+  .msg{display:flex; gap:10px; margin:12px 0; align-items:flex-start}
+  .b{flex:0 0 38px; height:38px; border-radius:10px; display:grid; place-items:center; background:#0b1320; border:1px solid #213047}
+  .user .b{background:#192433} .bot .b{background:#0b3b32; border-color:#0b3b32}
+  .bubble{padding:12px 14px; border-radius:14px; max-width:80%; border:1px solid #1f2a3d; background:#0e1520}
+  .user .bubble{background:#131b2a} .bot .bubble{background:#0a2e27; border-color:#0a3a33}
+  .meta{display:flex; gap:8px; align-items:center; color:#a2b5ca; font-size:12px; margin:6px 0 0 52px}
+  .act{display:flex; gap:6px; margin-top:6px}
+  .action{font-size:12px; padding:4px 8px; border-radius:8px; border:1px solid #264; background:#0d1b1a; color:#a7f3d0; cursor:pointer}
+
+  /* Code & markdown */
+  pre{background:#0b1320; border:1px solid #243247; padding:10px; border-radius:10px; overflow:auto}
+  code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+  .bubble h1,.bubble h2,.bubble h3{margin:.4em 0}
+  .bubble ul{margin:.3em 0 .3em 1.2em}
+  a{color:#7dd3fc; text-decoration:none} a:hover{text-decoration:underline}
+
+  /* Composer */
+  .composer{display:flex; gap:10px; padding:12px; border-top:1px solid var(--line); background:#0e1520}
+  textarea{
+    flex:1; min-height:48px; max-height:220px; resize:none; padding:12px; border-radius:14px;
+    background:#0b1320; color:var(--text); border:1px solid #243247; outline:none
+  }
+  .icbtn{height:44px; min-width:44px; display:grid; place-items:center; border-radius:12px; border:1px solid #243247; background:#0b1320; color:#cce3ff; cursor:pointer}
+  .send{min-width:130px}
+
   .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
+
   /* Modal */
-  .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(3,6,10,.66)}
+  .modal{position:fixed; inset:0; background:rgba(3,6,10,.66); display:none; place-items:center}
   .modal.show{display:grid}
-  .box{width:min(560px,92%);background:#0e1623;border:1px solid #203049;border-radius:16px;padding:16px}
-  .box h2{margin:0 0 10px 0;font-size:18px}
-  .row{display:flex;gap:10px;align-items:center;margin:10px 0}
-  .row input[type=password]{flex:1;background:#0b1320;color:var(--text);border:1px solid #243247;border-radius:10px;padding:10px}
-  .kbd{border:1px solid #2a3b55;background:#0b1320;color:#c3d5ea;border-radius:6px;padding:2px 6px}
+  .box{width:min(560px,92%); background:#0e1623; border:1px solid #203049; border-radius:16px; padding:16px}
+  .box h2{margin:0 0 10px 0; font-size:18px}
+  .row{display:flex; gap:10px; align-items:center; margin:10px 0}
+  .row input[type=password], .row input[type=text]{flex:1; background:#0b1320; color:var(--text); border:1px solid #243247; border-radius:10px; padding:10px}
+  .hint{font-size:13px; color:var(--muted)}
+  .kbd{border:1px solid #2a3b55; background:#0b1320; color:#c3d5ea; border-radius:6px; padding:2px 6px}
+  .right{margin-left:auto}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="card">
-    <header>
-      <div class="brand"><div class="logo"></div><h1>Hazır Etiketli GPT</h1></div>
+<div class="shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidehead">
+      <button class="btn pill" id="newChatBtn">+ Yeni Sohbet</button>
+      <button class="btn ghost pill" id="exportBtn">Dışa Aktar</button>
+      <button class="btn ghost pill" id="keyBtn">API Anahtarı</button>
+    </div>
+    <div class="chats" id="chatList"></div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="header">
+      <div class="left">
+        <div class="brand"><div class="logo"></div><h1>XENAI — Akıllı Sohbet</h1></div>
+        <span class="badgelite">v1</span>
+      </div>
       <div class="controls">
         <select id="model">
           <option value="gpt-4o-mini" selected>gpt-4o-mini</option>
           <option value="gpt-4o">gpt-4o</option>
           <option value="gpt-4.1-mini">gpt-4.1-mini</option>
         </select>
-        <input id="system" type="text" placeholder="System: Türkçe, net, tablo/başlık kullan." />
-        <button class="btn sec" id="keyBtn">API Anahtarı</button>
-        <button class="btn sec" id="clear">Sohbeti Temizle</button>
+        <input id="system" type="text" placeholder="Sistem yönergesi (örn: Türkçe, kısa ve net, tablo kullan)" />
+        <button class="btn ghost" id="clearBtn">Temizle</button>
       </div>
-    </header>
-
-    <div class="wrap">
-      <!-- LEFT -->
-      <section class="tags">
-        <div class="search">
-          <input id="q" type="text" placeholder="Etiket ara (örn: gramer, diyalog, iş fikri)…" />
-          <button class="btn sec" id="showFav">⭐ Favoriler</button>
-        </div>
-        <p class="hint">İpucu: Etikete <strong>tek tık</strong> = hemen gönder. <strong>Alt + tık</strong> = düzenleyip gönder.</p>
-        <div id="grid" class="grid"></div>
-      </section>
-
-      <!-- RIGHT -->
-      <section>
-        <div id="chat" aria-live="polite"></div>
-        <form id="form">
-          <textarea id="input" placeholder="İstersen kendi mesajını da yazabilirsin… (Enter = Gönder, Shift+Enter = Satır)"></textarea>
-          <button class="btn send" id="send" type="submit">Gönder</button>
-        </form>
-        <p class="muted" style="margin:8px 2px 0">Not: Anahtar yerelde saklanır. Üretimde backend kullan.</p>
-      </section>
     </div>
-  </div>
+
+    <div class="toolbar">
+      <span class="chip">Model: <b id="mdlBadge">gpt-4o-mini</b></span>
+      <span class="chip">Akış: <b id="streamBadge">Açık</b></span>
+      <div class="tips">
+        <span class="tip">⌘/Ctrl + Enter → Gönder</span>
+        <span class="tip">Shift + Enter → Satır</span>
+        <span class="tip">/new, /clear, /summarize</span>
+      </div>
+    </div>
+
+    <div id="chat" aria-live="polite"></div>
+
+    <div class="composer">
+      <button class="icbtn" id="micBtn" title="Dikte (beta)">🎙️</button>
+      <textarea id="input" placeholder="Mesajını yaz…"></textarea>
+      <button class="btn send" id="sendBtn">Gönder</button>
+    </div>
+  </main>
 </div>
 
-<!-- API KEY MODAL -->
-<div class="modal" id="modal">
+<!-- API Key Modal -->
+<div class="modal" id="keyModal">
   <div class="box">
     <h2>OpenAI API Anahtarı</h2>
     <div class="row">
-      <input id="key" type="password" placeholder="ör. sk-proj-................">
-      <button class="btn" id="saveKey">Kaydet</button>
-      <button class="btn sec" id="cancelKey">Kapat</button>
+      <input id="apiKeyInput" type="password" placeholder="ör. sk-proj-..." />
+      <button class="btn" id="saveKeyBtn">Kaydet</button>
+      <button class="btn ghost" id="closeKeyBtn">Kapat</button>
     </div>
-    <div class="muted">Kısayol: <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">Enter</span></div>
+    <div class="hint">İpucu: <span class="kbd">Ctrl/Cmd</span> + <span class="kbd">Enter</span> ile kaydedebilirsin.</div>
   </div>
 </div>
 
 <script>
-/* ============= Yardımcılar ============= */
+/* ====================== XENAI Core ====================== */
 const $ = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
-const chat = $("#chat"), form = $("#form"), input = $("#input"), sendBtn = $("#send");
-const modelSel = $("#model"), systemInput = $("#system");
-const keyBtn = $("#keyBtn"), clearBtn = $("#clear");
-const modal = $("#modal"), keyInput = $("#key"), saveKeyBtn = $("#saveKey"), cancelKeyBtn = $("#cancelKey");
-const grid = $("#grid"), searchInput = $("#q"), favBtn = $("#showFav");
 
-const LS_KEY = "openai_api_key";
-const LS_FAVS = "ready_tags_favs";
-const state = { messages: [] , showingFavs:false };
+/* Elements */
+const chatEl = $("#chat");
+const inputEl = $("#input");
+const sendBtn = $("#sendBtn");
+const clearBtn = $("#clearBtn");
+const newChatBtn = $("#newChatBtn");
+const exportBtn = $("#exportBtn");
+const modelSel = $("#model");
+const systemEl = $("#system");
+const mdlBadge = $("#mdlBadge");
+const streamBadge = $("#streamBadge");
+const micBtn = $("#micBtn");
 
-function esc(s){ return s.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
-function mdLite(t){ return esc(t).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/\*([^*]+)\*/g,"<em>$1</em>").replace(/\n/g,"<br>"); }
-function cleanKey(k){ return (k||"").replace(/[^\x20-\x7E]/g,"").replace(/\s+/g,"").replace(/\.$/,""); }
-function getKey(){ return cleanKey(localStorage.getItem(LS_KEY)||""); }
-function setKey(k){ localStorage.setItem(LS_KEY, cleanKey(k)); }
-function getFavs(){ try{return JSON.parse(localStorage.getItem(LS_FAVS)||"[]");}catch{return []} }
-function toggleFav(id){ const f = new Set(getFavs()); f.has(id)?f.delete(id):f.add(id); localStorage.setItem(LS_FAVS, JSON.stringify([...f])); renderTags(); }
+/* Key Modal */
+const keyModal = $("#keyModal");
+const apiKeyInput = $("#apiKeyInput");
+const saveKeyBtn = $("#saveKeyBtn");
+const closeKeyBtn = $("#closeKeyBtn");
+const keyBtn = $("#keyBtn");
 
-function addMsg(role, html, plain=""){
-  const row = document.createElement("div");
-  row.className = "msg " + (role==="user" ? "user" : "bot");
-  row.innerHTML = `<div class="b">${role==="user"?"👤":"🤖"}</div><div class="bubble">${html}</div>`;
-  if(role==="assistant"){
-    const acts = document.createElement("div");
-    acts.className = "actions";
-    const cpy = document.createElement("button"); cpy.type="button"; cpy.className="action"; cpy.textContent="Kopyala";
-    cpy.onclick=()=>navigator.clipboard.writeText(plain);
-    acts.appendChild(cpy);
-    row.lastElementChild.appendChild(acts);
+/* Sidebar list */
+const chatList = $("#chatList");
+
+/* Local Storage keys */
+const LS_API_KEY = "xenai_api_key";
+const LS_CHATS = "xenai_chats_v1";
+const LS_ACTIVE = "xenai_active_id";
+
+/* App State */
+let state = {
+  chats: {},      // id: { id, title, sys, model, msgs: [ {role, content, ts} ] }
+  activeId: null,
+  streaming: true
+};
+
+/* ===== Utils ===== */
+function uuid(){ return "c"+Math.random().toString(36).slice(2)+Date.now().toString(36) }
+function esc(s){ return s.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]) ) }
+function cleanKey(k){ return (k||"").replace(/[^\x20-\x7E]/g,"").replace(/\s+/g,"").replace(/\.$/,"") }
+function getKey(){ return cleanKey(localStorage.getItem(LS_API_KEY)||"") }
+function setKey(k){ localStorage.setItem(LS_API_KEY, cleanKey(k)) }
+function saveState(){
+  localStorage.setItem(LS_CHATS, JSON.stringify(state.chats));
+  localStorage.setItem(LS_ACTIVE, state.activeId || "");
+}
+function loadState(){
+  try{ state.chats = JSON.parse(localStorage.getItem(LS_CHATS)||"{}") }catch{ state.chats={} }
+  state.activeId = localStorage.getItem(LS_ACTIVE) || null;
+  if(!state.activeId || !state.chats[state.activeId]){
+    const id = createChat("Yeni Sohbet");
+    setActive(id);
   }
-  chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+  renderChatList();
+}
+function formatTime(ts){ try{ return new Date(ts).toLocaleString() }catch{ return "" } }
+
+/* ===== Markdown-lite render ===== */
+function mdLite(t){
+  // triple backticks code blocks
+  t = t.replace(/```([\s\S]*?)```/g, (_, code)=> `<pre><code>${esc(code)}</code></pre>`);
+  // inline code
+  t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
+  // bold/italic
+  t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  t = t.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  // lists
+  t = t.replace(/^\s*[-•]\s+(.*)$/gm, "<li>$1</li>");
+  t = t.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+  // links
+  t = t.replace(/(https?:\/\/[^\s)]+)|(www\.[^\s)]+)/g, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
+  // newlines
+  t = t.replace(/\n/g, "<br>");
+  return t;
+}
+
+/* ===== UI Builders ===== */
+function addMsg(role, content, opts={}){
+  const row = document.createElement("div");
+  row.className = "msg " + (role === "user" ? "user" : "bot");
+  row.innerHTML = `
+    <div class="b">${role==="user"?"🧑":"🤖"}</div>
+    <div class="bubble">${mdLite(content||"")}</div>
+  `;
+  chatEl.appendChild(row);
+  chatEl.scrollTop = chatEl.scrollHeight;
+
+  // meta + actions
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.innerHTML = `<span>${role==="user"?"Kullanıcı":"XENAI"}</span> • <span>${formatTime(Date.now())}</span>`;
+  const acts = document.createElement("div"); acts.className = "act";
+  const copy = document.createElement("button"); copy.className="action"; copy.textContent="Kopyala";
+  copy.onclick = () => navigator.clipboard.writeText(content||"");
+  acts.appendChild(copy);
+
+  if(role==="assistant"){
+    const regen = document.createElement("button"); regen.className="action"; regen.textContent="Yeniden Üret";
+    regen.onclick = () => regenerateLast();
+    acts.appendChild(regen);
+    const speak = document.createElement("button"); speak.className="action"; speak.textContent="Seslendir";
+    speak.onclick = () => speakText(content||"");
+    acts.appendChild(speak);
+  }
+
+  meta.appendChild(acts);
+  chatEl.appendChild(meta);
+  chatEl.scrollTop = chatEl.scrollHeight;
   return row;
 }
-let typingEl=null; function showTyping(){ typingEl = addMsg("assistant", `<span class="spin"></span> Yazıyor...`);} function hideTyping(){ if(typingEl){typingEl.remove(); typingEl=null;} }
+let typingRow = null;
+function showTyping(){
+  typingRow = document.createElement("div");
+  typingRow.className = "msg bot";
+  typingRow.innerHTML = `
+    <div class="b">🤖</div>
+    <div class="bubble"><span class="spin"></span> Yazıyor…</div>
+  `;
+  chatEl.appendChild(typingRow);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+function updateTyping(html){
+  if(!typingRow) return;
+  typingRow.querySelector(".bubble").innerHTML = html;
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+function hideTyping(){ if(typingRow){ typingRow.remove(); typingRow=null } }
 
-/* ============= 25 Hazır Etiket ============= */
-const TAGS = [
-  {id:"idea",      ic:"💡", title:"İş Fikri Yarat", desc:"Beceri/sermayeye göre 3 özgün fikir + hızlı doğrulama adımları.",
-   prompt:`Görev: 3 özgün iş fikri üret. Girdi yoksa Türkiye pazarında mikro SaaS, hizmet ve içerik tabanlı karışık öner.
-Biçim:
-1) İsim + tek cümle
-2) Neden şimdi?
-3) İlk müşteri bulma
-4) 1 haftalık MVP planı
-5) Ana risk & nasıl test ederiz
-Sınırlar: Uydurma rakam yazma; kısa, net, madde madde.`},
-
-  {id:"mikrosaas", ic:"🧩", title:"Mikro SaaS Fikri", desc:"Niş bir acıya yönelik 2 fikir + 1 ekran akışı.",
-   prompt:`Görev: Türkiye pazarı için 2 mikro SaaS fikri ver. Her biri için (hedef, çözüm, veri kaynağı, tek ekran akışı).`},
-
-  {id:"grammar_tr", ic:"📝", title:"Gramer Düzelt (TR)", desc:"Metni dilbilgisi, noktalama ve akıcılık için düzelt.",
-   prompt:`Görev: Aşağıdaki Türkçe metni gramer/noktalama/akıcılık yönüyle düzelt ve değişiklikleri işaretli özetle.
-Çıktı: 1) Düzeltilmiş metin 2) Yapılan düzeltmeler (madde madde) 3) 2 öneri.
-Metin: [metni buraya yapıştır]`},
-
-  {id:"grammar_en", ic:"✍️", title:"Grammar Fix (EN)", desc:"Clear, concise, native-like rewrite + reasons.",
-   prompt:`Task: Improve grammar, clarity, and tone of the following English text.
-Output: 1) Polished text 2) Changes (bullet points) 3) Two style alternatives.
-Text: [paste here]`},
-
-  {id:"dialog_b1", ic:"🗣️", title:"Diyalog Yaz (B1)", desc:"Günlük durum için 12-16 replik diyalog.",
-   prompt:`Görev: CEFR B1 seviyesinde, günlük bir durumda (ör. “alışverişte iade”) 12–16 repliklik diyalog yaz.
-Kural: Kısa cümleler; deyim/kalıp ekle; Türkçe çeviri verme; en sonda 8 kelimelik mini sözlük.`},
-
-  {id:"dialog_b2", ic:"💬", title:"Diyalog Yaz (B2)", desc:"Tartışma tonu, 14–18 replik, argüman–karşı argüman.",
-   prompt:`Görev: CEFR B2 seviyesinde tartışma diyalogu yaz (14–18 replik). Argüman–karşı argüman içersin; sonunda 5 tartışma sorusu.`},
-
-  {id:"email_polish", ic:"📧", title:"E-postayı Profesyonelleştir", desc:"Kısa, nazik, net; konu satırı ve imza.",
-   prompt:`Görev: Aşağıdaki kaba e-postayı profesyonel, kısa ve net hale getir. Konu satırı ve kapanış ekle.
-Metin: [yapıştır]
-Sınır: 120 kelimeyi geçme; gereksiz övgü yok.`},
-
-  {id:"sales_cold", ic:"🚀", title:"Soğuk Satış E-postası", desc:"2 konu + 1 gövde + CTA.",
-   prompt:`Görev: [ürün/hizmet] için 2 konu satırı ve 1 gövde yaz. Hedef: [hedef kitle]. Ton: samimi ama net.
-Biçim: 1) Subject A 2) Subject B 3) Body (≤120 kelime) 4) CTA.`},
-
-  {id:"linkedin_post", ic:"🔗", title:"LinkedIn Gönderisi", desc:"Kanca + değer + kapanış; 120–180 kelime.",
-   prompt:`Görev: [konu] hakkında LinkedIn gönderisi yaz. Yapı: Kanca (1–2 cümle) → Değer maddeleri → Kapanış/CTA.
-Sınır: 120–180 kelime, emoji aşırı kullanma.`},
-
-  {id:"yt_outline", ic:"🎥", title:"YouTube Outline", desc:"Başlık, thumbnail metni, bölüm akışı.",
-   prompt:`Task: Create a YouTube video outline for topic: [topic]. Include:
-- 3 title options
-- Thumbnail text (max 6 words)
-- Hook (20s)
-- Chapter flow with timestamps
-- Call to action`},
-
-  {id:"blog_outline", ic:"🧭", title:"Blog Taslak (Outline)", desc:"H1–H3 başlık planı, brief ve kaynak fikirleri.",
-   prompt:`Görev: [ana konu] için blog taslağı oluştur. Çıktı:
-- H1–H3 başlık iskeleti
-- Yazım brief'i (hedef kitle, ton, amaç)
-- 6 alt konu ve olası görseller
-- 5 SSS`},
-
-  {id:"seo_clusters", ic:"🔎", title:"SEO Kümeleri", desc:"Kısa kuyruk → konu kümeleri + arama niyeti.",
-   prompt:`Görev: [anahtar kelime] için konu kümeleri çıkar. Her küme: 1 ana sayfa + 4 alt yazı fikri + arama niyeti + başlık önerisi.`},
-
-  {id:"product_desc", ic:"🛒", title:"E-ticaret Ürün Metni", desc:"Kısa başlık + özellikler + faydalar + SSS.",
-   prompt:`Görev: [ürün] için ürün sayfası metni yaz. Çıktı: 1) Kısa başlık 2) 5 özellik 3) 5 fayda 4) 3 SSS 5) Teknik tablo (markdown).`},
-
-  {id:"complaint_reply", ic:"🛟", title:"Şikâyete Net Cevap", desc:"Empati + çözüm + telafi; kısa.",
-   prompt:`Görev: Aşağıdaki müşteri şikâyetine kısa, net ve empatik bir yanıt yaz. Telafi ve net adım ekle.
-Şikâyet: [yapıştır]
-Yapı: Özür → Çözüm → Takip/teslim tarihi → İletişim.`},
-
-  {id:"cv_summary", ic:"🧑‍💼", title:"CV Özet (LinkedIn)", desc:"Headline + About (≤180 kelime).",
-   prompt:`Görev: [deneyim/hedef] bilgime göre LinkedIn başlık + 180 kelimelik About yaz. 6 anahtar beceri etiketi ekle.`},
-
-  {id:"interview_q", ic:"🎯", title:"Mülakat Soru&Cevap", desc:"Pozisyon özel 6 soru, örnek cevap iskeleti.",
-   prompt:`Görev: [pozisyon] için 6 mülakat sorusu ve her biri için güçlü bir cevap iskeleti oluştur. STAR yöntemi öner.`},
-
-  {id:"code_review", ic:"🧪", title:"Kod İncelemesi (JS)", desc:"Risk, performans, temizlik; kısa PR yorumu.",
-   prompt:`Task: Review the following JavaScript code. Output:
-1) Bugs & risks 2) Performance 3) Readability 4) Suggested patch (short).
-Code:\n[code here]`},
-
-  {id:"sql", ic:"🗂️", title:"SQL Sorgusu Yaz", desc:"Şema→sorgu + kısa açıklama.",
-   prompt:`Görev: Aşağıdaki tablo şemasına göre istenen sonucu getiren SQL yaz ve kısaca açıkla.\nŞema: [schema]\nİstek: [query]`},
-
-  {id:"excel", ic:"📊", title:"Excel Formülü", desc:"Örnekle açıkla + 2 varyant.",
-   prompt:`Görev: Excel/Google Sheets formülü yaz. Örnek ver ve iki varyant öner.\nİstek: [ör: sipariş tarihi son 30 gün ve tutar>500 filtre]`},
-
-  {id:"contract_sum", ic:"📄", title:"Sözleşme Özetle (UYARI)", desc:"Kritik maddeler + risk; hukuki tavsiye vermeden.",
-   prompt:`UYARI: Hukuki tavsiye verme. Görev: Aşağıdaki sözleşmeyi 1 sayfada özetle.
-Çıktı: 1) Taraflar/süre 2) Ücret/teslim 3) Sorumluluklar 4) Fesih 5) Uyuşmazlık 6) Risk notu.`},
-
-  {id:"meeting_notes", ic:"📝", title:"Toplantı Notu → Özet", desc:"Kararlar, aksiyonlar, sahipler, tarihler.",
-   prompt:`Görev: Aşağıdaki ham notlardan kararları, aksiyonları (sahip/tarih) ve açık soruları çıkar; tabloyla ver.\nNotlar: [yapıştır]`},
-
-  {id:"simplify", ic:"🫧", title:"Metni Basitleştir", desc:"B1 seviyesine indir, örnekle açıkla.",
-   prompt:`Görev: Metni B1 seviyesine basitleştir. 1 örnek ve 3 maddeyle özet ekle.\nMetin: [yapıştır]`},
-
-  {id:"tr2en", ic:"🌐", title:"TR → EN Çeviri", desc:"Doğal ton, kısa açıklama notu.",
-   prompt:`Task: Translate Turkish → English. Keep tone natural; add a short note if there are cultural nuances.\nText: [paste]`},
-
-  {id:"en2tr", ic:"🌍", title:"EN → TR Çeviri", desc:"Doğal, akıcı, bağlamsal.",
-   prompt:`Görev: İngilizce → Türkçe çeviri yap. Doğal ve akıcı ol; bağlam notu ekle.\nMetin: [yapıştır]`},
-
-  {id:"teacher_grammar", ic:"📚", title:"Gramer Konusu Anlat", desc:"Konu → açıklama + örnek + mini test.",
-   prompt:`Görev: [konu: ör. Present Perfect] konusunu açıkla. Yapı: Kural → 3 örnek → 5 soruluk mini test (cevap anahtarı ayrı).`}
-];
-
-/* ============= Etiketleri Çiz ============= */
-function renderTags(){
-  const q = (searchInput.value||"").toLowerCase();
-  const favs = new Set(getFavs());
-  const data = TAGS.filter(t => {
-    const hay = (t.title+" "+t.desc).toLowerCase();
-    const passQ = !q || hay.includes(q);
-    const passFav = !state.showingFavs || favs.has(t.id);
-    return passQ && passFav;
-  });
-
-  grid.innerHTML = "";
-  for(const t of data){
-    const el = document.createElement("div");
-    el.className = "tag";
-    el.dataset.id = t.id;
-    el.innerHTML = `
-      <div class="ic">${t.ic}</div>
-      <div class="txt">
-        <div class="title">${esc(t.title)}</div>
-        <p class="desc">${esc(t.desc)}</p>
-      </div>
-      <button class="fav ${getFavs().includes(t.id)?"active":""}" title="Favori">⭐</button>
-    `;
-    // click to send; Alt+click to edit
-    el.addEventListener("click", (e)=>{
-      if(e.target.classList.contains("fav")) return;
-      if(e.altKey){
-        input.value = t.prompt;
-        input.focus();
-      }else{
-        sendTemplate(t.prompt, t.title);
-      }
-    });
-    el.querySelector(".fav").addEventListener("click", (e)=>{
-      e.stopPropagation(); toggleFav(t.id);
-    });
-    grid.appendChild(el);
+/* ===== Chats ===== */
+function createChat(title="Yeni Sohbet"){
+  const id = uuid();
+  state.chats[id] = { id, title, sys:"", model:modelSel.value, msgs:[] };
+  return id;
+}
+function setActive(id){
+  state.activeId = id;
+  const ch = state.chats[id];
+  modelSel.value = ch.model || "gpt-4o-mini";
+  systemEl.value = ch.sys || "";
+  mdlBadge.textContent = modelSel.value;
+  renderChatList();
+  renderChat();
+  saveState();
+}
+function renderChat(){
+  chatEl.innerHTML = "";
+  const ch = state.chats[state.activeId];
+  if(!ch) return;
+  if(ch.msgs.length === 0){
+    addMsg("assistant", "Merhaba! Ben <strong>XENAI</strong>. Sağ üstten <em>API anahtarını</em> gir, model/sistem ayarını yap ve mesaj yaz. Başlangıç için fikirler:<br>- “Bana 7 günlük beslenme planı oluştur (kalori hedefi 2200).”<br>- “Bu metni kısa ve profesyonel hale getir.”<br>- “B1 seviyesinde 12 repliklik diyalog yaz: restoran rezervasyon.”");
+  }else{
+    for(const m of ch.msgs){ addMsg(m.role, m.content) }
+  }
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+function renameActive(title){
+  const ch = state.chats[state.activeId];
+  if(!ch) return;
+  ch.title = title || ch.title;
+  saveState(); renderChatList();
+}
+function renderChatList(){
+  chatList.innerHTML = "";
+  const ids = Object.keys(state.chats);
+  for(const id of ids){
+    const ch = state.chats[id];
+    const item = document.createElement("div");
+    item.className = "chatitem"+(id===state.activeId?" active":"");
+    item.innerHTML = `<div class="t">${esc(ch.title||"Sohbet")}</div><div class="m">${esc((ch.msgs[ch.msgs.length-1]?.content||"").slice(0,80))}</div>`;
+    item.onclick = () => setActive(id);
+    chatList.appendChild(item);
   }
 }
-searchInput.addEventListener("input", renderTags);
-favBtn.addEventListener("click", ()=>{
-  state.showingFavs = !state.showingFavs;
-  favBtn.textContent = state.showingFavs ? "⭐ Yalnız Favoriler" : "⭐ Favoriler";
-  renderTags();
-});
 
-/* ============= Sohbet ============= */
-function buildPrompt(messages){
-  return messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join("\n\n");
+/* ===== Speech (browser) ===== */
+let recog=null, recogOn=false;
+function initSpeech(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ micBtn.disabled = true; micBtn.title = "Tarayıcın desteklemiyor"; return }
+  recog = new SR(); recog.lang = "tr-TR"; recog.interimResults = true; recog.continuous = true;
+  recog.onresult = e=>{
+    let t = ""; for(const r of e.results){ t += r[0].transcript }
+    inputEl.value = t.trim();
+  };
+  recog.onend = ()=>{ if(recogOn){ recog.start() } }
 }
-
-async function query(model, inputStr){
-  const key = getKey();
-  if(!key || !key.startsWith("sk-")){
-    addMsg("assistant","⚠️ API anahtarını ayarla: Üstte <strong>API Anahtarı</strong> butonuna tıkla.","Anahtar yok");
-    return;
-  }
-  showTyping(); sendBtn.disabled = true; input.disabled = true;
-
+function toggleRec(){
+  if(!recog) return;
+  recogOn = !recogOn;
+  if(recogOn){ recog.start(); micBtn.textContent="🛑"; micBtn.title="Dikteyi durdur" }
+  else { recog.stop(); micBtn.textContent="🎙️"; micBtn.title="Dikte (beta)" }
+}
+function speakText(t){
   try{
-    // 1) Responses API (önerilen)
-    const body1 = {
-      model,
-      input: inputStr,
-      max_output_tokens: 500
-    };
-    const r1 = await fetch("https://api.openai.com/v1/responses",{
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang = "tr-TR";
+    speechSynthesis.speak(u);
+  }catch{}
+}
+
+/* ===== OpenAI Calls ===== */
+async function sendMessage(text){
+  // Commands
+  if(/^\/new/.test(text)){ const id=createChat("Yeni Sohbet"); setActive(id); return }
+  if(/^\/clear/.test(text)){ const ch=state.chats[state.activeId]; ch.msgs=[]; renderChat(); saveState(); return }
+  if(/^\/summarize/.test(text)){ summarizeChat(); return }
+
+  const ch = state.chats[state.activeId];
+  const sys = (systemEl.value||"").trim();
+  if(ch.msgs.length===0 && sys){ ch.sys = sys }
+
+  // Push user message
+  ch.msgs.push({ role:"user", content:text, ts:Date.now() });
+  addMsg("user", text);
+  saveState();
+
+  // Build messages for Chat Completions
+  const messages = [];
+  const systemText = ch.sys || "Türkçe yanıtla. Kısa ve net ol; gerekiyorsa tablo/başlık kullan.";
+  messages.push({ role:"system", content: systemText });
+  for(const m of ch.msgs){
+    messages.push({ role: m.role, content: m.content });
+  }
+
+  // Call OpenAI
+  const key = getKey();
+  if(!key || !key.startsWith("sk-")){ addMsg("assistant","⚠️ API anahtarını gir: sol taraftaki **API Anahtarı** butonundan.",""); return }
+  const model = modelSel.value;
+  const stream = state.streaming;
+
+  showTyping();
+  try{
+    // Prefer Chat Completions (stabil) with stream; fallback to Responses
+    const ccBody = { model, messages, temperature:0.7, stream };
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method:"POST",
       headers:{ "Authorization":"Bearer "+key.trim(), "Content-Type":"application/json" },
-      body: JSON.stringify(body1)
+      body: JSON.stringify(ccBody)
     });
 
-    let ok=false, text="";
-    if(r1.ok){
-      const data = await r1.json().catch(()=>null);
-      text = data?.output_text ||
-             data?.output?.[0]?.content?.[0]?.text?.value || "";
-      ok = !!text.trim();
-    }else{
-      // log (sessiz)
-      await r1.text().catch(()=>{});
+    if(!res.ok){
+      // fallback non-stream CC or Responses
+      hideTyping();
+      const txt = await res.text().catch(()=> "");
+      addMsg("assistant", `⚠️ Hata ${res.status}<br><code>${esc(txt.slice(0,600))}</code>`);
+      return;
     }
 
-    // 2) Fallback: Chat Completions
-    if(!ok){
-      const msgs = state.messages.map(m=>({role:m.role, content:m.content}));
-      const r2 = await fetch("https://api.openai.com/v1/chat/completions", {
-        method:"POST",
-        headers:{ "Authorization":"Bearer "+key.trim(), "Content-Type":"application/json" },
-        body: JSON.stringify({ model, messages: msgs, max_tokens: 500 })
-      });
-      if(r2.ok){
-        const d = await r2.json().catch(()=>null);
-        text = d?.choices?.[0]?.message?.content || "";
-        ok = !!text.trim();
-      }
-    }
-
-    hideTyping();
-    if(ok){
-      addMsg("assistant", mdLite(text), text);
-      state.messages.push({ role:"assistant", content:text });
+    if(stream){
+      await streamCC(res, ch);
     }else{
-      addMsg("assistant","(boş yanıt) — Lütfen tekrar dener misin?", "(boş yanıt)");
+      const data = await res.json();
+      const answer = data?.choices?.[0]?.message?.content || "(boş)";
+      hideTyping();
+      addAssistant(answer, ch);
     }
   }catch(err){
     hideTyping();
-    addMsg("assistant","⚠️ Ağ/istemci hatası: "+(err.message||err), String(err));
-  }finally{
-    sendBtn.disabled=false; input.disabled=false; input.focus();
+    addMsg("assistant", "⚠️ Ağ/istemci hatası: "+esc(err.message||String(err)));
   }
 }
 
-function sendTemplate(tpl, title="Etiket"){
-  const systemText = (systemInput.value||"Türkçe konuş; net, kısa; gerekiyorsa tablo/başlık kullan.");
-  if(state.messages.length===0 && systemText){
-    state.messages.push({ role:"system", content: systemText });
+async function streamCC(res, ch){
+  // SSE-ish event stream for chat/completions
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let done = false, buffer = "", acc = "";
+
+  updateTyping("<span class='spin'></span> Yazıyor…");
+  while(!done){
+    const {value, done:doneNow} = await reader.read();
+    done = doneNow;
+    if(value){
+      buffer += decoder.decode(value, {stream:true});
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() || "";
+      for(const p of parts){
+        const line = p.trim();
+        if(!line.startsWith("data:")) continue;
+        const jsonStr = line.slice(5).trim();
+        if(jsonStr === "[DONE]") continue;
+        try{
+          const evt = JSON.parse(jsonStr);
+          const delta = evt?.choices?.[0]?.delta?.content || "";
+          if(delta){
+            acc += delta;
+            updateTyping(mdLite(acc));
+          }
+        }catch{}
+      }
+    }
   }
-  const final = `# Etiket: ${title}\n\n${tpl}`;
-  addMsg("user", mdLite(final), final);
-  state.messages.push({ role:"user", content: final });
-  const inputStr = buildPrompt(state.messages);
-  query(modelSel.value, inputStr);
+  hideTyping();
+  if(acc.trim()){
+    addAssistant(acc, ch);
+  }else{
+    addMsg("assistant","(boş yanıt) — Lütfen tekrar deneyin.");
+  }
 }
 
-/* Kullanıcı serbest metin gönderirse */
-input.addEventListener("keydown", e=>{
-  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); form.requestSubmit(); }
-});
-form.addEventListener("submit", e=>{
-  e.preventDefault();
-  const txt = input.value.trim(); if(!txt) return; input.value="";
-  const systemText = (systemInput.value||"Türkçe konuş; net, kısa; gerekiyorsa tablo/başlık kullan.");
-  if(state.messages.length===0 && systemText){
-    state.messages.push({ role:"system", content: systemText });
+function addAssistant(answer, ch){
+  addMsg("assistant", answer);
+  ch.msgs.push({ role:"assistant", content:answer, ts:Date.now() });
+  // title auto
+  if((ch.title||"Yeni Sohbet")==="Yeni Sohbet"){
+    const first = (ch.msgs.find(m=>m.role==="user")?.content||"").slice(0,40);
+    renameActive(first || "XENAI Sohbeti");
   }
-  addMsg("user", mdLite(txt), txt);
-  state.messages.push({ role:"user", content: txt });
-  const inputStr = buildPrompt(state.messages);
-  query(modelSel.value, inputStr);
+  saveState();
+}
+
+/* ===== Regenerate last ===== */
+async function regenerateLast(){
+  const ch = state.chats[state.activeId];
+  if(!ch || ch.msgs.length===0) return;
+  const lastUserIdx = [...ch.msgs].map((m,i)=>({m,i})).reverse().find(x=>x.m.role==="user")?.i;
+  if(lastUserIdx==null) return;
+  const text = ch.msgs[lastUserIdx].content;
+  // remove trailing assistant(s)
+  ch.msgs = ch.msgs.slice(0, lastUserIdx+1);
+  renderChat();
+  await sendMessage(text);
+}
+
+/* ===== Summarize chat ===== */
+async function summarizeChat(){
+  const ch = state.chats[state.activeId];
+  if(!ch || ch.msgs.length===0){ addMsg("assistant","Özetlenecek mesaj yok."); return }
+  const plain = ch.msgs.map(m=>`${m.role.toUpperCase()}: ${m.content}`).join("\n");
+  await sendMessage("Bu konuşmayı 10 madde ve 5 aksiyonla özetle:\n\n"+plain.slice(-5000));
+}
+
+/* ===== Export ===== */
+function exportChat(){
+  const ch = state.chats[state.activeId];
+  if(!ch) return;
+  const lines = [];
+  lines.push(`# XENAI Sohbet: ${ch.title}`);
+  lines.push(`Model: ${ch.model}  |  Tarih: ${new Date().toLocaleString()}`);
+  lines.push(`Sistem: ${ch.sys||"(varsayılan)"}`);
+  lines.push(`---\n`);
+  for(const m of ch.msgs){
+    lines.push(`**${m.role.toUpperCase()}** — ${new Date(m.ts).toLocaleString()}\n\n${m.content}\n`);
+  }
+  const blob = new Blob([lines.join("\n")], {type:"text/markdown"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `xenai_${Date.now()}.md`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ====================== Events ====================== */
+sendBtn.onclick = () => {
+  const t = inputEl.value.trim(); if(!t) return;
+  inputEl.value = "";
+  sendMessage(t);
+};
+inputEl.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); sendBtn.click() }
+  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendBtn.click() }
 });
+clearBtn.onclick = ()=>{ const ch=state.chats[state.activeId]; if(!ch) return; ch.msgs=[]; renderChat(); saveState() };
+newChatBtn.onclick = ()=>{ const id=createChat("Yeni Sohbet"); setActive(id) };
+exportBtn.onclick = exportChat;
+modelSel.onchange = ()=>{ const ch=state.chats[state.activeId]; if(!ch) return; ch.model=modelSel.value; mdlBadge.textContent=modelSel.value; saveState() };
+systemEl.onchange = ()=>{ const ch=state.chats[state.activeId]; if(!ch) return; ch.sys=systemEl.value; saveState() };
+micBtn.onclick = toggleRec;
 
-/* ============= API Key Modal ============= */
-function openModal(){ modal.classList.add("show"); keyInput.value=getKey(); keyInput.focus(); }
-function closeModal(){ modal.classList.remove("show"); }
-keyBtn.onclick = openModal; cancelKeyBtn.onclick = closeModal;
-saveKeyBtn.onclick = ()=>{ const v = keyInput.value; setKey(v); if(!getKey().startsWith("sk-")) alert("Anahtar sk- ile başlamıyor olabilir. Yine de kaydedildi."); closeModal(); }
-keyInput.addEventListener("keydown", e=>{ if((e.key==="Enter")&&(e.metaKey||e.ctrlKey)) saveKeyBtn.click(); });
+/* Key Modal */
+function openKeyModal(){ keyModal.classList.add("show"); apiKeyInput.value=getKey(); apiKeyInput.focus() }
+function closeKeyModal(){ keyModal.classList.remove("show") }
+keyBtn.onclick = openKeyModal; saveKeyBtn.onclick = ()=>{ setKey(apiKeyInput.value); closeKeyModal() }; closeKeyBtn.onclick = closeKeyModal;
+apiKeyInput.addEventListener("keydown", e=>{ if((e.key==="Enter")&&(e.metaKey||e.ctrlKey)) saveKeyBtn.click() });
 
-/* ============= Clear & Init ============= */
-clearBtn.onclick = ()=>{ state.messages=[]; chat.innerHTML=""; addMsg("assistant","Sohbet temizlendi. Soldan bir etikete tıklayıp başlayabilirsin. ✨"); };
-addMsg("assistant","Hazır etiketlerden birine tıklayarak başlayabilirsin. `Alt + tık` ile metni önce düzenleyebilirsin.");
-renderTags();
+/* First run */
+(function init(){
+  loadState();
+  initSpeech();
+  if(!getKey()) openKeyModal();
+  addKeyboardToggles();
+})();
 
-// İlk kullanımda anahtar sor
-if(!getKey()) openModal();
+/* Convenience: toggle streaming with double-click on model badge */
+function addKeyboardToggles(){
+  mdlBadge.addEventListener("dblclick", ()=>{
+    state.streaming = !state.streaming;
+    streamBadge.textContent = state.streaming ? "Açık" : "Kapalı";
+  });
+}
 </script>
 </body>
 </html>
+
