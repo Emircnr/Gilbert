@@ -43,7 +43,7 @@
     </div>
 
     <div class="row">
-      <label>System (isteğe bağlı):</label>
+      <label>System (opsiyonel):</label>
       <input id="sys" type="text" placeholder="Örn: Kısa ve net cevap ver, Türkçe konuş." />
     </div>
 
@@ -55,24 +55,21 @@
     </form>
   </div>
   <p><small>
-    <b>UYARI:</b> Bu sayfa OpenAI anahtarını dosyada tutar. Güvensizdir; herkes görebilir ve kullanabilir. Yalnızca deneme amaçlı.<br/>
-    API anahtarı oluşturma: OpenAI paneli &rarr; <em>API Keys</em> &rarr; <em>Create new secret key</em>. (Resmi doküman) :contentReference[oaicite:2]{index=2}
+    <b>UYARI:</b> Bu dosyada API anahtarı düz metin olarak durur; **deneme dışında kullanma**. Anahtarı paylaşma ve depo/drive’a yükleme.
   </small></p>
 </div>
 
 <script>
-/*** 1) BURAYA ANAHTARINI YAZ (**ÇOK RİSKLİ**) ***/
-const OPENAI_API_KEY = "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"; // <- kendi anahtarını yaz
+/*** 1) SADECE BURAYI DÜZENLE — kendi anahtarını çift tırnak içine yapıştır ***/
+const OPENAI_API_KEY = "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"; // örn: "sk-proj-xxxxxxxx"
 
 /*** 2) Basit durum ***/
-const el = (id)=>document.getElementById(id);
-const chat = el("chat"), ta = el("t"), form = el("f"), sendBtn = el("send");
-const modelSel = el("model"), sysInput = el("sys");
-
-const history = []; // Responses API'ye chat geçmişini input olarak vereceğiz
+const $ = (id)=>document.getElementById(id);
+const chat = $("chat"), ta = $("t"), form = $("f"), sendBtn = $("send");
+const modelSel = $("model"), sysInput = $("sys");
+const history = []; // sohbet geçmişi
 
 function esc(s){ return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
-
 function addMsg(role, text){
   const row = document.createElement("div");
   row.className = "msg " + (role === "user" ? "user" : "bot");
@@ -83,31 +80,30 @@ function addMsg(role, text){
   chat.appendChild(row);
   chat.scrollTop = chat.scrollHeight;
 }
-
 let typingEl = null;
 function showTyping(){
   typingEl = document.createElement("div");
   typingEl.className = "msg bot";
   typingEl.innerHTML = `
     <div class="b a">🤖</div>
-    <div class="bubble"><span class="spin"></span> Yazıyor...</div>
-  `;
+    <div class="bubble"><span class="spin"></span> Yazıyor...</div>`;
   chat.appendChild(typingEl);
   chat.scrollTop = chat.scrollHeight;
 }
-function hideTyping(){
-  if(typingEl){ typingEl.remove(); typingEl = null; }
-}
+function hideTyping(){ if(typingEl){ typingEl.remove(); typingEl = null; } }
 
 async function ask(prompt){
   const systemText = sysInput.value.trim();
   const model = modelSel.value;
 
-  // Görünüm
+  if(!OPENAI_API_KEY || !OPENAI_API_KEY.startsWith("sk-")){
+    addMsg("assistant", "⚠️ API anahtarını PASTE_YOUR_OPENAI_KEY_HERE yerine yapıştırmalısın (sk- ile başlamalı).");
+    return;
+  }
+
   addMsg("user", prompt);
   sendBtn.disabled = true; ta.disabled = true; showTyping();
 
-  // Geçmişi güncelle
   if(history.length === 0 && systemText){
     history.push({ role: "system", content: systemText });
   }
@@ -122,7 +118,6 @@ async function ask(prompt){
       },
       body: JSON.stringify({
         model,
-        // Responses API'ye "input" veriyoruz; chat geçmişini aynen gönderiyoruz
         input: history
       })
     });
@@ -131,15 +126,12 @@ async function ask(prompt){
       hideTyping();
       const text = await res.text().catch(()=> "");
       addMsg("assistant", `⚠️ Hata ${res.status}: ${text || "İstek başarısız"}`);
-      // Hatalı isteği geçmişe eklemeyelim
       return;
     }
 
     const data = await res.json();
-    // Responses API, özet metni "output_text" alanında döndürür (docs)
     const answer =
       (data && data.output_text) ||
-      // yedek çözüm: içerik ağaçlarından metin çek
       (data.output && data.output[0] && data.output[0].content &&
        data.output[0].content[0] && data.output[0].content[0].text &&
        data.output[0].content[0].text.value) ||
@@ -147,8 +139,6 @@ async function ask(prompt){
 
     hideTyping();
     addMsg("assistant", answer);
-
-    // Sohbet geçmişine asistan mesajını da ekleyelim
     history.push({ role: "assistant", content: answer });
 
   }catch(err){
@@ -159,7 +149,6 @@ async function ask(prompt){
   }
 }
 
-/*** Enter ile gönderme (Shift+Enter = yeni satır) ***/
 ta.addEventListener("keydown", (e)=>{
   if(e.key === "Enter" && !e.shiftKey){
     e.preventDefault();
@@ -174,8 +163,7 @@ form.addEventListener("submit", (e)=>{
   ask(text);
 });
 
-// Karşılama
-addMsg("assistant", "Merhaba! Bu sayfa OpenAI Responses API ile doğrudan konuşur. Bir şey yazmayı dene. 🔑 Anahtarını dosyaya yazdığını unutma.");
+addMsg("assistant", "Merhaba! Önce dosyada API anahtarını ilgili satıra yapıştır, sonra bana bir şey yaz. 🚀");
 </script>
 </body>
 </html>
