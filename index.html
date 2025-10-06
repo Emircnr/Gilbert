@@ -1,169 +1,312 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tek Dosya GPT Chat (Doğrudan API)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPT Chat — Tek Dosya</title>
 <style>
-  :root{--bg:#0b0f14;--panel:#111827;--line:#1f2937;--acc:#22d3ee;--muted:#9ca3af}
-  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:#e5e7eb;font:16px/1.5 system-ui,Segoe UI,Roboto}
-  .wrap{max-width:880px;margin:0 auto;padding:16px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.35)}
-  header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
-  header h1{font-size:16px;margin:0}
-  .row{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);background:#0e1520}
-  .row label{font-size:13px;color:var(--muted)}
-  input[type=text],select{flex:1;padding:8px 10px;border:1px solid #263244;border-radius:10px;background:#0b1320;color:#e6eef6}
-  #chat{height:60vh;overflow:auto;padding:12px}
-  .msg{display:flex;gap:10px;margin:8px 0}
-  .b{flex:0 0 36px;height:36px;border-radius:50%;display:grid;place-items:center}
-  .u{background:#374151}.a{background:#0f766e}
-  .bubble{padding:10px 12px;border-radius:12px;max-width:80%}
-  .user .bubble{background:#1f2937}.bot .bubble{background:#0b3b32}
-  form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#0e1520}
-  textarea{flex:1;resize:none;min-height:44px;max-height:160px;padding:10px 12px;border:1px solid #263244;border-radius:12px;background:#0b1320;color:#e6eef6}
-  button{background:var(--acc);border:0;color:#082f49;padding:0 16px;border-radius:12px;font-weight:700;cursor:pointer;height:44px}
-  small{color:var(--muted)} code{background:#0b1320;border:1px solid #263244;padding:2px 6px;border-radius:6px}
-  .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite}
+  :root{
+    --bg: #0b0f14; --grad1:#0ea5e9; --grad2:#22c55e; --panel:#0f172a; --line:#1e293b;
+    --text:#e6eef6; --muted:#93a4b8; --accent:#22d3ee; --accent2:#34d399;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;color:var(--text);background:
+      radial-gradient(1200px 800px at 10% -10%, rgba(34,211,238,.18), transparent 60%),
+      radial-gradient(1200px 800px at 110% 110%, rgba(52,211,153,.16), transparent 60%),
+      linear-gradient(180deg, #0a0f15, #0b1118);
+    font:16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  }
+  .app{max-width:960px;margin:0 auto;padding:18px}
+  .card{
+    border:1px solid var(--line); background:rgba(15,23,42,.72); backdrop-filter: blur(8px);
+    border-radius:20px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.45);
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:14px 16px; border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex; align-items:center; gap:10px}
+  .logo{
+    width:28px;height:28px;border-radius:9px;background:
+      conic-gradient(from 120deg, var(--grad1), var(--grad2));
+    box-shadow:0 0 24px rgba(34,211,238,.35), inset 0 0 14px rgba(0,0,0,.25);
+  }
+  h1{font-size:15px;margin:0;letter-spacing:.3px}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  select, input[type="text"]{
+    background:#0b1320;color:var(--text);border:1px solid #243247;border-radius:10px;
+    padding:8px 10px; height:38px; outline:none;
+  }
+  .chip{font-size:12px;color:var(--muted)}
+  #chat{height:62vh;overflow:auto;padding:12px}
+  .msg{display:flex;gap:10px;margin:10px 0; align-items:flex-start}
+  .b{flex:0 0 38px;height:38px;border-radius:10px;display:grid;place-items:center;
+      background:#0b1320;border:1px solid #213047}
+  .user .b{background:#18212f} .bot .b{background:#0b3b32;border-color:#0b3b32}
+  .bubble{
+    padding:10px 12px;border-radius:14px;max-width:78%;border:1px solid #1f2a3d;background:#0e1520
+  }
+  .user .bubble{background:#141c2a} .bot .bubble{background:#0a2e27;border-color:#0a3a33}
+  .toolbar{display:flex;gap:8px;align-items:center}
+  .btn{height:38px;border:1px solid #234;color:#052f2b;background:linear-gradient(180deg,#27e0cc,#1bc2b5);
+       border-radius:12px;padding:0 12px;font-weight:700;cursor:pointer}
+  .btn.secondary{background:#0b1320;color:var(--text);border-color:#243247;font-weight:600}
+  .btn.warn{background:#ef4444;color:#fff;border-color:#ef4444}
+  form{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);background:#0e1520}
+  textarea{
+    flex:1;min-height:44px;max-height:180px;resize:none; padding:12px;border-radius:14px;
+    background:#0b1320;color:var(--text);border:1px solid #243247; outline:none
+  }
+  .send{min-width:120px}
+  .muted{color:var(--muted)}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
+  .msg .actions{margin-top:6px; display:flex; gap:6px}
+  .action{
+    font-size:12px;padding:4px 8px;border-radius:8px;border:1px solid #264;
+    background:#0d1b1a;color:#a7f3d0; cursor:pointer
+  }
+  /* Modal */
+  .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(3,6,10,.66)}
+  .modal.show{display:grid}
+  .modal .box{width:min(560px,92%);background:#0e1623;border:1px solid #203049;border-radius:16px;padding:16px}
+  .box h2{margin:0 0 10px 0;font-size:18px}
+  .row{display:flex; gap:10px; align-items:center; margin:10px 0}
+  .row input[type="password"]{flex:1;background:#0b1320;color:var(--text);border:1px solid #243247;border-radius:10px;padding:10px}
+  .hint{font-size:13px;color:var(--muted)}
+  .kbd{border:1px solid #2a3b55;background:#0b1320;color:#c3d5ea;border-radius:6px;padding:2px 6px}
+  .danger{color:#fca5a5}
+  .right{margin-left:auto}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
   <div class="card">
-    <header><h1>Tek Dosya GPT Chat</h1></header>
-
-    <div class="row">
-      <label>Model:</label>
-      <select id="model">
-        <option value="gpt-4o-mini" selected>gpt-4o-mini (önerilen)</option>
-        <option value="gpt-4o">gpt-4o</option>
-        <option value="gpt-4.1-mini">gpt-4.1-mini</option>
-      </select>
-    </div>
-
-    <div class="row">
-      <label>System (opsiyonel):</label>
-      <input id="sys" type="text" placeholder="Örn: Kısa ve net cevap ver, Türkçe konuş." />
-    </div>
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <h1>GPT Chat</h1>
+        <span class="chip">Responses API</span>
+      </div>
+      <div class="controls">
+        <select id="model">
+          <option value="gpt-4o-mini" selected>gpt-4o-mini</option>
+          <option value="gpt-4o">gpt-4o</option>
+          <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+        </select>
+        <input id="system" type="text" placeholder="System: (örn. Türkçe ve kısa cevap ver)">
+        <button class="btn secondary" id="clear">Sohbeti Temizle</button>
+        <button class="btn secondary" id="keyBtn">API Anahtarı</button>
+      </div>
+    </header>
 
     <div id="chat" aria-live="polite"></div>
 
-    <form id="f">
-      <textarea id="t" placeholder="Mesajını yaz... (Enter = Gönder, Shift+Enter = yeni satır)" required></textarea>
-      <button id="send" type="submit">Gönder</button>
+    <form id="form">
+      <textarea id="input" placeholder="Mesajını yaz... (Enter = Gönder, Shift+Enter = Satır)" required></textarea>
+      <button class="btn send" id="send" type="submit">Gönder</button>
     </form>
   </div>
-  <p><small>
-    <b>UYARI:</b> Bu dosyada API anahtarı düz metin olarak durur; **deneme dışında kullanma**. Anahtarı paylaşma ve depo/drive’a yükleme.
-  </small></p>
+  <p class="muted" style="margin:10px 6px 0">Not: Anahtar yerelde saklanır. Üretim için backend kullan.</p>
+</div>
+
+<!-- API KEY MODAL -->
+<div class="modal" id="modal">
+  <div class="box">
+    <h2>OpenAI API Anahtarı</h2>
+    <div class="hint">Panelden aldığın anahtarı buraya yapıştır. <span class="danger">Anahtarı herkese açık paylaşma.</span></div>
+    <div class="row">
+      <input id="key" type="password" placeholder="ör. sk-proj-................">
+      <button class="btn" id="saveKey">Kaydet</button>
+      <button class="btn secondary" id="cancelKey">Kapat</button>
+    </div>
+    <div class="hint">İpucu: <span class="kbd">Ctrl</span>/<span class="kbd">Cmd</span> + <span class="kbd">Enter</span> ile pencereden çıkmadan kaydedebilirsin.</div>
+  </div>
 </div>
 
 <script>
-/*** 1) SADECE BURAYI DÜZENLE — kendi anahtarını çift tırnak içine yapıştır ***/
-const OPENAI_API_KEY = "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" // örn: "sk-proj-xxxxxxxx"
+/* ==========================================================
+   Basit, sağlam tek-dosya GPT Chat (OpenAI Responses API)
+   - Proxy yok, doğrudan çağrı
+   - Key modal + localStorage
+   - Görünmez karakter/NOKTA temizleyici
+   - Hata mesajları ve kopyala butonu
+   ========================================================== */
 
-/*** 2) Basit durum ***/
 const $ = (id)=>document.getElementById(id);
-const chat = $("chat"), ta = $("t"), form = $("f"), sendBtn = $("send");
-const modelSel = $("model"), sysInput = $("sys");
-const history = []; // sohbet geçmişi
+const chat = $("chat"), form = $("form"), input = $("input"), sendBtn = $("send");
+const modelSel = $("model"), systemInput = $("system");
+const keyBtn = $("keyBtn"), clearBtn = $("clear");
+const modal = $("modal"), keyInput = $("key"), saveKeyBtn = $("saveKey"), cancelKeyBtn = $("cancelKey");
+
+const LS_KEY = "openai_api_key";
+const state = { messages: [] };
 
 function esc(s){ return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
-function addMsg(role, text){
+
+function mdLite(text){
+  // Çok hafif markdown: **kalın**, *italik*, `kod`
+  return esc(text)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/\n/g, "<br>");
+}
+
+function addMsg(role, html, options={}){
   const row = document.createElement("div");
   row.className = "msg " + (role === "user" ? "user" : "bot");
   row.innerHTML = `
-    <div class="b ${role === "user" ? "u":"a"}">${role === "user" ? "👤":"🤖"}</div>
-    <div class="bubble">${esc(text).replace(/\n/g,"<br>")}</div>
+    <div class="b">${role === "user" ? "👤" : "🤖"}</div>
+    <div class="bubble">${html}</div>
   `;
+  if (role === "assistant") {
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    const copy = document.createElement("button");
+    copy.className = "action"; copy.type = "button"; copy.textContent = "Kopyala";
+    copy.onclick = () => navigator.clipboard.writeText(options.plain || "");
+    actions.appendChild(copy);
+    row.lastElementChild.appendChild(actions);
+  }
   chat.appendChild(row);
   chat.scrollTop = chat.scrollHeight;
+  return row;
 }
+
 let typingEl = null;
 function showTyping(){
-  typingEl = document.createElement("div");
-  typingEl.className = "msg bot";
-  typingEl.innerHTML = `
-    <div class="b a">🤖</div>
-    <div class="bubble"><span class="spin"></span> Yazıyor...</div>`;
-  chat.appendChild(typingEl);
-  chat.scrollTop = chat.scrollHeight;
+  typingEl = addMsg("assistant", `<span class="spin"></span> Yazıyor...`);
 }
-function hideTyping(){ if(typingEl){ typingEl.remove(); typingEl = null; } }
+function hideTyping(){
+  if (typingEl){ typingEl.remove(); typingEl=null; }
+}
 
-async function ask(prompt){
-  const systemText = sysInput.value.trim();
-  const model = modelSel.value;
+function cleanKey(k){
+  if (!k) return "";
+  return k
+    .replace(/[^\x20-\x7E]/g, "") // görünmez
+    .replace(/\s+/g, "")          // boşluklar
+    .replace(/\.$/, "");          // sonda nokta
+}
 
-  if(!OPENAI_API_KEY || !OPENAI_API_KEY.startsWith("sk-")){
-    addMsg("assistant", "⚠️ API anahtarını PASTE_YOUR_OPENAI_KEY_HERE yerine yapıştırmalısın (sk- ile başlamalı).");
+function getKey(){
+  let k = localStorage.getItem(LS_KEY) || "";
+  return cleanKey(k);
+}
+function setKey(k){
+  const cleaned = cleanKey(k);
+  localStorage.setItem(LS_KEY, cleaned);
+  return cleaned;
+}
+
+// Modal kontrol
+function openModal(){
+  modal.classList.add("show");
+  keyInput.value = getKey();
+  keyInput.focus();
+}
+function closeModal(){ modal.classList.remove("show"); }
+
+// İlk yükleme: key yoksa sor
+if (!getKey()) openModal();
+
+keyBtn.onclick = openModal;
+cancelKeyBtn.onclick = closeModal;
+saveKeyBtn.onclick = () => {
+  const saved = setKey(keyInput.value);
+  if (!saved.startsWith("sk-")) { alert("Geçersiz gibi görünüyor (sk- ile başlamalı). Yine de kaydedildi."); }
+  closeModal();
+};
+keyInput.addEventListener("keydown", (e)=>{
+  if ((e.key === "Enter" && (e.metaKey || e.ctrlKey))) { saveKeyBtn.click(); }
+});
+
+clearBtn.onclick = () => {
+  state.messages = [];
+  chat.innerHTML = "";
+  addMsg("assistant", "Sohbet temizlendi. Başlayalım! ✨");
+};
+
+// Karşılama
+addMsg("assistant", "Merhaba! Mesaj yaz, ben de cevaplayayım. Sağ üstten **Model** seçebilir, **System** yönergesi ekleyebilirsin.");
+
+// Enter ile gönder (Shift+Enter yeni satır)
+input.addEventListener("keydown", (e)=>{
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    form.requestSubmit();
+  }
+});
+
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+
+  addMsg("user", mdLite(text));
+  if (state.messages.length === 0 && systemInput.value.trim()){
+    state.messages.push({ role:"system", content: systemInput.value.trim() });
+  }
+  state.messages.push({ role:"user", content: text });
+
+  await query();
+});
+
+async function query(){
+  const key = getKey();
+  if (!key || !key.startsWith("sk-")) {
+    addMsg("assistant", "⚠️ API anahtarını ayarla: Sağ üstte <strong>API Anahtarı</strong> butonuna tıkla.", {plain:"Anahtar yok"});
     return;
   }
 
-  addMsg("user", prompt);
-  sendBtn.disabled = true; ta.disabled = true; showTyping();
+  const model = modelSel.value;
+  showTyping();
+  sendBtn.disabled = true; input.disabled = true;
 
-  if(history.length === 0 && systemText){
-    history.push({ role: "system", content: systemText });
-  }
-  history.push({ role: "user", content: prompt });
-
-  try{
+  try {
     const res = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
-        "Authorization": "Bearer " + OPENAI_API_KEY,
+        "Authorization": "Bearer " + key.trim(),
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model,
-        input: history
+        input: state.messages
       })
     });
 
-    if(!res.ok){
+    if (!res.ok) {
       hideTyping();
-      const text = await res.text().catch(()=> "");
-      addMsg("assistant", `⚠️ Hata ${res.status}: ${text || "İstek başarısız"}`);
+      const txt = await res.text().catch(()=> "");
+      let msg = `⚠️ Hata ${res.status}`;
+      if (res.status === 401) msg += ": Geçersiz API anahtarı (sonunda nokta/boşluk olabilir ya da anahtar iptal edilmiştir).";
+      if (res.status === 429) msg += ": Hız sınırı/aşırı kullanım.";
+      addMsg("assistant", mdLite(msg + "\n\n" + (txt.slice(0,400) || "")), {plain: msg});
       return;
     }
 
     const data = await res.json();
     const answer =
       (data && data.output_text) ||
-      (data.output && data.output[0] && data.output[0].content &&
-       data.output[0].content[0] && data.output[0].content[0].text &&
-       data.output[0].content[0].text.value) ||
+      (data?.output?.[0]?.content?.[0]?.text?.value) ||
       "(boş yanıt)";
 
     hideTyping();
-    addMsg("assistant", answer);
-    history.push({ role: "assistant", content: answer });
+    addMsg("assistant", mdLite(answer), {plain: answer});
+    state.messages.push({ role:"assistant", content: answer });
 
-  }catch(err){
+  } catch (err) {
     hideTyping();
-    addMsg("assistant", "⚠️ İstek gönderilemedi: " + err.message);
-  }finally{
-    sendBtn.disabled = false; ta.disabled = false; ta.focus();
+    addMsg("assistant", mdLite("⚠️ Ağ/istemci hatası: " + (err.message || err)), {plain: String(err)});
+  } finally {
+    sendBtn.disabled = false; input.disabled = false; input.focus();
   }
 }
-
-ta.addEventListener("keydown", (e)=>{
-  if(e.key === "Enter" && !e.shiftKey){
-    e.preventDefault();
-    form.requestSubmit();
-  }
-});
-form.addEventListener("submit", (e)=>{
-  e.preventDefault();
-  const text = ta.value.trim();
-  if(!text) return;
-  ta.value = "";
-  ask(text);
-});
-
-addMsg("assistant", "Merhaba! Önce dosyada API anahtarını ilgili satıra yapıştır, sonra bana bir şey yaz. 🚀");
 </script>
 </body>
 </html>
