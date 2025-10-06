@@ -4,12 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>XENAI — Intelligent Assistant</title>
-<meta name="theme-color" content="#0b0f14" />
+<meta name="theme-color" content="#0c0f1a" />
 <style>
   :root{
-    --bg:#070b10; --panel:#0d1420; --panel2:#0b1220; --line:#162233;
-    --text:#e6eef6; --muted:#9fb0c7; --acc:#22d3ee; --acc2:#7c3aed;
-    --chip:#0b1320; --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
+    --bg:#0a0f18; --panel:#0e1524; --panel2:#0b1222; --glass:rgba(14,21,36,.62);
+    --line:#17243a; --text:#e9f1ff; --muted:#9fb0c7; --acc:#22d3ee; --acc2:#8b5cf6; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -17,118 +16,134 @@
     margin:0; color:var(--text);
     background:
       radial-gradient(1200px 800px at -10% -10%, rgba(34,211,238,.14), transparent 60%),
-      radial-gradient(1200px 800px at 110% 110%, rgba(124,58,237,.12), transparent 60%),
-      linear-gradient(180deg, #090d13, #0a0f15);
+      radial-gradient(1200px 800px at 110% 120%, rgba(139,92,246,.12), transparent 60%),
+      linear-gradient(180deg, #070b12, #0a0f18);
     font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+    letter-spacing:.2px;
   }
 
-  /*=== App layout (sidebar + main) ===*/
-  .shell{
-    display:grid; grid-template-columns: 320px 1fr; grid-template-rows: 64px 1fr 68px; height:100%;
+  /* ============ Layout ============ */
+  .grid{
+    display:grid; grid-template-columns: 320px 1fr; grid-template-rows: 72px 1fr 78px; height:100%;
   }
-  header{ grid-column: 1 / -1; display:flex; align-items:center; justify-content:space-between; gap:12px;
-    padding:10px 14px; border-bottom:1px solid var(--line);
-    background: linear-gradient(180deg, rgba(34,211,238,.06), transparent);
+  header{
+    grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:14px 18px; border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(34,211,238,.06), transparent);
+    position:sticky; top:0; z-index:3;
   }
-  .brand{display:flex; align-items:center; gap:12px}
+  .brand{display:flex; align-items:center; gap:14px}
   .logo{
-    width:36px; height:36px; border-radius:12px; position:relative;
-    background: conic-gradient(from 90deg, var(--acc), var(--acc2) 40%, #34d399 75%, var(--acc));
-    box-shadow: 0 0 28px rgba(34,211,238,.35), inset 0 0 18px rgba(0,0,0,.35);
-    overflow:hidden;
+    width:40px;height:40px;border-radius:14px;position:relative;overflow:hidden;
+    background: conic-gradient(from 110deg, var(--acc), var(--acc2) 40%, #34d399 80%, var(--acc));
+    box-shadow: 0 0 36px rgba(34,211,238,.35), inset 0 0 18px rgba(0,0,0,.35);
   }
   .logo::after{
-    content:""; position:absolute; inset:6px; border-radius:10px;
+    content:""; position:absolute; inset:8px; border-radius:12px;
     background: radial-gradient(120px 60px at 40% 30%, rgba(255,255,255,.25), transparent 40%);
-    filter: blur(8px);
+    filter: blur(10px);
   }
-  h1{font-size:16px; margin:0; letter-spacing:.3px}
-  .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  h1{margin:0;font-size:18px;letter-spacing:.4px}
+  .controls{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
   select{
-    background:#0b1320; color:var(--text); border:1px solid #223249; border-radius:12px;
-    height:38px; padding:6px 12px; outline:none
+    background:var(--panel2); color:var(--text); border:1px solid #23314a; border-radius:12px;
+    height:40px; padding:8px 12px; outline:none
   }
-  .btn{height:38px; padding:0 14px; border-radius:12px; font-weight:700; cursor:pointer; border:1px solid #234;
-    color:#071a1a; background:linear-gradient(180deg,#27e0cc,#1bc2b5)}
-  .btn.ghost{background:#0b1320; color:var(--text); border-color:#243247}
-  .avatar{width:34px; height:34px; border-radius:50%; border:1px solid #263b56; object-fit:cover}
+  .btn{
+    height:40px; padding:0 14px; border-radius:12px; font-weight:700; cursor:pointer; border:1px solid #214;
+    color:#071a1a; background:linear-gradient(180deg,#27e0cc,#1bc2b5);
+  }
+  .btn.ghost{background:var(--panel2); color:var(--text); border-color:#23314a}
+  .avatar{width:36px;height:36px;border-radius:50%;border:1px solid #263b56;object-fit:cover;display:none}
 
-  /* Sidebar (conversations) */
+  /* Sidebar */
   aside{
-    grid-row: 2 / 4; border-right:1px solid var(--line); background:rgba(13,20,32,.7); backdrop-filter: blur(8px);
+    grid-row:2/4; border-right:1px solid var(--line);
+    background:var(--glass); backdrop-filter: blur(10px);
     display:flex; flex-direction:column; min-height:0;
   }
-  .sidehead{padding:10px; border-bottom:1px solid var(--line); display:flex; gap:8px}
-  .search{display:flex; gap:8px}
+  .usercard{display:flex; align-items:center; gap:10px; padding:12px; border-bottom:1px solid var(--line)}
+  .usercard .info{display:flex; flex-direction:column}
+  .usercard .name{font-weight:700; font-size:14px}
+  .usercard .sub{color:var(--muted); font-size:12px}
+  .sidebar-actions{display:flex; gap:8px; padding:10px; border-bottom:1px solid var(--line)}
+  .search{display:flex;gap:8px;padding:10px}
   .search input{
-    flex:1; background:#0b1320; color:var(--text); border:1px solid #223249; border-radius:10px; padding:8px 10px; height:38px;
+    flex:1;background:var(--panel2); color:var(--text); border:1px solid #23314a; border-radius:12px; padding:10px;
+    height:40px; outline:none
   }
-  .newBtn{white-space:nowrap}
-  .convlist{flex:1; overflow:auto; padding:10px}
+  .convs{flex:1; overflow:auto; padding:10px; }
   .conv{
-    border:1px solid #1a2a40; background:#0b1320; border-radius:12px; padding:10px; margin-bottom:10px; cursor:pointer;
+    border:1px solid #1a2a40; background:rgba(11,19,32,.72); border-radius:14px; padding:12px; margin-bottom:10px; cursor:pointer;
+    transition:transform .06s ease, background .2s;
   }
+  .conv:hover{transform:translateY(-1px); background:#0d1626}
   .conv.active{outline:2px solid var(--acc); background:#0a1524}
-  .conv .t{font-weight:700; font-size:14px; margin:0 0 4px 0}
-  .conv .m{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .conv .row{display:flex; align-items:center; gap:6px}
+  .conv .row{display:flex; align-items:center; gap:8px}
+  .conv .title{font-weight:700; font-size:14px}
   .conv .time{margin-left:auto; font-size:11px; color:#8aa0b8}
-  .conv .del{margin-left:6px; border:1px solid #2a3b55; background:#0b1320; color:#cbd6e7; border-radius:8px; padding:2px 6px; font-size:11px}
-  .rename{border:1px dashed #2a3b55; background:#0b1320; color:#bcd0ea; border-radius:999px; padding:3px 8px; font-size:11px}
+  .conv .preview{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:4px}
+  .conv .pill{border:1px solid #2a3b55;background:#0b1320;color:#cbd6e7;border-radius:999px;padding:2px 8px;font-size:11px}
+  .conv .actions{display:flex; gap:6px; margin-left:6px}
+  .conv .mini{border:1px solid #2a3b55;background:#0b1320;color:#cbd6e7;border-radius:8px;padding:3px 7px;font-size:11px}
 
-  /* Main chat area */
-  main{ grid-column: 2; grid-row: 2; display:flex; flex-direction:column; min-height:0 }
-  #chatWrap{position:relative; height:100%; overflow:auto; scroll-behavior:smooth; padding:14px}
+  /* Main chat */
+  main{ grid-column:2; grid-row:2; display:flex; flex-direction:column; min-height:0 }
+  #chatWrap{position:relative; height:100%; overflow:auto; scroll-behavior:smooth; padding:18px}
   #chat{max-width:980px; margin:0 auto}
-  .msg{display:flex; gap:12px; margin:12px 0; align-items:flex-start}
-  .b{flex:0 0 40px; height:40px; border-radius:12px; display:grid; place-items:center; background:#0b1320; border:1px solid #213047}
-  .user .b{background:#192433}
+
+  .msg{display:flex; gap:12px; margin:14px 0; align-items:flex-start}
+  .b{flex:0 0 42px; height:42px; border-radius:14px; display:grid; place-items:center; background:#0b1320; border:1px solid #213047}
+  .user .b{background:#182233}
   .bot .b{background:#0b3b32; border-color:#0b3b32}
-  .bubble{padding:12px 14px; border-radius:16px; max-width:82%;
+  .bubble{padding:14px 16px; border-radius:16px; max-width:82%;
           border:1px solid #1f2a3d; background:#0e1520}
-  .user .bubble{background:#131b2a}
+  .user .bubble{background:#121a2c}
   .bot .bubble{background:#0a2e27; border-color:#0a3a33}
-  .meta{display:flex; gap:8px; align-items:center; color:#a2b5ca; font-size:12px; margin:6px 0 0 52px}
+  .meta{display:flex; gap:8px; align-items:center; color:#a2b5ca; font-size:12px; margin:6px 0 0 54px}
   .act{display:flex; gap:6px; margin-left:auto}
   .action{font-size:12px; padding:4px 8px; border-radius:8px; border:1px solid #264; background:#0d1b1a; color:#a7f3d0; cursor:pointer}
-  pre{background:#0b1320; border:1px solid #243247; padding:10px; border-radius:10px; overflow:auto}
+  pre{background:#0b1320; border:1px solid #243247; padding:12px; border-radius:12px; overflow:auto}
   code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
   a{color:#7dd3fc; text-decoration:none} a:hover{text-decoration:underline}
 
-  /* Composer */
-  footer{ grid-column: 2; grid-row: 3; }
-  .composer{display:flex; gap:10px; padding:12px; border-top:1px solid var(--line); background:#0e1520}
-  textarea{
-    flex:1; min-height:64px; max-height:40vh; resize:none; padding:14px 14px 14px 14px; border-radius:14px;
-    background:#0b1320; color:var(--text); border:1px solid #243247; outline:none; font-size:16px; line-height:1.5;
+  /* Composer (big like major assistants) */
+  footer{ grid-column:2; grid-row:3; }
+  .composer{
+    display:flex; gap:12px; padding:14px; border-top:1px solid var(--line);
+    background:linear-gradient(0deg, rgba(14,21,36,.65), rgba(14,21,36,.65)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+    backdrop-filter: blur(10px);
   }
-  .send{min-width:140px}
+  textarea{
+    flex:1; min-height:72px; max-height:42vh; resize:none; padding:16px; border-radius:16px;
+    background:var(--panel2); color:var(--text); border:1px solid #243247; outline:none; font-size:16px; line-height:1.55;
+  }
+  .send{min-width:150px}
   .icbtn{height:44px; min-width:44px; display:grid; place-items:center; border-radius:12px;
          border:1px solid #243247; background:#0b1320; color:#cce3ff; cursor:pointer}
 
-  .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-
   /* Jump to latest */
-  #jump{position:sticky; bottom:12px; margin-top:-36px; display:none; z-index:2}
+  #jump{position:sticky; bottom:14px; margin-top:-36px; display:none; z-index:2}
   #jump button{margin:0 auto; display:block; background:#0b1320; border:1px solid #223047; color:#d2f3ff;
                padding:8px 12px; border-radius:999px; cursor:pointer}
 
-  /* Auth modal */
+  /* Modal (auth) */
   .modal{position:fixed; inset:0; background:rgba(3,6,10,.66); display:none; place-items:center; z-index:20}
   .modal.show{display:grid}
-  .box{width:min(520px,92%); background:#0e1623; border:1px solid #203049; border-radius:16px; padding:18px}
+  .box{width:min(560px,92%); background:#0e1623; border:1px solid #203049; border-radius:16px; padding:20px}
   .box h2{margin:0 0 8px 0; font-size:20px}
   .row{display:flex; gap:10px; align-items:center; margin:12px 0}
   .note{font-size:13px; color:var(--muted)}
   .sep{height:1px; background:#1e2b40; margin:12px 0}
-  @media (max-width: 980px){ .shell{ grid-template-columns: 1fr; }
-    aside{ display:none } footer{ grid-column: 1 } main{ grid-column: 1 }
-  }
+
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media (max-width: 1100px){ .grid{ grid-template-columns: 1fr; } aside{ display:none } footer{ grid-column:1 } main{ grid-column:1 } }
 </style>
 </head>
 <body>
-<div class="shell">
+<div class="grid">
   <!-- Header -->
   <header>
     <div class="brand">
@@ -141,26 +156,34 @@
         <option value="xen-5.2">XEN 5.2 (Balanced)</option>
         <option value="xen-5.3">XEN 5.3 (Advanced)</option>
       </select>
-      <button class="btn ghost" id="newBtn">New Chat</button>
-      <button class="btn ghost" id="resetBtn" title="Start fresh">Reset</button>
-      <img id="avatar" class="avatar" src="" alt="" style="display:none" />
+      <button class="btn ghost" id="newBtn" title="New conversation">New Chat</button>
+      <img id="avatar" class="avatar" src="" alt=""/>
       <button class="btn" id="signinBtn">Sign in</button>
       <button class="btn ghost" id="signoutBtn" style="display:none">Sign out</button>
     </div>
   </header>
 
-  <!-- Sidebar: Conversations -->
+  <!-- Sidebar -->
   <aside>
-    <div class="sidehead">
-      <div class="search" style="flex:1">
-        <input id="search" type="text" placeholder="Search chats…" />
+    <div class="usercard">
+      <img id="sideAvatar" class="avatar" src="" alt=""/>
+      <div class="info">
+        <div class="name" id="displayName">Guest</div>
+        <div class="sub" id="displayEmail">Not signed in</div>
       </div>
-      <button class="btn newBtn" id="sideNewBtn">＋</button>
     </div>
-    <div class="convlist" id="convlist"></div>
+    <div class="sidebar-actions">
+      <button class="btn" id="sideGoogleBtn">Google</button>
+      <button class="btn ghost" id="sideAnonBtn">Guest</button>
+    </div>
+    <div class="search">
+      <input id="search" type="text" placeholder="Search your chats…" />
+      <button class="btn ghost" id="sideNewBtn" title="New chat">＋</button>
+    </div>
+    <div class="convs" id="convs"></div>
   </aside>
 
-  <!-- Main Chat -->
+  <!-- Main -->
   <main>
     <div id="chatWrap">
       <div id="chat" aria-live="polite"></div>
@@ -171,6 +194,7 @@
   <!-- Composer -->
   <footer>
     <div class="composer">
+      <button class="icbtn" id="micBtn" title="Dictate (beta)">🎙️</button>
       <textarea id="input" placeholder="Type your message…" autocomplete="off"></textarea>
       <button class="btn send" id="sendBtn">Send</button>
     </div>
@@ -181,13 +205,13 @@
 <div class="modal" id="authModal">
   <div class="box">
     <h2>Welcome to XENAI</h2>
-    <p class="note">Sign in to sync and keep your conversation history. You can also continue as a guest.</p>
+    <p class="note">Sign in with Google to sync your conversation history. You can also continue as a guest.</p>
     <div class="row">
       <button class="btn" id="googleBtn">Continue with Google</button>
       <button class="btn ghost" id="anonBtn">Continue as Guest</button>
     </div>
     <div class="sep"></div>
-    <p class="note">By continuing you agree to our simple usage terms. You can sign out anytime from the header.</p>
+    <p class="note">By continuing you agree to basic usage terms. You can sign out anytime.</p>
   </div>
 </div>
 
@@ -196,9 +220,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-import { getFirestore, enableIndexedDbPersistence, collection, addDoc, doc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+import { getFirestore, enableIndexedDbPersistence, collection, addDoc, doc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, limit, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-/* ====== CONFIG: your Firebase project ====== */
+/* ====== Your Firebase project ====== */
 const firebaseConfig = {
   apiKey: "AIzaSyDXQlb8jReShQmtOuCWPKg4G5ctO0kXE9E",
   authDomain: "xenai-cf2ce.firebaseapp.com",
@@ -208,58 +232,46 @@ const firebaseConfig = {
   appId: "1:492168745931:web:32c153a356794621abdc4e",
   measurementId: "G-EC555NNNY4"
 };
+
 const app = initializeApp(firebaseConfig);
-try{ getAnalytics(app); }catch{ /* analytics may fail on http */ }
+try{ getAnalytics(app); }catch{}
 const auth = getAuth(app);
 const db = getFirestore(app);
 enableIndexedDbPersistence(db).catch(()=>{});
 
-/* ================== OpenAI Call (stream) ================== */
-/* Insert your API key here (no UI field). */
-const OPENAI_API_KEY = "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";
+/* ================== OpenAI (stream) ================== */
+/* TODO: Put your real API key here */
+const OPENAI_API_KEY = "PUT_YOUR_OPENAI_API_KEY_HERE";
 
-/* Model mapping: UI names → actual API models (never shown in UI) */
+/* UI model names → real API models (UI never shows provider/model names) */
 const MODEL_MAP = {
   "xen-5.1": "gpt-4o-mini",
   "xen-5.2": "gpt-4o",
   "xen-5.3": "gpt-4.1-mini"
 };
-
-/* Hidden system behavior */
 const SYSTEM_DEFAULT = "You are XENAI. Reply in clear, helpful English. Use Markdown when useful. Be concise.";
 
 /* ================== DOM refs ================== */
 const $ = s => document.querySelector(s);
-const chatWrap = $("#chatWrap");
-const chat = $("#chat");
-const input = $("#input");
-const sendBtn = $("#sendBtn");
-const modelSel = $("#model");
-const resetBtn = $("#resetBtn");
-const signinBtn = $("#signinBtn");
-const signoutBtn = $("#signoutBtn");
-const avatarImg = $("#avatar");
-const authModal = $("#authModal");
-const googleBtn = $("#googleBtn");
-const anonBtn = $("#anonBtn");
-const jump = $("#jump"), jumpBtn = $("#jumpBtn");
-const convlist = $("#convlist");
-const searchInput = $("#search");
-const newBtn = $("#newBtn");
-const sideNewBtn = $("#sideNewBtn");
+const chatWrap = $("#chatWrap"); const chat = $("#chat"); const input = $("#input");
+const sendBtn = $("#sendBtn"); const modelSel = $("#model");
+const signinBtn = $("#signinBtn"); const signoutBtn = $("#signoutBtn"); const avatar = $("#avatar");
+const sideAvatar = $("#sideAvatar"); const displayName = $("#displayName"); const displayEmail = $("#displayEmail");
+const authModal = $("#authModal"); const googleBtn = $("#googleBtn"); const anonBtn = $("#anonBtn");
+const sideGoogleBtn = $("#sideGoogleBtn"); const sideAnonBtn = $("#sideAnonBtn");
+const newBtn = $("#newBtn"); const sideNewBtn = $("#sideNewBtn");
+const convsEl = $("#convs"); const searchEl = $("#search");
+const jump = $("#jump"); const jumpBtn = $("#jumpBtn"); const micBtn = $("#micBtn");
 
-/* ================== App State ================== */
+/* ================== State ================== */
 let uid = null;
 let activeConvId = null;
-let messages = [];           // current conversation messages
-let unsubMsgs = null;
-let unsubConvs = null;
+let unsubConvs = null, unsubMsgs = null;
+let messages = []; // current chat messages
+const LS_ACTIVE = "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";
 
-/* Local cache */
-const LS_ACTIVE = "xenai_active_conv_id";
-
-/* ================== Utils ================== */
-function esc(s){ return (s||"").replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
+/* ================== Helpers ================== */
+function esc(s){ return (s||"").replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;","&": "&amp;", ">":"&gt;"}[m])); }
 function mdLite(t){
   t = (t||"");
   t = t.replace(/```([\s\S]*?)```/g, (_, code)=> `<pre><code>${esc(code)}</code></pre>`);
@@ -272,19 +284,14 @@ function mdLite(t){
   t = t.replace(/\n/g, "<br>");
   return t;
 }
-function trunc(s, n){ s=s||""; return s.length>n? s.slice(0,n)+"…" : s }
-function fmtTime(ts){
-  try{ const d = new Date(ts); return d.toLocaleString(); }catch{ return "" }
-}
+function trunc(s,n){ s=s||""; return s.length>n? s.slice(0,n)+"…" : s }
+function fmtTime(ts){ try{ return new Date(ts).toLocaleString(); }catch{ return "" } }
 
-/* ============ Chat UI helpers ============ */
+/* Message rows */
 function addMsg(role, content){
   const row = document.createElement("div");
-  row.className = "msg " + (role === "user" ? "user" : "bot");
-  row.innerHTML = `
-    <div class="b">${role==="user"?"🧑":"🤖"}</div>
-    <div class="bubble">${mdLite(content||"")}</div>
-  `;
+  row.className = "msg " + (role==="user" ? "user" : "bot");
+  row.innerHTML = `<div class="b">${role==="user"?"🧑":"🤖"}</div><div class="bubble">${mdLite(content||"")}</div>`;
   chat.appendChild(row);
   smartScroll();
   const meta = document.createElement("div");
@@ -297,9 +304,8 @@ function addMsg(role, content){
   meta.appendChild(actions);
   chat.appendChild(meta);
   smartScroll();
-  return row;
 }
-let typingRow = null;
+let typingRow=null;
 function showTyping(){
   typingRow = document.createElement("div");
   typingRow.className = "msg bot";
@@ -307,38 +313,44 @@ function showTyping(){
   chat.appendChild(typingRow);
   smartScroll();
 }
-function updateTyping(html){
-  if(!typingRow) return;
-  typingRow.querySelector(".bubble").innerHTML = html;
-  smartScroll();
-}
-function hideTyping(){ if(typingRow){ typingRow.remove(); typingRow=null } }
+function updateTyping(html){ if(typingRow){ typingRow.querySelector(".bubble").innerHTML = html; smartScroll(); } }
+function hideTyping(){ if(typingRow){ typingRow.remove(); typingRow=null; } }
 
-/* Smart autoscroll with "Jump to latest" */
+/* Smart scroll & jump */
 function nearBottom(){
   const delta = chatWrap.scrollHeight - chatWrap.scrollTop - chatWrap.clientHeight;
-  return delta < 120;
+  return delta < 140;
 }
-function smartScroll(){
-  if(nearBottom()){ chatWrap.scrollTop = chatWrap.scrollHeight; $("#jump").style.display="none"; }
-  else { $("#jump").style.display="block"; }
-}
-chatWrap.addEventListener("scroll", ()=>{
-  if(nearBottom()) $("#jump").style.display="none";
-});
+function smartScroll(){ if(nearBottom()){ chatWrap.scrollTop = chatWrap.scrollHeight; jump.style.display="none"; } else { jump.style.display="block"; } }
+chatWrap.addEventListener("scroll", ()=>{ if(nearBottom()) jump.style.display="none"; });
 jumpBtn.onclick = ()=> chatWrap.scrollTop = chatWrap.scrollHeight;
 
-/* Auto-grow textarea (like big assistants) */
+/* Autogrow textarea (big like major assistants) */
 function autoGrow(){
   input.style.height = "auto";
-  const max = Math.round(window.innerHeight * 0.4);
+  const max = Math.round(window.innerHeight * 0.42);
   input.style.height = Math.min(input.scrollHeight, max) + "px";
 }
 input.addEventListener("input", autoGrow);
 window.addEventListener("resize", autoGrow);
-setTimeout(autoGrow, 100);
+setTimeout(autoGrow, 120);
 
-/* ============ OpenAI Streaming ============ */
+/* Speech dictation (browser) */
+let recog=null, recOn=false;
+function initSpeech(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ micBtn.disabled=true; micBtn.title="Not supported"; return; }
+  recog = new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=true;
+  recog.onresult = e=>{
+    let t=""; for(const r of e.results){ t+=r[0].transcript }
+    input.value = t.trim(); autoGrow();
+  };
+  recog.onend = ()=>{ if(recOn) recog.start(); }
+}
+function toggleRec(){ if(!recog) return; recOn=!recOn; if(recOn){ recog.start(); micBtn.textContent="🛑"; } else { recog.stop(); micBtn.textContent="🎙️"; } }
+micBtn.onclick = toggleRec;
+
+/* ================== OpenAI Streaming ================== */
 async function askXENAI(modelKey, msgs){
   const apiModel = MODEL_MAP[modelKey] || MODEL_MAP["xen-5.1"];
   const headers = { "Authorization":"Bearer "+OPENAI_API_KEY, "Content-Type":"application/json" };
@@ -354,196 +366,157 @@ async function askXENAI(modelKey, msgs){
   return res.body.getReader();
 }
 
-/* ============ Firestore Paths & Helpers ============ */
-function paths(){
-  if(!uid) return null;
-  const convsCol = collection(db, "users", uid, "conversations");
-  return { convsCol };
-}
-async function ensureFirstConv(){
-  const { convsCol } = paths();
-  const ref = await addDoc(convsCol, { title:"New chat", createdAt: serverTimestamp(), updatedAt: serverTimestamp(), lastMsg:"" });
-  activeConvId = ref.id;
-  localStorage.setItem(LS_ACTIVE, activeConvId);
-  startMessagesListener();
+/* ================== Firestore Paths & Ops ================== */
+function convsCol(){ return collection(db, "users", uid, "conversations"); }
+function msgsCol(convId){ return collection(db, "users", uid, "conversations", convId, "messages"); }
+
+async function ensureAtLeastOneConv(){
+  // If none exists, create one
+  const ref = await addDoc(convsCol(), { title:"New chat", createdAt: serverTimestamp(), updatedAt: serverTimestamp(), lastMsg:"", archived:false });
+  activeConvId = ref.id; localStorage.setItem(LS_ACTIVE, activeConvId);
+  startMsgsListener();
 }
 async function createConversation(){
-  const { convsCol } = paths();
-  const ref = await addDoc(convsCol, { title:"New chat", createdAt: serverTimestamp(), updatedAt: serverTimestamp(), lastMsg:"" });
+  const ref = await addDoc(convsCol(), { title:"New chat", createdAt: serverTimestamp(), updatedAt: serverTimestamp(), lastMsg:"", archived:false });
   setActiveConv(ref.id);
 }
-async function setActiveConv(id){
-  activeConvId = id;
-  localStorage.setItem(LS_ACTIVE, activeConvId);
-  startMessagesListener();
+function setActiveConv(id){
+  activeConvId = id; localStorage.setItem(LS_ACTIVE, id);
+  startMsgsListener();
 }
-async function renameConversation(id, title){
-  const ref = doc(db, "users", uid, "conversations", id);
-  await updateDoc(ref, { title, updatedAt: serverTimestamp() });
+async function renameConv(id, title){
+  await updateDoc(doc(db, "users", uid, "conversations", id), { title, updatedAt: serverTimestamp() });
 }
-async function updateConvMeta({ lastMsg }){
-  if(!activeConvId) return;
-  const ref = doc(db, "users", uid, "conversations", activeConvId);
-  await updateDoc(ref, { updatedAt: serverTimestamp(), lastMsg });
+async function archiveConv(id){
+  await updateDoc(doc(db, "users", uid, "conversations", id), { archived:true, updatedAt: serverTimestamp() });
+  if(id===activeConvId){ activeConvId=null; chat.innerHTML=""; messages=[]; }
 }
 
 /* Conversation list listener */
 function startConvsListener(){
   if(unsubConvs) unsubConvs();
-  const { convsCol } = paths();
-  const qy = query(convsCol, orderBy("updatedAt","desc"), limit(100));
+  // Show non-archived, latest first
+  const qy = query(convsCol(), where("archived","==",false), orderBy("updatedAt","desc"), limit(200));
   unsubConvs = onSnapshot(qy, snap=>{
-    const items = [];
-    snap.forEach(d=>{
-      const v = d.data();
-      if(v.archived===true) return; // soft delete
-      items.push({ id:d.id, ...v });
-    });
-    renderConvList(items);
-    // Choose active
-    const desired = localStorage.getItem(LS_ACTIVE);
-    const exists = items.find(x=>x.id===desired);
-    if(!activeConvId || !exists){
-      if(items.length){ setActiveConv(items[0].id); } else { /* create first convo on demand */ }
-    }else{
-      // ensure messages listener is running
-      if(!unsubMsgs) startMessagesListener();
+    const items = []; snap.forEach(d=> items.push({ id:d.id, ...d.data() }) );
+    renderConvs(items);
+    const saved = localStorage.getItem(LS_ACTIVE);
+    if(!activeConvId || !items.find(x=>x.id===saved)){
+      if(items.length) setActiveConv(items[0].id);
+      else { /* create on first send */ }
     }
   });
 }
-function renderConvList(items){
-  const q = (searchInput.value||"").toLowerCase();
-  convlist.innerHTML = "";
+function renderConvs(items){
+  const q = (searchEl.value||"").toLowerCase();
+  convsEl.innerHTML = "";
   for(const it of items){
     if(q && !( (it.title||"").toLowerCase().includes(q) || (it.lastMsg||"").toLowerCase().includes(q) )) continue;
     const el = document.createElement("div");
     el.className = "conv"+(it.id===activeConvId?" active":"");
     el.innerHTML = `
       <div class="row">
-        <div class="t">${esc(it.title||"Untitled")}</div>
+        <span class="pill">${it.title?esc(it.title):"Untitled"}</span>
+        <div class="actions">
+          <button class="mini rename">Rename</button>
+          <button class="mini del">Archive</button>
+        </div>
         <span class="time">${it.updatedAt?.toDate? it.updatedAt.toDate().toLocaleDateString() : ""}</span>
-        <button class="rename">Rename</button>
-        <button class="del">Archive</button>
       </div>
-      <div class="m">${esc(trunc(it.lastMsg||"", 70))}</div>
+      <div class="preview">${esc(trunc(it.lastMsg||"", 80))}</div>
     `;
     el.addEventListener("click", (e)=>{
-      if(e.target.classList.contains("rename")) return;
-      if(e.target.classList.contains("del")) return;
+      if(e.target.classList.contains("rename") || e.target.classList.contains("del")) return;
       setActiveConv(it.id);
     });
-    el.querySelector(".rename").onclick = async (e)=>{
-      e.stopPropagation();
-      const nv = prompt("Rename chat:", it.title||"");
-      if(nv && nv.trim()) await renameConversation(it.id, nv.trim());
-    };
-    el.querySelector(".del").onclick = async (e)=>{
-      e.stopPropagation();
-      const ok = confirm("Archive this conversation?");
-      if(!ok) return;
-      await updateDoc(doc(db, "users", uid, "conversations", it.id), { archived:true, updatedAt: serverTimestamp() });
-    };
-    convlist.appendChild(el);
+    el.querySelector(".rename").onclick = async (e)=>{ e.stopPropagation(); const nv = prompt("Rename chat:", it.title||""); if(nv && nv.trim()) await renameConv(it.id, nv.trim()); };
+    el.querySelector(".del").onclick = async (e)=>{ e.stopPropagation(); if(confirm("Archive this conversation?")) await archiveConv(it.id); };
+    convsEl.appendChild(el);
   }
 }
-searchInput.addEventListener("input", ()=> startConvsListener());
+searchEl.addEventListener("input", ()=> startConvsListener());
 
 /* Messages listener for active conversation */
-function startMessagesListener(){
+function startMsgsListener(){
   if(!uid || !activeConvId) return;
   if(unsubMsgs) unsubMsgs();
-  chat.innerHTML = "";
-  messages = [];
-  const msgsRef = collection(db, "users", uid, "conversations", activeConvId, "messages");
-  const qy = query(msgsRef, orderBy("ts","asc"), limit(500));
+  const qy = query(msgsCol(activeConvId), orderBy("ts","asc"), limit(500));
+  chat.innerHTML=""; messages=[];
   unsubMsgs = onSnapshot(qy, snap=>{
-    chat.innerHTML = "";
-    messages = [];
-    if(snap.empty){
-      addMsg("assistant", "Hello, I'm <strong>XENAI</strong>. Ask anything. Your conversations are saved in the sidebar.");
-      return;
-    }
+    chat.innerHTML = ""; messages=[];
+    if(snap.empty){ addMsg("assistant","Hello, I'm <strong>XENAI</strong>. Ask anything. Your conversations are saved on the left."); return; }
     snap.forEach(d=>{
       const m = d.data();
-      messages.push({ role: m.role, content: m.content, ts: m.ts?.toMillis?.() || Date.now() });
+      messages.push({ role:m.role, content:m.content, ts: m.ts?.toMillis?.() || Date.now() });
     });
-    for(const m of messages){
-      addMsg(m.role==="user"?"user":"assistant", m.content);
-    }
+    for(const m of messages){ addMsg(m.role==="user"?"user":"assistant", m.content); }
   });
 }
 
-/* Append message to Firestore */
+/* Append message */
 async function appendMessage(role, content){
   if(!uid || !activeConvId) return;
-  const msgsRef = collection(db, "users", uid, "conversations", activeConvId, "messages");
-  await addDoc(msgsRef, { role, content, ts: serverTimestamp() });
-  await updateConvMeta({ lastMsg: content.slice(0,140) });
+  await addDoc(msgsCol(activeConvId), { role, content, ts: serverTimestamp() });
+  await updateDoc(doc(db,"users",uid,"conversations",activeConvId), { updatedAt: serverTimestamp(), lastMsg: content.slice(0,140) });
 }
 
 /* ================== Auth ================== */
+const provider = new GoogleAuthProvider();
 onAuthStateChanged(auth, async (user)=>{
   if(user){
     uid = user.uid;
-    avatarImg.style.display = user.photoURL ? "inline-block" : "none";
-    if(user.photoURL){ avatarImg.src = user.photoURL; avatarImg.alt = user.displayName||"User"; }
-    signinBtn.style.display = "none";
-    signoutBtn.style.display = "inline-block";
+    // header
+    avatar.style.display = user.photoURL ? "inline-block" : "none";
+    if(user.photoURL){ avatar.src = user.photoURL; avatar.alt = user.displayName||"User"; }
+    signinBtn.style.display="none"; signoutBtn.style.display="inline-block";
+    // sidebar
+    sideAvatar.style.display = user.photoURL ? "inline-block" : "none";
+    if(user.photoURL){ sideAvatar.src=user.photoURL; sideAvatar.alt=user.displayName||"User"; }
+    displayName.textContent = user.displayName || "Anonymous";
+    displayEmail.textContent = user.email || "Guest session";
     authModal.classList.remove("show");
-
-    // ensure at least one conversation
     startConvsListener();
-    // if none appears within a moment, create one on first send
   }else{
-    uid = null;
-    avatarImg.style.display = "none";
-    signinBtn.style.display = "inline-block";
-    signoutBtn.style.display = "none";
+    uid = null; activeConvId=null; if(unsubMsgs) unsubMsgs(); if(unsubConvs) unsubConvs();
+    chat.innerHTML=""; messages=[];
+    avatar.style.display="none"; sideAvatar.style.display="none";
+    signinBtn.style.display="inline-block"; signoutBtn.style.display="none";
+    displayName.textContent="Guest"; displayEmail.textContent="Not signed in";
+    convsEl.innerHTML="";
     authModal.classList.add("show");
-    if(unsubMsgs) unsubMsgs(); unsubMsgs=null;
-    if(unsubConvs) unsubConvs(); unsubConvs=null;
-    activeConvId = null; localStorage.removeItem(LS_ACTIVE);
-    chat.innerHTML = "";
-    messages = [];
-    addMsg("assistant", "Welcome to <strong>XENAI</strong>. Sign in with Google or continue as guest to save your chat history.");
+    addMsg("assistant","Welcome to <strong>XENAI</strong>. Sign in with Google or continue as guest to keep your chat history.");
   }
 });
 signinBtn.onclick = ()=> authModal.classList.add("show");
-signoutBtn.onclick = ()=> signOut(auth);
-const provider = new GoogleAuthProvider();
 googleBtn.onclick = async ()=>{ await signInWithPopup(auth, provider); };
 anonBtn.onclick = async ()=>{ await signInAnonymously(auth); };
+sideGoogleBtn.onclick = async ()=>{ await signInWithPopup(auth, provider); };
+sideAnonBtn.onclick = async ()=>{ await signInAnonymously(auth); };
+signoutBtn.onclick = ()=> signOut(auth);
 
 /* ================== Send flow ================== */
 async function handleSend(){
-  const text = input.value.trim();
-  if(!text) return;
-  input.value = ""; autoGrow();
+  const text = input.value.trim(); if(!text) return;
+  input.value=""; autoGrow();
 
-  if(!uid){
-    alert("Please sign in or continue as guest to start chatting.");
-    return;
-  }
-  if(!activeConvId){
-    await ensureFirstConv();
-  }
+  if(!uid){ alert("Please sign in or continue as guest to chat."); return; }
+  if(!activeConvId){ await ensureAtLeastOneConv(); }
 
   // local echo + persist
   addMsg("user", text);
   appendMessage("user", text).catch(()=>{});
 
-  // build short history
-  const hist = [...messages, { role:"user", content:text }].slice(-20).map(m=>({ role: m.role==="assistant"?"assistant":"user", content:m.content }));
+  // short history for prompt
+  const hist = [...messages, { role:"user", content:text }].slice(-24).map(m=>({ role: m.role==="assistant"?"assistant":"user", content: m.content }));
 
-  // call
+  // stream
   showTyping();
   try{
     const reader = await askXENAI(modelSel.value, hist);
     const decoder = new TextDecoder("utf-8");
-    let done = false, buffer = "", acc = "";
+    let buffer = "", done=false, acc="";
     while(!done){
-      const { value, done:doneNow } = await reader.read();
-      done = doneNow;
+      const {value, done:dn} = await reader.read(); done=dn;
       if(value){
         buffer += decoder.decode(value, {stream:true});
         const chunks = buffer.split("\n\n");
@@ -556,22 +529,19 @@ async function handleSend(){
           try{
             const evt = JSON.parse(jsonStr);
             const delta = evt?.choices?.[0]?.delta?.content || "";
-            if(delta){
-              acc += delta;
-              updateTyping(mdLite(acc));
-            }
+            if(delta){ acc += delta; updateTyping(mdLite(acc)); }
           }catch{}
         }
       }
     }
     hideTyping();
-    if(!acc.trim()) acc = "(no content)";
+    if(!acc.trim()) acc="(no content)";
     addMsg("assistant", acc);
     appendMessage("assistant", acc).catch(()=>{});
-    // auto title from first user message
+    // title on first reply
     const convRef = doc(db, "users", uid, "conversations", activeConvId);
-    const convSnap = await getDoc(convRef);
-    const title = convSnap.data()?.title || "";
+    const snap = await getDoc(convRef);
+    const title = snap.data()?.title || "";
     if(!title || title==="New chat"){
       const first = trunc(text.replace(/\n/g," "), 40);
       await updateDoc(convRef, { title: first || "Chat", updatedAt: serverTimestamp() });
@@ -583,25 +553,18 @@ async function handleSend(){
 }
 sendBtn.onclick = handleSend;
 input.addEventListener("keydown", e=>{
-  if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); handleSend() }
-  else if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); handleSend() }
+  if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); handleSend(); }
+  else if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); handleSend(); }
 });
 
-/* New / Reset */
+/* New conversation */
 newBtn.onclick = ()=> createConversation();
 sideNewBtn.onclick = ()=> createConversation();
-resetBtn.onclick = async ()=>{
-  chat.innerHTML = "";
-  messages = [];
-  addMsg("assistant", "New conversation. How can I help?");
-  if(uid && activeConvId){
-    await appendMessage("assistant", "— Conversation reset —");
-  }
-};
 
-/* Initial greeting */
-addMsg("assistant", "Welcome to <strong>XENAI</strong>. Sign in with Google or continue as guest to keep your chat history. Choose a model and start typing.");
+/* init */
+initSpeech();
 authModal.classList.add("show");
+addMsg("assistant","Hello! I’m <strong>XENAI</strong>. Sign in with Google or continue as guest to save your chat history. Choose a XEN model above and start typing.");
 </script>
 </body>
 </html>
