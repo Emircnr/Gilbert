@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Paribu Otomatik Trading</title>
+<title>Paribu Arbitraj & Trading Sistemi</title>
 <style>
 :root {
   --bg: #0a0e1a;
@@ -38,6 +38,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
 .header h1 {
@@ -65,7 +66,11 @@ body {
   border-radius: 50%;
 }
 
-.status-dot.on { background: var(--success); animation: pulse 2s infinite; }
+.status-dot.on { 
+  background: var(--success); 
+  box-shadow: 0 0 10px var(--success);
+  animation: pulse 2s infinite; 
+}
 .status-dot.off { background: var(--danger); }
 
 @keyframes pulse {
@@ -117,6 +122,7 @@ body {
 .btn-primary:hover {
   background: #2563eb;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .btn-success {
@@ -126,6 +132,7 @@ body {
 
 .btn-success:hover {
   background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .btn-danger {
@@ -135,6 +142,7 @@ body {
 
 .btn-danger:hover {
   background: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .btn:disabled {
@@ -169,21 +177,29 @@ body {
   border-radius: 8px;
   color: var(--text);
   font-size: 0.875rem;
+  transition: border 0.2s;
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .alert {
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
   border: 2px solid;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .alert.success {
@@ -218,29 +234,48 @@ body {
 .trade-box {
   background: linear-gradient(135deg, var(--surface) 0%, rgba(19, 24, 38, 0.5) 100%);
   border: 3px solid;
-  border-radius: 16px;
-  padding: 2rem;
+  border-radius: 20px;
+  padding: 2.5rem;
   box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.trade-box.buy { border-color: var(--success); }
-.trade-box.sell { border-color: var(--danger); }
+.trade-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.trade-box.buy { border-color: var(--success); color: var(--success); }
+.trade-box.sell { border-color: var(--danger); color: var(--danger); }
 
 .trade-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid rgba(255,255,255,0.1);
 }
 
 .trade-title {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 900;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  letter-spacing: -0.5px;
 }
 
 .auto-badge {
@@ -263,7 +298,10 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  background: rgba(0,0,0,0.3);
+  padding: 1.5rem;
+  border-radius: 12px;
 }
 
 @media (max-width: 768px) {
@@ -272,9 +310,6 @@ body {
 
 .info-item {
   text-align: center;
-  background: rgba(0,0,0,0.3);
-  padding: 1rem;
-  border-radius: 8px;
 }
 
 .info-label {
@@ -282,13 +317,16 @@ body {
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
 }
 
 .info-value {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 900;
   font-family: 'Courier New', monospace;
+  color: var(--text);
+  text-shadow: 0 0 20px currentColor;
   animation: flash 0.5s;
 }
 
@@ -297,33 +335,45 @@ body {
   100% { transform: scale(1); opacity: 1; }
 }
 
-.info-value.empty { color: var(--text-muted); opacity: 0.5; }
+.info-value.empty { 
+  color: var(--text-muted); 
+  opacity: 0.4;
+  text-shadow: none;
+}
 
 .amount-input {
   width: 100%;
-  padding: 1.25rem;
-  font-size: 1.5rem;
+  padding: 1.5rem;
+  font-size: 2rem;
   font-weight: 900;
   font-family: 'Courier New', monospace;
   text-align: center;
   background: rgba(0,0,0,0.4);
-  border: 2px solid rgba(255,255,255,0.1);
+  border: 3px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   color: var(--text);
-  margin: 1rem 0;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s;
 }
 
 .amount-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+  transform: scale(1.02);
+}
+
+.amount-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.3;
 }
 
 .total-box {
   text-align: center;
-  padding: 1rem;
+  padding: 1.5rem;
   background: rgba(0,0,0,0.3);
-  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
   margin-bottom: 1.5rem;
 }
 
@@ -331,22 +381,32 @@ body {
   font-size: 0.875rem;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .total-value {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 900;
   font-family: 'Courier New', monospace;
+  color: var(--text);
 }
 
 .trade-button {
   width: 100%;
-  padding: 1.5rem;
-  font-size: 1.25rem;
+  padding: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 900;
-  border-radius: 12px;
+  border-radius: 16px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  transition: all 0.3s;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.trade-button:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
 }
 
 .stats-grid {
@@ -368,6 +428,8 @@ body {
   color: var(--text-muted);
   text-transform: uppercase;
   margin-bottom: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .stat-value {
@@ -388,11 +450,17 @@ th {
   font-weight: 600;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
 }
 
 td {
   padding: 1rem;
   border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+tbody tr {
+  transition: background 0.2s;
 }
 
 tbody tr:hover {
@@ -401,8 +469,8 @@ tbody tr:hover {
 
 .loading {
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 3px solid rgba(255,255,255,0.3);
   border-radius: 50%;
   border-top-color: white;
@@ -412,95 +480,51 @@ tbody tr:hover {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-.warning-box {
-  background: rgba(245, 158, 11, 0.1);
-  border: 2px solid var(--warning);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.warning-box h3 {
-  color: var(--warning);
-  margin-bottom: 0.5rem;
-}
-
-.test-mode-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(245, 158, 11, 0.2);
-  border: 2px solid var(--warning);
-  border-radius: 8px;
-  font-weight: 700;
-  color: var(--warning);
-}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>⚡ Paribu Otomatik Trading</h1>
+  <h1>⚡ Paribu Arbitraj & Trading Sistemi</h1>
   <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
     <div class="status-badge">
       <div class="status-dot" id="status"></div>
       <span id="statusText">Hazır</span>
     </div>
-    <div class="status-badge">⏱️ <span id="time">--:--:--</span></div>
+    <div class="status-badge">
+      ⏱️ <span id="time">--:--:--</span>
+    </div>
   </div>
 </div>
 
 <div class="container">
   
-  <!-- UYARI -->
-  <div class="warning-box">
-    <h3>⚠️ ÖNEMLİ BİLGİ</h3>
-    <p><strong>Paribu'nun resmi trading API endpoint'leri public değildir.</strong> Aşağıdaki endpoint ayarlarını Paribu müşteri hizmetlerinden veya dokümantasyonundan öğrenmeniz gerekmektedir.</p>
-    <p style="margin-top: 0.5rem;">• <strong>TEST MODU:</strong> Gerçek işlem yapmadan sistemi test edebilirsiniz.</p>
-    <p>• <strong>CANLI MOD:</strong> Gerçek API'ye bağlanır ve işlem yapar.</p>
-  </div>
-
   <!-- API AYARLARI -->
   <div class="card">
-    <div class="card-title">🔑 API Ayarları</div>
-    
-    <div style="margin-bottom: 1.5rem;">
-      <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-        <input type="checkbox" id="testMode" checked>
-        <span style="font-weight: 600;">TEST MODU (Gerçek işlem yapmaz, sadece fiyatları gösterir)</span>
-      </label>
-    </div>
+    <div class="card-title">🔑 Paribu API Ayarları</div>
     
     <div class="form-grid">
       <div class="form-group">
-        <label class="form-label">Paribu API Key</label>
-        <input type="text" class="form-input" id="apiKey" placeholder="API Key">
+        <label class="form-label">API Key (Authorization Token)</label>
+        <input type="text" class="form-input" id="apiKey" placeholder="API Key'inizi girin">
       </div>
       <div class="form-group">
-        <label class="form-label">Paribu Secret Key</label>
-        <input type="password" class="form-input" id="secretKey" placeholder="Secret Key">
+        <label class="form-label">Secret Key (HMAC İmzalama için)</label>
+        <input type="password" class="form-input" id="secretKey" placeholder="Secret Key'inizi girin">
       </div>
       <div class="form-group">
         <label class="form-label">Fark Eşiği (%)</label>
         <input type="number" class="form-input" id="threshold" value="0.5" step="0.1" min="0">
       </div>
       <div class="form-group">
-        <label class="form-label">Güncelleme (saniye)</label>
-        <input type="number" class="form-input" id="interval" value="3" min="1" max="10">
+        <label class="form-label">Güncelleme Aralığı (saniye)</label>
+        <input type="number" class="form-input" id="interval" value="3" min="2" max="10">
       </div>
-    </div>
-    
-    <div class="form-group" style="margin-top: 1rem;">
-      <label class="form-label">Paribu Order Endpoint (Örn: https://v3.paribu.com/app/orders)</label>
-      <input type="text" class="form-input" id="endpoint" placeholder="https://v3.paribu.com/app/orders" value="https://v3.paribu.com/app/orders">
-      <small style="color: var(--text-muted); font-size: 0.75rem;">Bu endpoint'i Paribu dokümantasyonundan öğrenmeniz gerekmektedir.</small>
     </div>
     
     <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
       <button class="btn btn-primary" id="startBtn">🚀 Başlat</button>
-      <button class="btn btn-danger" id="stopBtn" disabled>⏸️ Durdur</button>
+      <button class="btn btn-danger" id="stopBtn" style="display:none;">⏸️ Durdur</button>
     </div>
   </div>
 
@@ -509,30 +533,30 @@ tbody tr:hover {
   <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-label">USDT/TRY</div>
+      <div class="stat-label">USDT/TRY Kuru</div>
       <div class="stat-value" id="usdtry">--</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">BTC/USDT</div>
+      <div class="stat-label">BTC/USDT Fiyatı</div>
       <div class="stat-value" id="btc">--</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Coin</div>
+      <div class="stat-label">İzlenen Coin</div>
       <div class="stat-value" id="coinCount">0</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Fırsat</div>
+      <div class="stat-label">Aktif Fırsat</div>
       <div class="stat-value" id="oppCount">0</div>
     </div>
   </div>
 
-  <!-- OTOMATİK TRADING -->
+  <!-- OTOMATİK TRADING PANELİ -->
   <div class="trading-grid">
     
-    <!-- AL -->
+    <!-- AL KUTUSU -->
     <div class="trade-box buy">
       <div class="trade-header">
-        <div class="trade-title" style="color: var(--success);">🛒 SATIN AL</div>
+        <div class="trade-title">🛒 SATIN AL</div>
         <div class="auto-badge">⚡ OTOMATİK</div>
       </div>
       
@@ -551,7 +575,7 @@ tbody tr:hover {
         </div>
       </div>
       
-      <input type="number" class="amount-input" id="buyAmount" placeholder="Miktar (Adet)" step="0.00000001">
+      <input type="number" class="amount-input" id="buyAmount" placeholder="0.00000000" step="0.00000001">
       
       <div class="total-box">
         <div class="total-label">Toplam Maliyet</div>
@@ -563,10 +587,10 @@ tbody tr:hover {
       </button>
     </div>
 
-    <!-- SAT -->
+    <!-- SAT KUTUSU -->
     <div class="trade-box sell">
       <div class="trade-header">
-        <div class="trade-title" style="color: var(--danger);">💰 SAT</div>
+        <div class="trade-title">💰 SAT</div>
         <div class="auto-badge">⚡ OTOMATİK</div>
       </div>
       
@@ -585,7 +609,7 @@ tbody tr:hover {
         </div>
       </div>
       
-      <input type="number" class="amount-input" id="sellAmount" placeholder="Miktar (Adet)" step="0.00000001">
+      <input type="number" class="amount-input" id="sellAmount" placeholder="0.00000000" step="0.00000001">
       
       <div class="total-box">
         <div class="total-label">Toplam Gelir</div>
@@ -599,22 +623,24 @@ tbody tr:hover {
     
   </div>
 
-  <!-- COIN EKLEME -->
+  <!-- COIN EKLEME VE TABLO -->
   <div class="card">
-    <div class="card-title">📊 İzlenen Coinler</div>
-    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-      <input type="text" class="form-input" id="coinInput" placeholder="BTC, ETH, XRP" style="flex: 1;">
+    <div class="card-title">📊 İzlenen Coinler ve Fırsatlar</div>
+    
+    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+      <input type="text" class="form-input" id="coinInput" placeholder="Örn: BTC, ETH, XRP, AVAX, SOL" style="flex: 1; min-width: 250px;">
       <button class="btn btn-primary" id="addBtn">➕ Ekle</button>
     </div>
+    
     <div style="overflow-x: auto;">
       <table>
         <thead>
           <tr>
             <th>Coin</th>
-            <th>Paribu AL</th>
-            <th>Paribu SAT</th>
-            <th>% AL</th>
-            <th>% SAT</th>
+            <th>Paribu AL Fiyatı</th>
+            <th>Paribu SAT Fiyatı</th>
+            <th>% AL Fırsatı</th>
+            <th>% SAT Fırsatı</th>
             <th>Durum</th>
           </tr>
         </thead>
@@ -626,12 +652,10 @@ tbody tr:hover {
 </div>
 
 <script>
-// STATE
+// ============ STATE ============
 let state = {
-  testMode: true,
   apiKey: '',
   secretKey: '',
-  endpoint: '',
   threshold: 0.5,
   interval: 3000,
   coins: new Set(['BTC', 'ETH', 'XRP', 'AVAX', 'SOL']),
@@ -643,12 +667,10 @@ let state = {
   running: false
 };
 
-// DOM
+// ============ DOM ============
 const el = {
-  testMode: document.getElementById('testMode'),
   apiKey: document.getElementById('apiKey'),
   secretKey: document.getElementById('secretKey'),
-  endpoint: document.getElementById('endpoint'),
   threshold: document.getElementById('threshold'),
   interval: document.getElementById('interval'),
   startBtn: document.getElementById('startBtn'),
@@ -684,9 +706,10 @@ const el = {
   alert: document.getElementById('alert')
 };
 
-// HELPERS
+// ============ HELPERS ============
 function showAlert(type, msg) {
-  el.alert.innerHTML = `<div class="alert ${type}"><div style="font-size: 1.5rem;">${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌'}</div><div>${msg}</div></div>`;
+  const icons = { success: '✅', warning: '⚠️', danger: '❌' };
+  el.alert.innerHTML = `<div class="alert ${type}"><div style="font-size:1.5rem">${icons[type]}</div><div>${msg}</div></div>`;
   setTimeout(() => el.alert.innerHTML = '', 5000);
 }
 
@@ -699,7 +722,61 @@ function time() {
   return new Date().toLocaleTimeString('tr-TR');
 }
 
-// API
+// ============ PARIBU API ============
+async function createHmacSignature(url, body) {
+  const message = url + JSON.stringify(body);
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(state.secretKey);
+  const msgData = encoder.encode(message);
+  
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signature = await crypto.subtle.sign('HMAC', key, msgData);
+  const hashArray = Array.from(new Uint8Array(signature));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function createParibuOrder(trade, market, price, amount) {
+  if (!state.apiKey || !state.secretKey) {
+    throw new Error('API Key ve Secret Key girilmelidir!');
+  }
+  
+  const url = '/order';
+  const body = {
+    market: market.toLowerCase() + '_tl',
+    trade: trade,
+    type: 'limit',
+    price: price,
+    amount: amount
+  };
+  
+  const signature = await createHmacSignature(url, body);
+  
+  const response = await fetch('https://api.paribu.com/order', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': state.apiKey,
+      'X-Signature': signature
+    },
+    body: JSON.stringify(body)
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Paribu API Hatası ${response.status}: ${errorText}`);
+  }
+  
+  return response.json();
+}
+
+// ============ DATA FETCHING ============
 async function fetchBinance(sym) {
   const res = await fetch(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${sym}USDT`);
   const data = await res.json();
@@ -714,59 +791,7 @@ async function fetchParibu(sym) {
   return { bid: 0, ask: 0 };
 }
 
-async function createOrder(side, coin, price, amount) {
-  if (state.testMode) {
-    // TEST MODU - Gerçek işlem yapmaz
-    await new Promise(r => setTimeout(r, 1000));
-    return {
-      success: true,
-      message: `TEST: ${amount} ${coin} ${side === 'buy' ? 'alındı' : 'satıldı'} (${fmt(price, 2)} TL)`,
-      test: true
-    };
-  }
-  
-  // GERÇEK MOD
-  if (!state.apiKey || !state.secretKey || !state.endpoint) {
-    throw new Error('API bilgileri eksik');
-  }
-  
-  const timestamp = Date.now();
-  const body = {
-    market: `${coin.toUpperCase()}_TL`,
-    side: side,
-    type: 'limit',
-    price: price,
-    amount: amount
-  };
-  
-  const bodyStr = JSON.stringify(body);
-  const message = `${state.endpoint}${timestamp}${bodyStr}`;
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message + state.secretKey);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const signature = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  
-  const res = await fetch(state.endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-KEY': state.apiKey,
-      'X-SIGNATURE': signature,
-      'X-TIMESTAMP': timestamp.toString()
-    },
-    body: bodyStr
-  });
-  
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`API Hatası ${res.status}: ${errorText || 'Endpoint çalışmıyor. Lütfen doğru endpoint'i girin.'}`);
-  }
-  
-  return res.json();
-}
-
-// ANA GÜNCELLEME
+// ============ ANA GÜNCELLEME ============
 async function update() {
   try {
     // USDT/TRY
@@ -778,7 +803,7 @@ async function update() {
     const btcData = await fetchBinance('BTC');
     el.btc.textContent = '$' + fmt(btcData.ask, 2);
     
-    // COINLER
+    // TÜM COİNLERİ HESAPLA
     const opps = [];
     for (const coin of state.coins) {
       try {
@@ -792,9 +817,11 @@ async function update() {
         const binanceAskTL = binance.ask * state.usdtry;
         const binanceBidTL = binance.bid * state.usdtry;
         
+        // AL Stratejisi (Paribu'dan al, Binance'de sat)
         const buyPrice = paribu.ask;
         const buyPct = ((binanceBidTL - buyPrice) / buyPrice) * 100;
         
+        // SAT Stratejisi (Paribu'da sat, Binance'den al)
         const sellPrice = paribu.bid;
         const sellPct = ((sellPrice - binanceAskTL) / binanceAskTL) * 100;
         
@@ -812,12 +839,14 @@ async function update() {
     
     state.opportunities = opps;
     
+    // EN İYİ FIRSATLARI BUL (EŞIK KONTROLÜ)
     const buyOpps = opps.filter(o => o.buyPct >= state.threshold);
     const sellOpps = opps.filter(o => o.sellPct >= state.threshold);
     
     state.bestBuy = buyOpps.sort((a, b) => b.buyPct - a.buyPct)[0] || null;
     state.bestSell = sellOpps.sort((a, b) => b.sellPct - a.sellPct)[0] || null;
     
+    // OTOMATİK GÜNCELLE
     updateBuyPanel();
     updateSellPanel();
     updateTable();
@@ -826,34 +855,36 @@ async function update() {
     el.oppCount.textContent = (buyOpps.length + sellOpps.length);
     el.time.textContent = time();
     el.status.className = 'status-dot on';
-    el.statusText.textContent = state.testMode ? 'TEST MODU' : 'CANLI';
+    el.statusText.textContent = 'Çalışıyor';
     
   } catch (err) {
-    console.error(err);
+    console.error('Update error:', err);
     el.status.className = 'status-dot off';
     el.statusText.textContent = 'Hata';
   }
 }
 
-// AL PANELİ
+// ============ AL PANELİNİ GÜNCELLE ============
 function updateBuyPanel() {
   const opp = state.bestBuy;
   
   if (opp) {
+    // ANİMASYONLU GÜNCELLEME
     el.buyCoin.textContent = opp.coin;
     el.buyCoin.classList.remove('empty');
-    el.buyCoin.classList.add('info-value');
+    el.buyCoin.style.animation = 'flash 0.5s';
     
     el.buyPrice.textContent = fmt(opp.buyPrice, 2);
     el.buyPrice.classList.remove('empty');
-    el.buyPrice.classList.add('info-value');
+    el.buyPrice.style.animation = 'flash 0.5s';
     
     el.buyPct.textContent = '+' + fmt(opp.buyPct, 2) + '%';
     el.buyPct.classList.remove('empty');
-    el.buyPct.classList.add('info-value');
+    el.buyPct.style.animation = 'flash 0.5s';
     
     el.buyBtn.disabled = false;
     
+    // TOPLAM HESAPLA
     if (el.buyAmount.value) {
       const total = parseFloat(el.buyAmount.value) * opp.buyPrice;
       el.buyTotal.textContent = fmt(total, 2) + ' TL';
@@ -870,25 +901,27 @@ function updateBuyPanel() {
   }
 }
 
-// SAT PANELİ
+// ============ SAT PANELİNİ GÜNCELLE ============
 function updateSellPanel() {
   const opp = state.bestSell;
   
   if (opp) {
+    // ANİMASYONLU GÜNCELLEME
     el.sellCoin.textContent = opp.coin;
     el.sellCoin.classList.remove('empty');
-    el.sellCoin.classList.add('info-value');
+    el.sellCoin.style.animation = 'flash 0.5s';
     
     el.sellPrice.textContent = fmt(opp.sellPrice, 2);
     el.sellPrice.classList.remove('empty');
-    el.sellPrice.classList.add('info-value');
+    el.sellPrice.style.animation = 'flash 0.5s';
     
     el.sellPct.textContent = '+' + fmt(opp.sellPct, 2) + '%';
     el.sellPct.classList.remove('empty');
-    el.sellPct.classList.add('info-value');
+    el.sellPct.style.animation = 'flash 0.5s';
     
     el.sellBtn.disabled = false;
     
+    // TOPLAM HESAPLA
     if (el.sellAmount.value) {
       const total = parseFloat(el.sellAmount.value) * opp.sellPrice;
       el.sellTotal.textContent = fmt(total, 2) + ' TL';
@@ -905,9 +938,10 @@ function updateSellPanel() {
   }
 }
 
+// ============ TABLO GÜNCELLE ============
 function updateTable() {
   if (!state.opportunities.length) {
-    el.table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Coin ekleyin</td></tr>';
+    el.table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Coin ekleyin ve fırsatları görün</td></tr>';
     return;
   }
   
@@ -916,28 +950,42 @@ function updateTable() {
     const sellActive = o.sellPct >= state.threshold;
     return `
       <tr>
-        <td><strong>${o.coin}</strong></td>
-        <td style="color:${buyActive?'var(--success)':'var(--text-muted)'}">${fmt(o.buyPrice, 2)} TL</td>
-        <td style="color:${sellActive?'var(--danger)':'var(--text-muted)'}">${fmt(o.sellPrice, 2)} TL</td>
-        <td style="color:${buyActive?'var(--success)':'var(--text-muted)'}"><strong>${fmt(o.buyPct, 2)}%</strong></td>
-        <td style="color:${sellActive?'var(--danger)':'var(--text-muted)'}"><strong>${fmt(o.sellPct, 2)}%</strong></td>
-        <td>${buyActive || sellActive ? '<span style="color:var(--success)">✓</span>' : '<span style="color:var(--text-muted)">○</span>'}</td>
+        <td><strong style="font-size:1rem">${o.coin}</strong></td>
+        <td style="color:${buyActive?'var(--success)':'var(--text-muted)'}; font-weight:600">
+          ${fmt(o.buyPrice, 2)} TL
+        </td>
+        <td style="color:${sellActive?'var(--danger)':'var(--text-muted)'}; font-weight:600">
+          ${fmt(o.sellPrice, 2)} TL
+        </td>
+        <td style="color:${buyActive?'var(--success)':'var(--text-muted)'}; font-weight:700; font-size:1rem">
+          ${buyActive?'<span style="background:rgba(16,185,129,0.2);padding:0.25rem 0.75rem;border-radius:6px">':''}
+          ${fmt(o.buyPct, 2)}%
+          ${buyActive?'</span>':''}
+        </td>
+        <td style="color:${sellActive?'var(--danger)':'var(--text-muted)'}; font-weight:700; font-size:1rem">
+          ${sellActive?'<span style="background:rgba(239,68,68,0.2);padding:0.25rem 0.75rem;border-radius:6px">':''}
+          ${fmt(o.sellPct, 2)}%
+          ${sellActive?'</span>':''}
+        </td>
+        <td>
+          ${buyActive || sellActive 
+            ? '<span style="color:var(--success);font-weight:700">✓ AKTİF</span>' 
+            : '<span style="color:var(--text-muted)">○ Bekliyor</span>'}
+        </td>
       </tr>
     `;
   }).join('');
 }
 
-// EVENTS
+// ============ EVENT HANDLERS ============
 el.startBtn.addEventListener('click', () => {
-  state.testMode = el.testMode.checked;
   state.apiKey = el.apiKey.value.trim();
   state.secretKey = el.secretKey.value.trim();
-  state.endpoint = el.endpoint.value.trim();
   state.threshold = parseFloat(el.threshold.value) || 0.5;
   state.interval = (parseFloat(el.interval.value) || 3) * 1000;
   
-  if (!state.testMode && (!state.apiKey || !state.secretKey || !state.endpoint)) {
-    showAlert('danger', 'Canlı mod için API Key, Secret Key ve Endpoint girilmelidir!');
+  if (!state.apiKey || !state.secretKey) {
+    showAlert('danger', 'API Key ve Secret Key girilmelidir!');
     return;
   }
   
@@ -946,17 +994,17 @@ el.startBtn.addEventListener('click', () => {
   update();
   state.running = true;
   
-  el.startBtn.disabled = true;
-  el.stopBtn.disabled = false;
+  el.startBtn.style.display = 'none';
+  el.stopBtn.style.display = 'inline-flex';
   
-  showAlert('success', state.testMode ? 'TEST MODU başlatıldı! Gerçek işlem yapmaz.' : 'CANLI MOD başlatıldı! Gerçek işlemler yapılacak.');
+  showAlert('success', 'Sistem başlatıldı! Fiyatlar otomatik güncellenecek.');
 });
 
 el.stopBtn.addEventListener('click', () => {
   if (state.timer) clearInterval(state.timer);
   state.running = false;
-  el.startBtn.disabled = false;
-  el.stopBtn.disabled = true;
+  el.startBtn.style.display = 'inline-flex';
+  el.stopBtn.style.display = 'none';
   el.status.className = 'status-dot off';
   el.statusText.textContent = 'Durduruldu';
   showAlert('warning', 'Sistem durduruldu.');
@@ -970,10 +1018,11 @@ el.addBtn.addEventListener('click', () => {
   }
   coins.forEach(c => state.coins.add(c));
   el.coinInput.value = '';
-  showAlert('success', `${coins.join(', ')} eklendi!`);
+  showAlert('success', `${coins.join(', ')} izlemeye alındı!`);
   if (state.running) update();
 });
 
+// Miktar değişiminde toplam hesapla
 el.buyAmount.addEventListener('input', () => {
   if (state.bestBuy && el.buyAmount.value) {
     const total = parseFloat(el.buyAmount.value) * state.bestBuy.buyPrice;
@@ -988,12 +1037,13 @@ el.sellAmount.addEventListener('input', () => {
   }
 });
 
+// AL BUTONU
 el.buyBtn.addEventListener('click', async () => {
   const opp = state.bestBuy;
   const amount = parseFloat(el.buyAmount.value);
   
   if (!opp || !amount) {
-    showAlert('warning', 'Miktar girin!');
+    showAlert('warning', 'Lütfen miktar girin!');
     return;
   }
   
@@ -1001,30 +1051,32 @@ el.buyBtn.addEventListener('click', async () => {
   el.buyBtnText.innerHTML = '<span class="loading"></span> İŞLENİYOR...';
   
   try {
-    const result = await createOrder('buy', opp.coin, opp.buyPrice, amount);
+    const result = await createParibuOrder('buy', opp.coin, opp.buyPrice, amount);
     
-    if (result.test) {
-      showAlert('warning', `${result.message} - Bu bir test işlemidir, gerçek işlem yapılmadı!`);
-    } else {
-      showAlert('success', `${amount} ${opp.coin} başarıyla satın alındı! Fiyat: ${fmt(opp.buyPrice, 2)} TL`);
-    }
+    showAlert('success', 
+      `✅ Başarılı! ${amount} ${opp.coin} satın alındı!<br>
+       Fiyat: ${fmt(opp.buyPrice, 2)} TL<br>
+       Sipariş ID: ${result.uid || 'N/A'}`
+    );
     
     el.buyAmount.value = '';
     el.buyTotal.textContent = '0.00 TL';
+    
   } catch (error) {
-    showAlert('danger', `Hata: ${error.message}`);
+    showAlert('danger', `❌ İşlem Başarısız: ${error.message}`);
   } finally {
     el.buyBtn.disabled = false;
     el.buyBtnText.textContent = '🛒 SATIN AL';
   }
 });
 
+// SAT BUTONU
 el.sellBtn.addEventListener('click', async () => {
   const opp = state.bestSell;
   const amount = parseFloat(el.sellAmount.value);
   
   if (!opp || !amount) {
-    showAlert('warning', 'Miktar girin!');
+    showAlert('warning', 'Lütfen miktar girin!');
     return;
   }
   
@@ -1032,26 +1084,29 @@ el.sellBtn.addEventListener('click', async () => {
   el.sellBtnText.innerHTML = '<span class="loading"></span> İŞLENİYOR...';
   
   try {
-    const result = await createOrder('sell', opp.coin, opp.sellPrice, amount);
+    const result = await createParibuOrder('sell', opp.coin, opp.sellPrice, amount);
     
-    if (result.test) {
-      showAlert('warning', `${result.message} - Bu bir test işlemidir, gerçek işlem yapılmadı!`);
-    } else {
-      showAlert('success', `${amount} ${opp.coin} başarıyla satıldı! Fiyat: ${fmt(opp.sellPrice, 2)} TL`);
-    }
+    showAlert('success', 
+      `✅ Başarılı! ${amount} ${opp.coin} satıldı!<br>
+       Fiyat: ${fmt(opp.sellPrice, 2)} TL<br>
+       Sipariş ID: ${result.uid || 'N/A'}`
+    );
     
     el.sellAmount.value = '';
     el.sellTotal.textContent = '0.00 TL';
+    
   } catch (error) {
-    showAlert('danger', `Hata: ${error.message}`);
+    showAlert('danger', `❌ İşlem Başarısız: ${error.message}`);
   } finally {
     el.sellBtn.disabled = false;
     el.sellBtnText.textContent = '💰 SAT';
   }
 });
 
-// BAŞLATMA
-showAlert('success', 'Hoş geldiniz! Önce TEST MODU ile sistemi test edin.');
+// ============ BAŞLATMA ============
+showAlert('success', '🎉 Hoş geldiniz! API bilgilerinizi girin ve sistemi başlatın.');
+updateTable();
+el.coinCount.textContent = state.coins.size;
 </script>
 
 </body>
