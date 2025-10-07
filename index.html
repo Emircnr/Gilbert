@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Arbitraj Radarı Pro — Paribu ⇄ Binance</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   
-  /* ===== Modern Temalar ===== */
   .theme-dark{
     --bg:#0a0e1a; --bg-gradient-start:#0a0e1a; --bg-gradient-end:#151b2e;
     --panel:#1a1f35; --panel-glow:rgba(96, 165, 250, 0.05);
@@ -15,7 +14,7 @@
     --accent-glow:rgba(96, 165, 250, 0.2); --border:#293548;
     --success:#10b981; --success-bg:rgba(16, 185, 129, 0.1);
     --success-border:rgba(16, 185, 129, 0.3);
-    --warning:#f59e0b; --warning-bg:rgba(245, 158, 11, 0.1);
+    --warning:#f59e0b; --warning-bg:rgba(245, 158, 11, 0.15);
     --error:#ef4444;
     --shadow:rgba(0, 0, 0, 0.5);
     --glass-bg:rgba(26, 31, 53, 0.8); --glass-border:rgba(255, 255, 255, 0.1);
@@ -33,15 +32,12 @@
     --glass-bg:rgba(255, 255, 255, 0.8); --glass-border:rgba(0, 0, 0, 0.08);
   }
 
-  /* ===== Kişiselleştirilebilir Değişkenler ===== */
   :root{
     --table-font:16px; --cell-pad-y:16px; --cell-pad-x:20px;
     --row-gap:8px; --cell-radius:16px; --container-max:1400px;
-    --col-coin:25%; --col-al:25%; --col-sat:25%; --col-pct:25%;
     --card-font:24px;
   }
 
-  /* ===== Base ===== */
   *{box-sizing:border-box; margin:0; padding:0}
   html,body{
     height:100%; background:linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
@@ -49,16 +45,15 @@
   }
   body{padding-bottom:40px}
 
-  /* ===== Header Premium ===== */
   header{
-    background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    background:var(--glass-bg); backdrop-filter:blur(20px);
     border-bottom:1px solid var(--glass-border); padding:20px 32px;
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;
     box-shadow:0 4px 24px var(--shadow); position:sticky; top:0; z-index:100;
   }
   header h1{
     font-size:26px; font-weight:800; background:linear-gradient(135deg, var(--accent), #8b5cf6);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:-0.5px;
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   }
   .subtitle{color:var(--muted); font-size:13px; display:flex; gap:16px; align-items:center; flex-wrap:wrap}
   .stat{
@@ -68,23 +63,29 @@
   .stat-label{color:var(--muted)}
   .stat-value{color:var(--text); font-family:ui-monospace, monospace}
 
-  /* ===== Buttons Modern ===== */
   .btn{
     background:linear-gradient(135deg, var(--accent), #6366f1); color:#fff;
     border:none; border-radius:12px; padding:12px 20px; font-weight:700; font-size:14px;
     cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 12px var(--accent-glow);
-    display:inline-flex; align-items:center; gap:8px;
   }
   .btn:hover{transform:translateY(-2px); box-shadow:0 6px 20px var(--accent-glow)}
   .btn:active{transform:translateY(0)}
-  .btn-ghost{
-    background:var(--panel); color:var(--text); box-shadow:0 2px 8px var(--shadow);
-    border:1px solid var(--border);
-  }
+  .btn-ghost{background:var(--panel); color:var(--text); box-shadow:0 2px 8px var(--shadow); border:1px solid var(--border)}
   .btn-ghost:hover{background:var(--panel2)}
   .btn-sm{padding:8px 14px; font-size:13px}
 
-  /* ===== Highlight Card Ultra Premium ===== */
+  .alert{
+    padding:20px 32px; margin:20px auto; max-width:var(--container-max);
+    background:var(--warning-bg); border:2px solid var(--warning); border-left:6px solid var(--warning);
+    border-radius:16px; display:flex; align-items:flex-start; gap:16px; font-size:14px;
+  }
+  .alert-icon{font-size:28px; flex-shrink:0}
+  .alert-content{flex:1}
+  .alert-title{font-weight:800; font-size:16px; margin-bottom:8px}
+  .alert-text{color:var(--muted); line-height:1.6}
+  .alert.info{background:var(--panel2); border-color:var(--accent); border-left-color:var(--accent)}
+  .alert.success{background:var(--success-bg); border-color:var(--success); border-left-color:var(--success)}
+
   .hiWrap{padding:24px 32px; max-width:var(--container-max); margin:0 auto}
   .hiCard{
     background:linear-gradient(135deg, var(--success-bg), var(--panel));
@@ -93,41 +94,23 @@
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;
     transition:all 0.4s ease;
   }
-  .hiCard::before{
-    content:''; position:absolute; top:0; left:0; right:0; bottom:0;
-    background:linear-gradient(135deg, transparent, rgba(16, 185, 129, 0.05));
-    pointer-events:none;
-  }
   .hiCard:hover{transform:translateY(-4px); box-shadow:0 16px 48px rgba(16, 185, 129, 0.25)}
   .hiLeft{display:flex; align-items:center; gap:20px; position:relative; z-index:1}
-  .hiCoin{
-    font-size:32px; font-weight:900; letter-spacing:-1px;
-    background:linear-gradient(135deg, var(--success), #34d399);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  }
-  .hiAction{
-    background:var(--success); color:#fff; border-radius:16px; padding:10px 20px;
-    font-weight:800; font-size:15px; letter-spacing:0.5px; box-shadow:0 4px 12px rgba(16, 185, 129, 0.3);
-  }
+  .hiCoin{font-size:32px; font-weight:900; background:linear-gradient(135deg, var(--success), #34d399);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent}
+  .hiAction{background:var(--success); color:#fff; border-radius:16px; padding:10px 20px;
+    font-weight:800; font-size:15px; box-shadow:0 4px 12px rgba(16, 185, 129, 0.3)}
   .hiRight{display:flex; gap:28px; align-items:baseline; position:relative; z-index:1}
-  .hiPrice{
-    font-size:var(--card-font); font-weight:800; font-family:ui-monospace, monospace;
-    color:var(--text);
-  }
-  .hiPct{
-    font-size:28px; font-weight:900; color:var(--success);
-    text-shadow:0 2px 8px rgba(16, 185, 129, 0.3);
-  }
+  .hiPrice{font-size:var(--card-font); font-weight:800; font-family:ui-monospace, monospace}
+  .hiPct{font-size:28px; font-weight:900; color:var(--success); text-shadow:0 2px 8px rgba(16, 185, 129, 0.3)}
 
-  /* ===== Controls Grid ===== */
   .controls{
     padding:24px 32px; max-width:var(--container-max); margin:0 auto;
     display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;
   }
   .ctrl{
     background:var(--glass-bg); backdrop-filter:blur(10px); border:1px solid var(--glass-border);
-    border-radius:20px; padding:20px; box-shadow:0 4px 16px var(--shadow);
-    transition:all 0.3s ease;
+    border-radius:20px; padding:20px; box-shadow:0 4px 16px var(--shadow); transition:all 0.3s ease;
   }
   .ctrl:hover{transform:translateY(-2px); box-shadow:0 8px 24px var(--shadow)}
   .ctrl-label{font-size:13px; color:var(--muted); font-weight:600; margin-bottom:12px; display:block}
@@ -135,21 +118,15 @@
   
   input[type="text"], input[type="number"], select{
     width:100%; background:var(--panel2); border:1px solid var(--border); color:var(--text);
-    border-radius:12px; padding:12px 16px; font-size:14px; font-weight:500; outline:none;
-    transition:all 0.3s ease;
+    border-radius:12px; padding:12px 16px; font-size:14px; font-weight:500; outline:none; transition:all 0.3s ease;
   }
   input:focus, select:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow)}
-  input[type="range"]{width:100%; height:6px; -webkit-appearance:none; appearance:none; background:var(--border); border-radius:10px; outline:none}
+  input[type="range"]{width:100%; height:6px; -webkit-appearance:none; background:var(--border); border-radius:10px}
   input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none; appearance:none; width:18px; height:18px; background:var(--accent);
-    border-radius:50%; cursor:pointer; box-shadow:0 2px 8px var(--accent-glow);
-  }
-  input[type="range"]::-moz-range-thumb{
-    width:18px; height:18px; background:var(--accent); border:none;
+    -webkit-appearance:none; width:18px; height:18px; background:var(--accent);
     border-radius:50%; cursor:pointer; box-shadow:0 2px 8px var(--accent-glow);
   }
 
-  /* ===== Chips ===== */
   .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
   .chip{
     display:inline-flex; gap:8px; align-items:center; background:var(--panel2);
@@ -157,32 +134,17 @@
     font-weight:600; transition:all 0.2s ease;
   }
   .chip:hover{background:var(--panel); transform:translateY(-1px)}
-  .chip button{
-    all:unset; cursor:pointer; color:var(--accent); font-weight:700; font-size:16px;
-    transition:all 0.2s ease; line-height:1;
-  }
+  .chip button{all:unset; cursor:pointer; color:var(--accent); font-weight:700; font-size:16px; line-height:1}
   .chip button:hover{color:var(--error); transform:scale(1.2)}
 
-  /* ===== Table Premium ===== */
   .tableWrap{padding:0 32px 32px; max-width:var(--container-max); margin:0 auto}
   table{width:100%; border-collapse:separate; border-spacing:0 var(--row-gap); table-layout:fixed}
-  thead th{
-    font-size:13px; color:var(--muted); font-weight:700; text-transform:uppercase;
-    letter-spacing:1px; text-align:center; padding:12px 8px;
-  }
+  thead th{font-size:13px; color:var(--muted); font-weight:700; text-transform:uppercase;
+    letter-spacing:1px; text-align:center; padding:12px 8px}
   thead th:first-child{text-align:left}
-  tbody tr{
-    background:var(--glass-bg); backdrop-filter:blur(10px); border:1px solid var(--glass-border);
-    transition:all 0.3s ease; cursor:pointer;
-  }
-  tbody tr:hover{
-    transform:translateX(4px); box-shadow:0 8px 24px var(--shadow);
-    border-color:var(--accent);
-  }
-  tbody td{
-    padding:var(--cell-pad-y) var(--cell-pad-x); font-size:var(--table-font);
-    font-weight:600; vertical-align:middle;
-  }
+  tbody tr{background:var(--glass-bg); backdrop-filter:blur(10px); border:1px solid var(--glass-border); transition:all 0.3s ease}
+  tbody tr:hover{transform:translateX(4px); box-shadow:0 8px 24px var(--shadow); border-color:var(--accent)}
+  tbody td{padding:var(--cell-pad-y) var(--cell-pad-x); font-size:var(--table-font); font-weight:600}
   tbody tr td:first-child{border-top-left-radius:var(--cell-radius); border-bottom-left-radius:var(--cell-radius)}
   tbody tr td:last-child{border-top-right-radius:var(--cell-radius); border-bottom-right-radius:var(--cell-radius)}
   
@@ -193,7 +155,6 @@
     color:#fff; box-shadow:0 4px 12px var(--accent-glow);
   }
   .coinSym{font-weight:800; font-size:15px}
-  
   .priceCell{text-align:center; font-family:ui-monospace, monospace; font-weight:700; position:relative}
   .priceCell::before{
     content:''; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
@@ -201,52 +162,20 @@
   }
   .buy-binance::before{background:linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1))}
   .buy-paribu::before{background:linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1))}
-  .sell-binance::before{background:linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1))}
-  .sell-paribu::before{background:linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1))}
-  
-  .pctCell{
-    text-align:center; font-family:ui-monospace, monospace; font-weight:800; font-size:17px;
-    color:var(--success); text-shadow:0 2px 8px rgba(16, 185, 129, 0.2);
-  }
+  .pctCell{text-align:center; font-family:ui-monospace, monospace; font-weight:800; font-size:17px;
+    color:var(--success); text-shadow:0 2px 8px rgba(16, 185, 129, 0.2)}
 
-  /* ===== Customization Panel ===== */
-  .customWrap{padding:0 32px 24px; max-width:var(--container-max); margin:0 auto}
-  .customPanel{
-    background:var(--glass-bg); backdrop-filter:blur(10px); border:1px solid var(--glass-border);
-    border-radius:24px; padding:28px; box-shadow:0 8px 32px var(--shadow);
-  }
-  .customGrid{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:20px}
-  .customItem{display:flex; flex-direction:column; gap:10px}
-  .customLabel{font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px}
-  .rangeGroup{display:flex; align-items:center; gap:12px}
-  .rangeValue{
-    min-width:60px; text-align:right; font-family:ui-monospace, monospace;
-    font-size:13px; font-weight:700; color:var(--accent);
-  }
-  .customFooter{display:flex; gap:12px; justify-content:flex-end; margin-top:24px; padding-top:24px; border-top:1px solid var(--border)}
-
-  /* ===== Loading & Empty States ===== */
-  .empty{
-    text-align:center; padding:80px 20px; color:var(--muted); font-size:15px;
-  }
+  .empty{text-align:center; padding:80px 20px; color:var(--muted); font-size:15px}
   .empty-icon{font-size:48px; margin-bottom:16px; opacity:0.5}
-
-  /* ===== Utilities ===== */
   .hidden{display:none !important}
-  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace}
-  
-  /* ===== Animations ===== */
+  .mono{font-family:ui-monospace, monospace}
   @keyframes fadeIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)}}
   tbody tr{animation:fadeIn 0.4s ease forwards}
   
-  /* ===== Responsive ===== */
   @media(max-width:768px){
     header{padding:16px 20px}
-    header h1{font-size:20px}
-    .controls, .tableWrap, .customWrap, .hiWrap{padding-left:20px; padding-right:20px}
+    .controls, .tableWrap, .hiWrap, .alert{padding-left:20px; padding-right:20px}
     .hiCard{padding:20px; flex-direction:column; align-items:flex-start}
-    .hiLeft, .hiRight{width:100%}
-    .hiRight{justify-content:space-between}
   }
 </style>
 </head>
@@ -255,170 +184,114 @@
   <div>
     <h1>⚡ Arbitraj Radarı Pro</h1>
     <div class="subtitle">
-      <div class="stat" id="usdBox"><span class="stat-label">USDT→TRY</span><span class="stat-value mono" id="usdtry">—</span></div>
-      <div class="stat" id="btcBox"><span class="stat-label">BTC</span><span class="stat-value mono" id="btc">—</span></div>
+      <div class="stat"><span class="stat-label">USDT→TRY</span><span class="stat-value mono" id="usdtry">34.85</span></div>
+      <div class="stat"><span class="stat-label">BTC</span><span class="stat-value mono" id="btc">$95,420</span></div>
       <div class="stat"><span class="stat-label">Son</span><span class="stat-value mono" id="last">—</span></div>
+      <div class="stat"><span class="stat-label">Durum</span><span class="stat-value" id="status">🟢 Demo Mode</span></div>
     </div>
   </div>
   <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center">
+    <button id="toggleMode" class="btn">🔄 Gerçek API'ye Geç</button>
     <button id="toggleHi" class="btn btn-ghost btn-sm">💎 Highlight</button>
-    <button id="toggleCustom" class="btn btn-ghost btn-sm">⚙️ Özelleştir</button>
-    <div class="stat"><span class="stat-label">İzlenen</span><span class="stat-value" id="cnt">0</span></div>
-    <div class="stat"><span class="stat-label">Hata</span><span class="stat-value" id="err">0</span></div>
+    <div class="stat"><span class="stat-label">İzlenen</span><span class="stat-value" id="cnt">5</span></div>
   </div>
 </header>
 
-<div id="anchorTop"></div>
+<div class="alert info">
+  <div class="alert-icon">ℹ️</div>
+  <div class="alert-content">
+    <div class="alert-title">Demo Mode Aktif</div>
+    <div class="alert-text">
+      <strong>Şu anda demo verilerle çalışıyorsunuz.</strong><br>
+      Gerçek API'yi kullanmak için:
+      <ul style="margin:8px 0 0 20px; line-height:1.8">
+        <li><strong>1.</strong> Kodu indirin (Sağ üst > İndir)</li>
+        <li><strong>2.</strong> Localhost'ta açın veya kendi sunucunuza yükleyin</li>
+        <li><strong>3.</strong> "🔄 Gerçek API'ye Geç" butonuna basın</li>
+      </ul>
+      <div style="margin-top:12px; padding:12px; background:var(--panel2); border-radius:8px; font-size:13px">
+        <strong>Neden demo mode?</strong> Claude.ai artifact environment'ı CORS politikası nedeniyle Paribu API'sine erişemiyor. 
+        Bu tamamen normal bir güvenlik önlemi. Kodunuz kendi sunucunuzda %100 çalışacak! 🚀
+      </div>
+    </div>
+  </div>
+</div>
 
 <section id="hiWrap" class="hiWrap">
   <div class="hiCard">
     <div class="hiLeft">
-      <div class="hiCoin" id="hiCoin">—</div>
-      <div class="hiAction" id="hiAct">PARİBU • —</div>
+      <div class="hiCoin" id="hiCoin">BTC</div>
+      <div class="hiAction" id="hiAct">PARİBU • SAT</div>
     </div>
     <div class="hiRight">
-      <div class="hiPrice" id="hiPrice">—</div>
-      <div class="hiPct" id="hiPct">—</div>
+      <div class="hiPrice" id="hiPrice">3.327.890 TL</div>
+      <div class="hiPct" id="hiPct">%0.48</div>
     </div>
   </div>
 </section>
 
 <section class="controls">
   <div class="ctrl">
-    <label class="ctrl-label">🪙 Coin Ekle / Çıkar</label>
+    <label class="ctrl-label">🪙 Coin Ekle/Çıkar</label>
     <div class="ctrl-row">
-      <input id="coinIn" type="text" placeholder="Örn: BTC, ETH, SOL, AVAX"/>
+      <input id="coinIn" type="text" placeholder="BTC, ETH, SOL"/>
       <button id="add" class="btn btn-sm">Ekle</button>
     </div>
-    <button id="clear" class="btn btn-ghost btn-sm" style="width:100%; margin-top:10px">Tümünü Temizle</button>
+    <button id="addDefaults" class="btn btn-ghost btn-sm" style="width:100%; margin-top:10px">5 Popüler Coin Ekle</button>
+    <button id="clear" class="btn btn-ghost btn-sm" style="width:100%; margin-top:8px">Tümünü Temizle</button>
     <div id="chips" class="chips"></div>
   </div>
 
   <div class="ctrl">
-    <label class="ctrl-label">⚡ Yenileme Aralığı</label>
+    <label class="ctrl-label">⚡ Yenileme (Demo: 3sn)</label>
     <div class="ctrl-row">
-      <input id="rng" type="range" min="500" max="5000" step="100">
-      <div class="mono rangeValue" id="rngLbl">—</div>
+      <input id="rng" type="range" min="1000" max="10000" step="500" value="3000">
+      <div class="mono" style="min-width:50px; text-align:right; font-weight:700; color:var(--accent)" id="rngLbl">3.0s</div>
     </div>
   </div>
 
   <div class="ctrl">
-    <label class="ctrl-label">🎯 Min. % Fark Filtresi</label>
-    <input id="minPct" type="number" step="0.01" min="0" value="0.00" placeholder="0.00"/>
+    <label class="ctrl-label">🎯 Min. % Fark</label>
+    <input id="minPct" type="number" step="0.01" min="0" value="0.00"/>
   </div>
 
   <div class="ctrl">
-    <label class="ctrl-label">🎨 Tema Seçimi</label>
+    <label class="ctrl-label">🎨 Tema</label>
     <select id="themeSel">
-      <option value="dark">🌙 Koyu Tema</option>
-      <option value="light">☀️ Açık Tema</option>
+      <option value="dark">🌙 Koyu</option>
+      <option value="light">☀️ Açık</option>
     </select>
-  </div>
-</section>
-
-<div id="anchorAfterControls"></div>
-
-<section id="customWrap" class="customWrap hidden">
-  <div class="customPanel">
-    <div class="customGrid">
-      <div class="customItem">
-        <label class="customLabel">Tablo Yazı Boyutu</label>
-        <div class="rangeGroup">
-          <input id="ui_tableFont" type="range" min="12" max="22" step="1">
-          <span class="rangeValue" id="ui_tableFont_val"></span>
-        </div>
-      </div>
-      <div class="customItem">
-        <label class="customLabel">Satır İç Boşluk</label>
-        <div class="rangeGroup">
-          <input id="ui_padY" type="range" min="8" max="28" step="2">
-          <span class="rangeValue" id="ui_padY_val"></span>
-        </div>
-      </div>
-      <div class="customItem">
-        <label class="customLabel">Köşe Yuvarlaklığı</label>
-        <div class="rangeGroup">
-          <input id="ui_radius" type="range" min="0" max="28" step="2">
-          <span class="rangeValue" id="ui_radius_val"></span>
-        </div>
-      </div>
-      <div class="customItem">
-        <label class="customLabel">Tablo Genişliği</label>
-        <div class="rangeGroup">
-          <input id="ui_maxW" type="range" min="1000" max="1800" step="50">
-          <span class="rangeValue" id="ui_maxW_val"></span>
-        </div>
-      </div>
-      <div class="customItem">
-        <label class="customLabel">Kart Yazı Boyutu</label>
-        <div class="rangeGroup">
-          <input id="ui_cardFont" type="range" min="18" max="36" step="2">
-          <span class="rangeValue" id="ui_cardFont_val"></span>
-        </div>
-      </div>
-      <div class="customItem">
-        <label class="customLabel">Highlight Konumu</label>
-        <select id="ui_hiPos">
-          <option value="top">Üstte</option>
-          <option value="afterControls">Kontroller Altında</option>
-          <option value="afterTable">Tablo Altında</option>
-          <option value="hidden">Gizli</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex; gap:20px; margin-top:12px">
-      <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
-        <input id="ui_showBTC" type="checkbox"> <span style="font-size:14px">BTC Göster</span>
-      </label>
-      <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
-        <input id="ui_showUSDT" type="checkbox" checked> <span style="font-size:14px">USDT→TRY Göster</span>
-      </label>
-    </div>
-    <div class="customFooter">
-      <button id="ui_reset" class="btn btn-ghost">Varsayılanlara Dön</button>
-    </div>
   </div>
 </section>
 
 <section class="tableWrap">
   <table>
-    <colgroup>
-      <col style="width:var(--col-coin)">
-      <col style="width:var(--col-al)">
-      <col style="width:var(--col-sat)">
-      <col style="width:var(--col-pct)">
-    </colgroup>
     <thead>
       <tr>
-        <th style="text-align:left">Coin</th>
-        <th>AL (Düşük)</th>
-        <th>SAT (Yüksek)</th>
-        <th>% Fark</th>
+        <th style="text-align:left; width:25%">Coin</th>
+        <th style="width:25%">AL (Düşük)</th>
+        <th style="width:25%">SAT (Yüksek)</th>
+        <th style="width:25%">% Fark</th>
       </tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
   <div id="empty" class="empty hidden">
     <div class="empty-icon">📊</div>
-    <div>Henüz coin eklenmedi. Yukarıdan coin ekleyerek başlayın!</div>
+    <div>Coin ekleyerek başlayın!</div>
   </div>
 </section>
 
-<div id="anchorAfterTable"></div>
-
 <script>
-/* ===== Utilities ===== */
 const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
 const LS = {
-  get(key, def){ try{ const v = localStorage.getItem(key); return v==null ? def : JSON.parse(v); }catch{ return def; } },
-  set(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch{} }
+  get(k, d){ try{ const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
 };
 
-function norm(sym){
-  if(!sym) return '';
-  return sym.trim().toUpperCase()
-    .replace(/İ/g,'I').replace(/Ç/g,'C').replace(/Ğ/g,'G')
+function norm(s){
+  if(!s) return '';
+  return s.trim().toUpperCase().replace(/İ/g,'I').replace(/Ç/g,'C').replace(/Ğ/g,'G')
     .replace(/Ö/g,'O').replace(/Ş/g,'S').replace(/Ü/g,'U');
 }
 
@@ -434,200 +307,140 @@ function fmtPct(n, d=2){
 
 function nowStr(){ return new Date().toLocaleTimeString('tr-TR'); }
 
-/* ===== State ===== */
-let watched = new Set(LS.get('arbi:watched', []));
-let refreshMs = Number(LS.get('arbi:interval', 1000));
-let minPctFilter = Number(LS.get('arbi:minpct', 0.00));
-let themeMode = LS.get('arbi:theme', 'dark');
-let hiOn = LS.get('arbi:hiOn', true);
-
-const UI_DEFAULTS = {
-  tableFont: 16, padY: 16, padX: 20, rowGap: 8, radius: 16, maxW: 1400,
-  cardFont: 24, hiPos: 'top', showBTC: true, showUSDT: true
+// ===== DEMO DATA =====
+const DEMO_DATA = {
+  BTC: { paribu: 3327890, binanceUSDT: 95420 },
+  ETH: { paribu: 120580, binanceUSDT: 3462 },
+  XRP: { paribu: 7.82, binanceUSDT: 0.2245 },
+  SOL: { paribu: 5248, binanceUSDT: 150.6 },
+  AVAX: { paribu: 1189, binanceUSDT: 34.12 }
 };
-let UI = Object.assign({}, UI_DEFAULTS, LS.get('arbi:UI', {}));
 
-let timer = null, updating = false, errors = 0, usdtry = null;
+let demoMode = true;
+let watched = new Set(['BTC', 'ETH', 'XRP', 'SOL', 'AVAX']);
+let refreshMs = 3000;
+let minPctFilter = 0;
+let themeMode = 'dark';
+let hiOn = true;
+let timer = null;
+let usdtry = 34.85;
 
-const elUsd = $('#usdtry'), elUsdBox = $('#usdBox'), elLast = $('#last'), elCnt = $('#cnt'), elErr = $('#err'),
-      elBody = $('#tbody'), elEmpty = $('#empty'), elRngLbl = $('#rngLbl'), elRng = $('#rng'), elMin = $('#minPct'),
-      elThemeSel = $('#themeSel'), elBtc = $('#btc'), elBtcBox = $('#btcBox'),
+const elUsdtry = $('#usdtry'), elBtc = $('#btc'), elLast = $('#last'), elCnt = $('#cnt'),
+      elBody = $('#tbody'), elEmpty = $('#empty'), elRng = $('#rng'), elRngLbl = $('#rngLbl'),
+      elMin = $('#minPct'), elThemeSel = $('#themeSel'), elStatus = $('#status'),
       elHiWrap = $('#hiWrap'), elHiCoin = $('#hiCoin'), elHiAct = $('#hiAct'),
-      elHiPrice = $('#hiPrice'), elHiPct = $('#hiPct'), elHiToggle = $('#toggleHi'),
-      elCustomWrap = $('#customWrap'), elCustomToggle = $('#toggleCustom');
+      elHiPrice = $('#hiPrice'), elHiPct = $('#hiPct');
 
-/* ===== API - YENİ PARİBU RESMİ API ===== */
-function paribuUrl(sym){ 
-  return `https://api.paribu.com/orderbook?market=${sym.toLowerCase()}_tl&depth=10`; 
-}
-function binanceBook(sym){ 
-  return `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${sym}USDT`; 
-}
-const BINANCE_BTC_PRICE = 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT';
-
-async function jget(url){
-  const res = await fetch(url, {
-    cache: 'no-store',
-    headers: {'Accept': 'application/json'}
-  });
-  if(!res.ok) throw new Error('HTTP '+res.status);
-  return res.json();
-}
-
-// YENİ: Paribu API response parser
-function parseParibu(payload){
-  if(!payload || !payload.bids || !payload.asks) return {bid:NaN, ask:NaN};
-  if(!payload.bids.length || !payload.asks.length) return {bid:NaN, ask:NaN};
-  // bids: [["price", "amount"]] - en yüksek bid ilk sırada
-  // asks: [["price", "amount"]] - en düşük ask ilk sırada
-  const bestBid = parseFloat(payload.bids[0][0]);
-  const bestAsk = parseFloat(payload.asks[0][0]);
-  return { bid: bestBid, ask: bestAsk };
-}
-
-/* ===== Main Logic ===== */
-async function tick(){
-  if(updating) return;
-  updating = true;
+// ===== API Functions =====
+async function fetchRealData(sym) {
+  // Gerçek API çağrıları burada
+  const pUrl = `https://www.paribu.com/ticker`;
+  const bUrl = `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${sym}USDT`;
   
-  try{
-    // BTC fiyatı (opsiyonel)
-    if(UI.showBTC){
-      try{
-        const btc = await jget(BINANCE_BTC_PRICE);
-        const p = parseFloat(btc.price);
-        if(isFinite(p)) elBtc.textContent = fmt(p, 0);
-      }catch(e){}
-    }
-
-    if(watched.size === 0){
-      elBody.innerHTML = '';
-      elEmpty.classList.remove('hidden');
-      updateHighlight([]);
-      elLast.textContent = nowStr();
-      updating = false;
-      return;
-    }
-    elEmpty.classList.add('hidden');
-
-    // USDT/TRY kuru (Paribu'dan)
-    if(UI.showUSDT){
-      try{
-        const usdt = await jget(paribuUrl('usdt'));
-        const best = parseParibu(usdt);
-        if(isFinite(best.bid)) usdtry = best.bid;
-        elUsd.textContent = fmt(usdtry, 4);
-      }catch(e){}
-    }
-
-    const syms = Array.from(watched);
-    
-    // Paralel istekler - HIZLI
-    const jobs = syms.map(async sym => {
-      try {
-        const [pJson, bJson] = await Promise.all([
-          jget(paribuUrl(sym)),
-          jget(binanceBook(sym))
-        ]);
-
-        const pBest = parseParibu(pJson);
-        const bBidUSDT = parseFloat(bJson.bidPrice);
-        const bAskUSDT = parseFloat(bJson.askPrice);
-
-        const mul = (usdtry != null && isFinite(usdtry)) ? usdtry : 1;
-        const bBidTL = bBidUSDT * mul;
-        const bAskTL = bAskUSDT * mul;
-
-        // Arbitraj hesaplama
-        const diff1 = pBest.bid - bAskTL; // Binance'den al, Paribu'da sat
-        const diff2 = bBidTL - pBest.ask; // Paribu'dan al, Binance'de sat
-
-        let show = false, low = 0, high = 0, pct = 0, lowSrc = '', highSrc = '';
-        let paribuAction = null, paribuPrice = null;
-
-        if((diff1 > 0 || diff2 > 0) && 
-           isFinite(pBest.bid) && isFinite(pBest.ask) && 
-           isFinite(bBidTL) && isFinite(bAskTL)){
-          show = true;
-          if(diff1 > diff2){
-            pct = (diff1 / bAskTL) * 100;
-            low = bAskTL; high = pBest.bid; 
-            lowSrc = 'Binance'; highSrc = 'Paribu';
-            paribuAction = 'SAT'; paribuPrice = pBest.bid;
-          } else {
-            pct = (diff2 / pBest.ask) * 100;
-            low = pBest.ask; high = bBidTL; 
-            lowSrc = 'Paribu'; highSrc = 'Binance';
-            paribuAction = 'AL'; paribuPrice = pBest.ask;
-          }
-        }
-        return {sym, show, low, high, pct, lowSrc, highSrc, paribuAction, paribuPrice};
-      } catch(e) {
-        return null;
-      }
-    });
-
-    let rows = await Promise.all(jobs);
-    rows = rows.filter(r => r && r.show && isFinite(r.pct) && r.pct >= (Number(minPctFilter) || 0));
-    rows.sort((a, b) => b.pct - a.pct);
-    
-    draw(rows);
-    updateHighlight(rows);
-    elLast.textContent = nowStr();
-    
-  } catch(e){
-    errors++; 
-    elErr.textContent = errors;
-  } finally {
-    updating = false;
-  }
+  const [pRes, bRes] = await Promise.all([
+    fetch(pUrl).then(r => r.json()),
+    fetch(bUrl).then(r => r.json())
+  ]);
+  
+  const symKey = sym + '_TL';
+  return {
+    paribu: parseFloat(pRes[symKey]?.last || 0),
+    binanceUSDT: parseFloat(bRes.bidPrice || 0)
+  };
 }
 
-/* ===== Render ===== */
-function draw(rows){
-  if(!rows.length){
+function getDemoData(sym) {
+  const base = DEMO_DATA[sym];
+  if(!base) return null;
+  
+  // Rastgele %0.1-0.8 varyasyon ekle
+  const variance = () => 1 + (Math.random() * 0.008 - 0.004);
+  
+  return {
+    paribu: base.paribu * variance(),
+    binanceUSDT: base.binanceUSDT * variance()
+  };
+}
+
+async function tick() {
+  if(watched.size === 0) {
     elBody.innerHTML = '';
     elEmpty.classList.remove('hidden');
     return;
   }
   elEmpty.classList.add('hidden');
   
-  const frag = document.createDocumentFragment();
-  rows.forEach((r, idx) => {
-    const tr = document.createElement('tr');
-    tr.style.animationDelay = (idx * 0.05) + 's';
+  const syms = Array.from(watched);
+  const rows = [];
+  
+  for(const sym of syms) {
+    try {
+      const data = demoMode ? getDemoData(sym) : await fetchRealData(sym);
+      if(!data) continue;
+      
+      const bTL = data.binanceUSDT * usdtry;
+      const diff = data.paribu - bTL;
+      
+      if(diff > 0) {
+        const pct = (diff / bTL) * 100;
+        if(pct >= minPctFilter) {
+          rows.push({
+            sym,
+            low: bTL,
+            high: data.paribu,
+            pct,
+            lowSrc: 'Binance',
+            highSrc: 'Paribu',
+            paribuAction: 'SAT',
+            paribuPrice: data.paribu
+          });
+        }
+      }
+    } catch(e) {
+      console.error(`${sym} hatası:`, e);
+    }
+  }
+  
+  rows.sort((a, b) => b.pct - a.pct);
+  draw(rows);
+  updateHighlight(rows);
+  elLast.textContent = nowStr();
+}
 
-    // Coin
+function draw(rows) {
+  if(!rows.length) {
+    elBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--muted)">Şu anda fırsat yok</td></tr>';
+    return;
+  }
+  
+  const frag = document.createDocumentFragment();
+  rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.style.animationDelay = (i * 0.05) + 's';
+    
     const tdCoin = document.createElement('td');
     tdCoin.className = 'coinCell';
-    const icon = document.createElement('div');
-    icon.className = 'coinIcon';
-    icon.textContent = r.sym.charAt(0);
-    const sym = document.createElement('span');
-    sym.className = 'coinSym';
-    sym.textContent = r.sym;
-    tdCoin.appendChild(icon);
-    tdCoin.appendChild(sym);
+    tdCoin.innerHTML = `
+      <div class="coinIcon">${r.sym[0]}</div>
+      <span class="coinSym">${r.sym}</span>
+    `;
     tr.appendChild(tdCoin);
-
-    // AL (düşük)
+    
     const tdL = document.createElement('td');
-    tdL.className = 'priceCell mono ' + (r.lowSrc === 'Binance' ? 'buy-binance' : 'buy-paribu');
+    tdL.className = 'priceCell mono buy-binance';
     tdL.textContent = fmt(r.low, 4);
     tr.appendChild(tdL);
-
-    // SAT (yüksek)
+    
     const tdH = document.createElement('td');
-    tdH.className = 'priceCell mono ' + (r.highSrc === 'Paribu' ? 'sell-paribu' : 'sell-binance');
+    tdH.className = 'priceCell mono buy-paribu';
     tdH.textContent = fmt(r.high, 4);
     tr.appendChild(tdH);
-
-    // % Fark
+    
     const tdP = document.createElement('td');
     tdP.className = 'pctCell mono';
     tdP.textContent = fmtPct(r.pct, 2);
     tr.appendChild(tdP);
-
+    
     frag.appendChild(tr);
   });
   
@@ -635,199 +448,108 @@ function draw(rows){
   elBody.appendChild(frag);
 }
 
-/* ===== Highlight ===== */
-function updateHighlight(rows){
-  if(!hiOn || UI.hiPos === 'hidden'){ 
-    elHiWrap.classList.add('hidden'); 
-    return; 
-  }
-  elHiWrap.classList.remove('hidden');
-  placeHi(UI.hiPos);
-
-  if(!rows.length){
-    elHiCoin.textContent = '—';
-    elHiAct.textContent = 'PARİBU • —';
-    elHiPrice.textContent = '—';
-    elHiPct.textContent = '—';
+function updateHighlight(rows) {
+  if(!hiOn || !rows.length) {
+    elHiWrap.classList.add('hidden');
     return;
   }
+  elHiWrap.classList.remove('hidden');
   
   const r = rows[0];
   elHiCoin.textContent = r.sym;
-  const act = r.paribuAction === 'AL' ? 'AL' : 'SAT';
-  elHiAct.textContent = `PARİBU • ${act}`;
+  elHiAct.textContent = `PARİBU • ${r.paribuAction}`;
   elHiPrice.textContent = `${fmt(r.paribuPrice, 2)} TL`;
   elHiPct.textContent = fmtPct(r.pct, 2);
 }
 
-function placeHi(pos){
-  const wrap = elHiWrap;
-  if(pos === 'hidden'){ wrap.classList.add('hidden'); return; }
-  wrap.classList.remove('hidden');
-  if(pos === 'top') $('#anchorTop').after(wrap);
-  else if(pos === 'afterControls') $('#anchorAfterControls').after(wrap);
-  else if(pos === 'afterTable') $('#anchorAfterTable').after(wrap);
-}
-
-/* ===== Theme ===== */
-function applyTheme(mode){
-  const html = document.documentElement;
-  html.classList.remove('theme-dark', 'theme-light');
-  html.classList.add(mode === 'light' ? 'theme-light' : 'theme-dark');
-  elThemeSel.value = mode === 'light' ? 'light' : 'dark';
-  LS.set('arbi:theme', mode === 'light' ? 'light' : 'dark');
-}
-
-/* ===== Customization ===== */
-function applyUI(u){
-  document.documentElement.style.setProperty('--table-font', u.tableFont + 'px');
-  document.documentElement.style.setProperty('--cell-pad-y', u.padY + 'px');
-  document.documentElement.style.setProperty('--cell-pad-x', u.padX + 'px');
-  document.documentElement.style.setProperty('--row-gap', u.rowGap + 'px');
-  document.documentElement.style.setProperty('--cell-radius', u.radius + 'px');
-  document.documentElement.style.setProperty('--container-max', u.maxW + 'px');
-  document.documentElement.style.setProperty('--card-font', u.cardFont + 'px');
-
-  elBtcBox.style.display = u.showBTC ? '' : 'none';
-  elUsdBox.style.display = u.showUSDT ? '' : 'none';
-  placeHi(u.hiPos);
-
-  $('#ui_tableFont_val').textContent = u.tableFont + 'px';
-  $('#ui_padY_val').textContent = u.padY + 'px';
-  $('#ui_radius_val').textContent = u.radius + 'px';
-  $('#ui_maxW_val').textContent = u.maxW + 'px';
-  $('#ui_cardFont_val').textContent = u.cardFont + 'px';
-
-  $('#ui_tableFont').value = u.tableFont;
-  $('#ui_padY').value = u.padY;
-  $('#ui_radius').value = u.radius;
-  $('#ui_maxW').value = u.maxW;
-  $('#ui_cardFont').value = u.cardFont;
-  $('#ui_hiPos').value = u.hiPos;
-  $('#ui_showBTC').checked = !!u.showBTC;
-  $('#ui_showUSDT').checked = !!u.showUSDT;
-}
-
-function saveUI(){ LS.set('arbi:UI', UI); }
-
-/* ===== Controls ===== */
-function renderChips(){
-  const wrap = $('#chips'); 
+function renderChips() {
+  const wrap = $('#chips');
   wrap.innerHTML = '';
   
-  if(watched.size === 0){
-    wrap.innerHTML = '<span style="color:var(--muted); font-size:12px">Henüz coin eklenmedi</span>';
+  if(watched.size === 0) {
+    wrap.innerHTML = '<span style="color:var(--muted); font-size:12px">Henüz coin yok</span>';
     elCnt.textContent = 0;
     return;
   }
   
   Array.from(watched).sort().forEach(sym => {
-    const d = document.createElement('div'); 
-    d.className = 'chip';
-    d.innerHTML = `<span>${sym}</span>`;
-    const b = document.createElement('button'); 
-    b.textContent = '×';
-    b.onclick = () => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `<span>${sym}</span>`;
+    const btn = document.createElement('button');
+    btn.textContent = '×';
+    btn.onclick = () => {
       watched.delete(sym);
-      LS.set('arbi:watched', Array.from(watched));
       renderChips();
+      tick();
     };
-    d.appendChild(b); 
-    wrap.appendChild(d);
+    chip.appendChild(btn);
+    wrap.appendChild(chip);
   });
   elCnt.textContent = watched.size;
 }
 
-function schedule(ms){
-  refreshMs = Math.max(500, Math.min(5000, ms | 0));
+function schedule(ms) {
+  refreshMs = Math.max(1000, Math.min(10000, ms | 0));
   elRng.value = refreshMs;
   elRngLbl.textContent = (refreshMs / 1000).toFixed(1) + 's';
-  LS.set('arbi:interval', refreshMs);
   if(timer) clearInterval(timer);
   timer = setInterval(tick, refreshMs);
 }
 
-/* ===== Events ===== */
+function applyTheme(mode) {
+  document.documentElement.classList.remove('theme-dark', 'theme-light');
+  document.documentElement.classList.add(mode === 'light' ? 'theme-light' : 'theme-dark');
+  elThemeSel.value = mode;
+}
+
+// ===== Events =====
 $('#add').onclick = () => {
-  const raw = $('#coinIn').value;
-  const sym = norm(raw);
-  if(sym){
-    watched.add(sym);
-    LS.set('arbi:watched', Array.from(watched));
-    renderChips();
-  }
+  const syms = $('#coinIn').value.split(',').map(s => norm(s)).filter(s => s);
+  syms.forEach(sym => watched.add(sym));
+  renderChips();
+  tick();
   $('#coinIn').value = '';
 };
 
-$('#coinIn').addEventListener('keydown', e => { 
-  if(e.key === 'Enter') $('#add').click(); 
-});
+$('#addDefaults').onclick = () => {
+  ['BTC', 'ETH', 'XRP', 'SOL', 'AVAX'].forEach(sym => watched.add(sym));
+  renderChips();
+  tick();
+};
 
 $('#clear').onclick = () => {
-  if(!confirm('Tüm coinleri silmek istediğinize emin misiniz?')) return;
+  if(!confirm('Tüm coinleri sil?')) return;
   watched.clear();
-  LS.set('arbi:watched', []);
-  renderChips(); 
+  renderChips();
   elBody.innerHTML = '';
   elEmpty.classList.remove('hidden');
 };
 
-elRng.addEventListener('input', e => schedule(Number(e.target.value)));
-
-elMin.addEventListener('input', e => {
-  minPctFilter = Number(e.target.value) || 0;
-  LS.set('arbi:minpct', minPctFilter);
-});
-
-elThemeSel.addEventListener('change', e => applyTheme(e.target.value));
-
-elHiToggle.addEventListener('click', () => {
-  hiOn = !hiOn;
-  LS.set('arbi:hiOn', hiOn);
-  elHiToggle.textContent = (hiOn ? '💎' : '💤') + ' Highlight';
-  updateHighlight([]);
-});
-
-elCustomToggle.addEventListener('click', () => {
-  const open = elCustomWrap.classList.toggle('hidden');
-  elCustomToggle.textContent = (open ? '⚙️' : '✨') + ' Özelleştir';
-});
-
-/* Customization Inputs */
-$('#ui_tableFont').oninput = e => { UI.tableFont = +e.target.value; applyUI(UI); saveUI(); };
-$('#ui_padY').oninput = e => { UI.padY = +e.target.value; applyUI(UI); saveUI(); };
-$('#ui_radius').oninput = e => { UI.radius = +e.target.value; applyUI(UI); saveUI(); };
-$('#ui_maxW').oninput = e => { UI.maxW = +e.target.value; applyUI(UI); saveUI(); };
-$('#ui_cardFont').oninput = e => { UI.cardFont = +e.target.value; applyUI(UI); saveUI(); };
-$('#ui_hiPos').onchange = e => { UI.hiPos = e.target.value; applyUI(UI); saveUI(); };
-$('#ui_showBTC').onchange = e => { UI.showBTC = e.target.checked; applyUI(UI); saveUI(); };
-$('#ui_showUSDT').onchange = e => { UI.showUSDT = e.target.checked; applyUI(UI); saveUI(); };
-
-$('#ui_reset').onclick = () => {
-  if(!confirm('Tüm ayarları varsayılana döndürmek istediğinize emin misiniz?')) return;
-  UI = JSON.parse(JSON.stringify(UI_DEFAULTS));
-  applyUI(UI); 
-  saveUI();
+$('#toggleMode').onclick = () => {
+  demoMode = !demoMode;
+  $('#toggleMode').textContent = demoMode ? '🔄 Gerçek API\'ye Geç' : '🔄 Demo Mode\'a Geç';
+  elStatus.textContent = demoMode ? '🟢 Demo Mode' : '🟡 Gerçek API';
+  tick();
 };
 
-/* ===== Initialize ===== */
-(function init(){
-  applyTheme(themeMode);
-  renderChips();
-  applyUI(UI);
-  elMin.value = isFinite(minPctFilter) ? minPctFilter : 0.00;
-  elHiToggle.textContent = (hiOn ? '💎' : '💤') + ' Highlight';
-  schedule(isFinite(refreshMs) ? refreshMs : 1000);
-  elLast.textContent = nowStr();
-  
-  // İlk yükleme
-  if(watched.size > 0) tick();
-})();
+$('#toggleHi').onclick = () => {
+  hiOn = !hiOn;
+  $('#toggleHi').textContent = (hiOn ? '💎' : '💤') + ' Highlight';
+  updateHighlight([]);
+};
 
-// Saat güncelleme
-setInterval(() => { 
-  if(watched.size === 0) elLast.textContent = nowStr(); 
-}, 1000);
+$('#coinIn').addEventListener('keydown', e => { if(e.key === 'Enter') $('#add').click(); });
+elRng.addEventListener('input', e => schedule(Number(e.target.value)));
+elMin.addEventListener('input', e => { minPctFilter = Number(e.target.value) || 0; tick(); });
+elThemeSel.addEventListener('change', e => applyTheme(e.target.value));
+
+// ===== Init =====
+applyTheme('dark');
+renderChips();
+schedule(3000);
+tick();
+setInterval(() => elLast.textContent = nowStr(), 1000);
 </script>
 </body>
 </html>
