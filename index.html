@@ -1,555 +1,594 @@
 <!DOCTYPE html>
-<html lang="tr" class="theme-dark">
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Arbitraj Radarı Pro — Paribu ⇄ Binance</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-  
-  .theme-dark{
-    --bg:#0a0e1a; --bg-gradient-start:#0a0e1a; --bg-gradient-end:#151b2e;
-    --panel:#1a1f35; --panel-glow:rgba(96, 165, 250, 0.05);
-    --panel2:#14182b; --text:#f1f5f9; --muted:#94a3b8; --accent:#60a5fa;
-    --accent-glow:rgba(96, 165, 250, 0.2); --border:#293548;
-    --success:#10b981; --success-bg:rgba(16, 185, 129, 0.1);
-    --success-border:rgba(16, 185, 129, 0.3);
-    --warning:#f59e0b; --warning-bg:rgba(245, 158, 11, 0.15);
-    --error:#ef4444;
-    --shadow:rgba(0, 0, 0, 0.5);
-    --glass-bg:rgba(26, 31, 53, 0.8); --glass-border:rgba(255, 255, 255, 0.1);
-  }
-  .theme-light{
-    --bg:#f8fafc; --bg-gradient-start:#ffffff; --bg-gradient-end:#f1f5f9;
-    --panel:#ffffff; --panel-glow:rgba(37, 99, 235, 0.05);
-    --panel2:#f8fafc; --text:#0f172a; --muted:#64748b; --accent:#2563eb;
-    --accent-glow:rgba(37, 99, 235, 0.15); --border:#e2e8f0;
-    --success:#059669; --success-bg:rgba(5, 150, 105, 0.08);
-    --success-border:rgba(5, 150, 105, 0.25);
-    --warning:#d97706; --warning-bg:rgba(217, 119, 6, 0.08);
-    --error:#dc2626;
-    --shadow:rgba(15, 23, 42, 0.1);
-    --glass-bg:rgba(255, 255, 255, 0.8); --glass-border:rgba(0, 0, 0, 0.08);
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔴 TikTok Live Dashboard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  :root{
-    --table-font:16px; --cell-pad-y:16px; --cell-pad-x:20px;
-    --row-gap:8px; --cell-radius:16px; --container-max:1400px;
-    --card-font:24px;
-  }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0f;
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-  *{box-sizing:border-box; margin:0; padding:0}
-  html,body{
-    height:100%; background:linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-    color:var(--text); font-family:'Inter',system-ui,sans-serif; overflow-x:hidden
-  }
-  body{padding-bottom:40px}
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 0, 128, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(138, 43, 226, 0.12) 0%, transparent 50%);
+            animation: gradientShift 25s ease infinite;
+            z-index: 0;
+        }
 
-  header{
-    background:var(--glass-bg); backdrop-filter:blur(20px);
-    border-bottom:1px solid var(--glass-border); padding:20px 32px;
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;
-    box-shadow:0 4px 24px var(--shadow); position:sticky; top:0; z-index:100;
-  }
-  header h1{
-    font-size:26px; font-weight:800; background:linear-gradient(135deg, var(--accent), #8b5cf6);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  }
-  .subtitle{color:var(--muted); font-size:13px; display:flex; gap:16px; align-items:center; flex-wrap:wrap}
-  .stat{
-    display:flex; align-items:center; gap:6px; padding:6px 12px; background:var(--panel2);
-    border:1px solid var(--border); border-radius:20px; font-size:13px; font-weight:600;
-  }
-  .stat-label{color:var(--muted)}
-  .stat-value{color:var(--text); font-family:ui-monospace, monospace}
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(5%, 5%) rotate(180deg); }
+        }
 
-  .btn{
-    background:linear-gradient(135deg, var(--accent), #6366f1); color:#fff;
-    border:none; border-radius:12px; padding:12px 20px; font-weight:700; font-size:14px;
-    cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 12px var(--accent-glow);
-  }
-  .btn:hover{transform:translateY(-2px); box-shadow:0 6px 20px var(--accent-glow)}
-  .btn:active{transform:translateY(0)}
-  .btn-ghost{background:var(--panel); color:var(--text); box-shadow:0 2px 8px var(--shadow); border:1px solid var(--border)}
-  .btn-ghost:hover{background:var(--panel2)}
-  .btn-sm{padding:8px 14px; font-size:13px}
+        .container {
+            max-width: 1900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
 
-  .alert{
-    padding:20px 32px; margin:20px auto; max-width:var(--container-max);
-    background:var(--warning-bg); border:2px solid var(--warning); border-left:6px solid var(--warning);
-    border-radius:16px; display:flex; align-items:flex-start; gap:16px; font-size:14px;
-  }
-  .alert-icon{font-size:28px; flex-shrink:0}
-  .alert-content{flex:1}
-  .alert-title{font-weight:800; font-size:16px; margin-bottom:8px}
-  .alert-text{color:var(--muted); line-height:1.6}
-  .alert.info{background:var(--panel2); border-color:var(--accent); border-left-color:var(--accent)}
-  .alert.success{background:var(--success-bg); border-color:var(--success); border-left-color:var(--success)}
+        /* Header - Compact */
+        .header {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease;
+        }
 
-  .hiWrap{padding:24px 32px; max-width:var(--container-max); margin:0 auto}
-  .hiCard{
-    background:linear-gradient(135deg, var(--success-bg), var(--panel));
-    border:2px solid var(--success-border); border-radius:24px; padding:28px 36px;
-    box-shadow:0 12px 40px rgba(16, 185, 129, 0.15); position:relative; overflow:hidden;
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;
-    transition:all 0.4s ease;
-  }
-  .hiCard:hover{transform:translateY(-4px); box-shadow:0 16px 48px rgba(16, 185, 129, 0.25)}
-  .hiLeft{display:flex; align-items:center; gap:20px; position:relative; z-index:1}
-  .hiCoin{font-size:32px; font-weight:900; background:linear-gradient(135deg, var(--success), #34d399);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent}
-  .hiAction{background:var(--success); color:#fff; border-radius:16px; padding:10px 20px;
-    font-weight:800; font-size:15px; box-shadow:0 4px 12px rgba(16, 185, 129, 0.3)}
-  .hiRight{display:flex; gap:28px; align-items:baseline; position:relative; z-index:1}
-  .hiPrice{font-size:var(--card-font); font-weight:800; font-family:ui-monospace, monospace}
-  .hiPct{font-size:28px; font-weight:900; color:var(--success); text-shadow:0 2px 8px rgba(16, 185, 129, 0.3)}
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-  .controls{
-    padding:24px 32px; max-width:var(--container-max); margin:0 auto;
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;
-  }
-  .ctrl{
-    background:var(--glass-bg); backdrop-filter:blur(10px); border:1px solid var(--glass-border);
-    border-radius:20px; padding:20px; box-shadow:0 4px 16px var(--shadow); transition:all 0.3s ease;
-  }
-  .ctrl:hover{transform:translateY(-2px); box-shadow:0 8px 24px var(--shadow)}
-  .ctrl-label{font-size:13px; color:var(--muted); font-weight:600; margin-bottom:12px; display:block}
-  .ctrl-row{display:flex; gap:10px; align-items:center}
-  
-  input[type="text"], input[type="number"], select{
-    width:100%; background:var(--panel2); border:1px solid var(--border); color:var(--text);
-    border-radius:12px; padding:12px 16px; font-size:14px; font-weight:500; outline:none; transition:all 0.3s ease;
-  }
-  input:focus, select:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow)}
-  input[type="range"]{width:100%; height:6px; -webkit-appearance:none; background:var(--border); border-radius:10px}
-  input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none; width:18px; height:18px; background:var(--accent);
-    border-radius:50%; cursor:pointer; box-shadow:0 2px 8px var(--accent-glow);
-  }
+        .header-top {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
-  .chip{
-    display:inline-flex; gap:8px; align-items:center; background:var(--panel2);
-    border:1px solid var(--border); border-radius:20px; padding:8px 14px; font-size:13px;
-    font-weight:600; transition:all 0.2s ease;
-  }
-  .chip:hover{background:var(--panel); transform:translateY(-1px)}
-  .chip button{all:unset; cursor:pointer; color:var(--accent); font-weight:700; font-size:16px; line-height:1}
-  .chip button:hover{color:var(--error); transform:scale(1.2)}
+        .header-title {
+            font-size: 4em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff0050 0%, #00f0ff 50%, #ff0050 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s ease infinite;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 80, 0.3));
+        }
 
-  .tableWrap{padding:0 32px 32px; max-width:var(--container-max); margin:0 auto}
-  table{width:100%; border-collapse:separate; border-spacing:0 var(--row-gap); table-layout:fixed}
-  thead th{font-size:13px; color:var(--muted); font-weight:700; text-transform:uppercase;
-    letter-spacing:1px; text-align:center; padding:12px 8px}
-  thead th:first-child{text-align:left}
-  tbody tr{background:var(--glass-bg); backdrop-filter:blur(10px); border:1px solid var(--glass-border); transition:all 0.3s ease}
-  tbody tr:hover{transform:translateX(4px); box-shadow:0 8px 24px var(--shadow); border-color:var(--accent)}
-  tbody td{padding:var(--cell-pad-y) var(--cell-pad-x); font-size:var(--table-font); font-weight:600}
-  tbody tr td:first-child{border-top-left-radius:var(--cell-radius); border-bottom-left-radius:var(--cell-radius)}
-  tbody tr td:last-child{border-top-right-radius:var(--cell-radius); border-bottom-right-radius:var(--cell-radius)}
-  
-  .coinCell{display:flex; align-items:center; gap:12px}
-  .coinIcon{
-    width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--accent), #8b5cf6);
-    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
-    color:#fff; box-shadow:0 4px 12px var(--accent-glow);
-  }
-  .coinSym{font-weight:800; font-size:15px}
-  .priceCell{text-align:center; font-family:ui-monospace, monospace; font-weight:700; position:relative}
-  .priceCell::before{
-    content:''; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
-    width:calc(100% - 20px); height:calc(100% - 8px); border-radius:12px; z-index:-1; opacity:0.8;
-  }
-  .buy-binance::before{background:linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1))}
-  .buy-paribu::before{background:linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1))}
-  .pctCell{text-align:center; font-family:ui-monospace, monospace; font-weight:800; font-size:17px;
-    color:var(--success); text-shadow:0 2px 8px rgba(16, 185, 129, 0.2)}
+        @keyframes gradientText {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
 
-  .empty{text-align:center; padding:80px 20px; color:var(--muted); font-size:15px}
-  .empty-icon{font-size:48px; margin-bottom:16px; opacity:0.5}
-  .hidden{display:none !important}
-  .mono{font-family:ui-monospace, monospace}
-  @keyframes fadeIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)}}
-  tbody tr{animation:fadeIn 0.4s ease forwards}
-  
-  @media(max-width:768px){
-    header{padding:16px 20px}
-    .controls, .tableWrap, .hiWrap, .alert{padding-left:20px; padding-right:20px}
-    .hiCard{padding:20px; flex-direction:column; align-items:flex-start}
-  }
-</style>
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 0, 80, 0.15);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.95em;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 0, 80, 0.3);
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #ff0050;
+            border-radius: 50%;
+            position: relative;
+            animation: pulse 1.5s ease-out infinite;
+        }
+
+        .pulse-dot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #ff0050;
+            opacity: 0.7;
+            animation: ripple 1.5s ease-out infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        /* Stats Grid - Compact */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 15px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 0, 80, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 1.8em;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, #00f0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 6px rgba(0, 240, 255, 0.3));
+            transition: all 0.4s ease;
+        }
+
+        /* Leaderboard - Prominent */
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .leaderboard-title {
+            font-size: 2em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s ease infinite;
+            filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.4));
+        }
+
+        /* Leaderboard List - 3 Columns for better fit */
+        .leaderboard-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .leader-item {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .leader-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .leader-item.rank-1 {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+            padding: 18px 20px;
+        }
+
+        .leader-item.rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(169, 169, 169, 0.2) 100%);
+            border: 1.5px solid rgba(192, 192, 192, 0.5);
+        }
+
+        .leader-item.rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2) 0%, rgba(184, 134, 11, 0.2) 100%);
+            border: 1.5px solid rgba(205, 127, 50, 0.5);
+        }
+
+        .rank-badge {
+            font-size: 1.8em;
+            min-width: 40px;
+            text-align: center;
+            font-weight: 900;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .leader-item.rank-1 .rank-badge {
+            font-size: 2.2em;
+            min-width: 50px;
+        }
+
+        .leader-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .leader-name {
+            font-size: 0.95em;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .leader-item.rank-1 .leader-name {
+            font-size: 1.15em;
+        }
+
+        .leader-likes {
+            font-size: 1.3em;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #ff0050 0%, #ff6b9d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 80, 0.2));
+        }
+
+        .leader-item.rank-1 .leader-likes {
+            font-size: 1.6em;
+        }
+
+        .progress-wrapper {
+            flex: 0.8;
+            min-width: 100px;
+        }
+
+        .progress-bar-bg {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 100px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leader-item.rank-1 .progress-bar-bg {
+            height: 24px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0050 0%, #ff6b9d 50%, #00f0ff 100%);
+            background-size: 200% 100%;
+            border-radius: 100px;
+            transition: width 0.6s ease;
+            box-shadow: 0 0 12px rgba(255, 0, 80, 0.5);
+            animation: progressGlow 2s ease infinite;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.3em;
+            opacity: 0.5;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 1600px) {
+            .leaderboard-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .leaderboard-list {
+                grid-template-columns: 1fr;
+            }
+            .leader-item.rank-1 {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .header-title {
+                font-size: 2.5em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 12px 15px;
+            }
+            
+            .leader-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .progress-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>⚡ Arbitraj Radarı Pro</h1>
-    <div class="subtitle">
-      <div class="stat"><span class="stat-label">USDT→TRY</span><span class="stat-value mono" id="usdtry">34.85</span></div>
-      <div class="stat"><span class="stat-label">BTC</span><span class="stat-value mono" id="btc">$95,420</span></div>
-      <div class="stat"><span class="stat-label">Son</span><span class="stat-value mono" id="last">—</span></div>
-      <div class="stat"><span class="stat-label">Durum</span><span class="stat-value" id="status">🟢 Demo Mode</span></div>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h1 class="header-title">🎬 TikTok Live Dashboard</h1>
+                <div class="live-badge">
+                    <div class="pulse-dot"></div>
+                    <span id="statusText">Connecting...</span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-label">User</div>
+                    <div class="stat-value" id="kullaniciAdi">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-label">Duration</div>
+                    <div class="stat-value" id="sure">0:00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❤️</div>
+                    <div class="stat-label">Total Likes</div>
+                    <div class="stat-value" id="toplamBegeni">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-label">Users</div>
+                    <div class="stat-value" id="katilimci">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <div class="leaderboard-header">
+                <div class="leaderboard-title">🏆 TOP 20 LEADERBOARD</div>
+            </div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <div class="empty-state">
+                    ⏳ Waiting for likes...<br>
+                    <small style="font-size: 0.7em; opacity: 0.7;">Data will appear when viewers start liking</small>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center">
-    <button id="toggleMode" class="btn">🔄 Gerçek API'ye Geç</button>
-    <button id="toggleHi" class="btn btn-ghost btn-sm">💎 Highlight</button>
-    <div class="stat"><span class="stat-label">İzlenen</span><span class="stat-value" id="cnt">5</span></div>
-  </div>
-</header>
 
-<div class="alert info">
-  <div class="alert-icon">ℹ️</div>
-  <div class="alert-content">
-    <div class="alert-title">Demo Mode Aktif</div>
-    <div class="alert-text">
-      <strong>Şu anda demo verilerle çalışıyorsunuz.</strong><br>
-      Gerçek API'yi kullanmak için:
-      <ul style="margin:8px 0 0 20px; line-height:1.8">
-        <li><strong>1.</strong> Kodu indirin (Sağ üst > İndir)</li>
-        <li><strong>2.</strong> Localhost'ta açın veya kendi sunucunuza yükleyin</li>
-        <li><strong>3.</strong> "🔄 Gerçek API'ye Geç" butonuna basın</li>
-      </ul>
-      <div style="margin-top:12px; padding:12px; background:var(--panel2); border-radius:8px; font-size:13px">
-        <strong>Neden demo mode?</strong> Claude.ai artifact environment'ı CORS politikası nedeniyle Paribu API'sine erişemiyor. 
-        Bu tamamen normal bir güvenlik önlemi. Kodunuz kendi sunucunuzda %100 çalışacak! 🚀
-      </div>
-    </div>
-  </div>
-</div>
+    <script>
+        const socket = io();
+        let maxLikes = 1;
+        let updateQueue = [];
+        let isProcessing = false;
 
-<section id="hiWrap" class="hiWrap">
-  <div class="hiCard">
-    <div class="hiLeft">
-      <div class="hiCoin" id="hiCoin">BTC</div>
-      <div class="hiAction" id="hiAct">PARİBU • SAT</div>
-    </div>
-    <div class="hiRight">
-      <div class="hiPrice" id="hiPrice">3.327.890 TL</div>
-      <div class="hiPct" id="hiPct">%0.48</div>
-    </div>
-  </div>
-</section>
-
-<section class="controls">
-  <div class="ctrl">
-    <label class="ctrl-label">🪙 Coin Ekle/Çıkar</label>
-    <div class="ctrl-row">
-      <input id="coinIn" type="text" placeholder="BTC, ETH, SOL"/>
-      <button id="add" class="btn btn-sm">Ekle</button>
-    </div>
-    <button id="addDefaults" class="btn btn-ghost btn-sm" style="width:100%; margin-top:10px">5 Popüler Coin Ekle</button>
-    <button id="clear" class="btn btn-ghost btn-sm" style="width:100%; margin-top:8px">Tümünü Temizle</button>
-    <div id="chips" class="chips"></div>
-  </div>
-
-  <div class="ctrl">
-    <label class="ctrl-label">⚡ Yenileme (Demo: 3sn)</label>
-    <div class="ctrl-row">
-      <input id="rng" type="range" min="1000" max="10000" step="500" value="3000">
-      <div class="mono" style="min-width:50px; text-align:right; font-weight:700; color:var(--accent)" id="rngLbl">3.0s</div>
-    </div>
-  </div>
-
-  <div class="ctrl">
-    <label class="ctrl-label">🎯 Min. % Fark</label>
-    <input id="minPct" type="number" step="0.01" min="0" value="0.00"/>
-  </div>
-
-  <div class="ctrl">
-    <label class="ctrl-label">🎨 Tema</label>
-    <select id="themeSel">
-      <option value="dark">🌙 Koyu</option>
-      <option value="light">☀️ Açık</option>
-    </select>
-  </div>
-</section>
-
-<section class="tableWrap">
-  <table>
-    <thead>
-      <tr>
-        <th style="text-align:left; width:25%">Coin</th>
-        <th style="width:25%">AL (Düşük)</th>
-        <th style="width:25%">SAT (Yüksek)</th>
-        <th style="width:25%">% Fark</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-  <div id="empty" class="empty hidden">
-    <div class="empty-icon">📊</div>
-    <div>Coin ekleyerek başlayın!</div>
-  </div>
-</section>
-
-<script>
-const $ = s => document.querySelector(s);
-const LS = {
-  get(k, d){ try{ const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); }catch{ return d; } },
-  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
-};
-
-function norm(s){
-  if(!s) return '';
-  return s.trim().toUpperCase().replace(/İ/g,'I').replace(/Ç/g,'C').replace(/Ğ/g,'G')
-    .replace(/Ö/g,'O').replace(/Ş/g,'S').replace(/Ü/g,'U');
-}
-
-function fmt(n, d=2){
-  if(n==null || !isFinite(n)) return '—';
-  return Number(n).toLocaleString('tr-TR',{minimumFractionDigits:d, maximumFractionDigits:d});
-}
-
-function fmtPct(n, d=2){
-  if(n==null || !isFinite(n)) return '—';
-  return '%'+Number(n).toLocaleString('tr-TR',{minimumFractionDigits:d, maximumFractionDigits:d});
-}
-
-function nowStr(){ return new Date().toLocaleTimeString('tr-TR'); }
-
-// ===== DEMO DATA =====
-const DEMO_DATA = {
-  BTC: { paribu: 3327890, binanceUSDT: 95420 },
-  ETH: { paribu: 120580, binanceUSDT: 3462 },
-  XRP: { paribu: 7.82, binanceUSDT: 0.2245 },
-  SOL: { paribu: 5248, binanceUSDT: 150.6 },
-  AVAX: { paribu: 1189, binanceUSDT: 34.12 }
-};
-
-let demoMode = true;
-let watched = new Set(['BTC', 'ETH', 'XRP', 'SOL', 'AVAX']);
-let refreshMs = 3000;
-let minPctFilter = 0;
-let themeMode = 'dark';
-let hiOn = true;
-let timer = null;
-let usdtry = 34.85;
-
-const elUsdtry = $('#usdtry'), elBtc = $('#btc'), elLast = $('#last'), elCnt = $('#cnt'),
-      elBody = $('#tbody'), elEmpty = $('#empty'), elRng = $('#rng'), elRngLbl = $('#rngLbl'),
-      elMin = $('#minPct'), elThemeSel = $('#themeSel'), elStatus = $('#status'),
-      elHiWrap = $('#hiWrap'), elHiCoin = $('#hiCoin'), elHiAct = $('#hiAct'),
-      elHiPrice = $('#hiPrice'), elHiPct = $('#hiPct');
-
-// ===== API Functions =====
-async function fetchRealData(sym) {
-  // Gerçek API çağrıları burada
-  const pUrl = `https://www.paribu.com/ticker`;
-  const bUrl = `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${sym}USDT`;
-  
-  const [pRes, bRes] = await Promise.all([
-    fetch(pUrl).then(r => r.json()),
-    fetch(bUrl).then(r => r.json())
-  ]);
-  
-  const symKey = sym + '_TL';
-  return {
-    paribu: parseFloat(pRes[symKey]?.last || 0),
-    binanceUSDT: parseFloat(bRes.bidPrice || 0)
-  };
-}
-
-function getDemoData(sym) {
-  const base = DEMO_DATA[sym];
-  if(!base) return null;
-  
-  // Rastgele %0.1-0.8 varyasyon ekle
-  const variance = () => 1 + (Math.random() * 0.008 - 0.004);
-  
-  return {
-    paribu: base.paribu * variance(),
-    binanceUSDT: base.binanceUSDT * variance()
-  };
-}
-
-async function tick() {
-  if(watched.size === 0) {
-    elBody.innerHTML = '';
-    elEmpty.classList.remove('hidden');
-    return;
-  }
-  elEmpty.classList.add('hidden');
-  
-  const syms = Array.from(watched);
-  const rows = [];
-  
-  for(const sym of syms) {
-    try {
-      const data = demoMode ? getDemoData(sym) : await fetchRealData(sym);
-      if(!data) continue;
-      
-      const bTL = data.binanceUSDT * usdtry;
-      const diff = data.paribu - bTL;
-      
-      if(diff > 0) {
-        const pct = (diff / bTL) * 100;
-        if(pct >= minPctFilter) {
-          rows.push({
-            sym,
-            low: bTL,
-            high: data.paribu,
-            pct,
-            lowSrc: 'Binance',
-            highSrc: 'Paribu',
-            paribuAction: 'SAT',
-            paribuPrice: data.paribu
-          });
+        function processQueue() {
+            if (updateQueue.length === 0 || isProcessing) return;
+            
+            isProcessing = true;
+            const data = updateQueue.shift();
+            
+            document.getElementById('toplamBegeni').textContent = formatNumber(data.toplamBegeni);
+            document.getElementById('katilimci').textContent = data.katilimci;
+            updateTime(data.sure);
+            renderLeaderboard(data.siralama);
+            
+            requestAnimationFrame(() => {
+                isProcessing = false;
+                processQueue();
+            });
         }
-      }
-    } catch(e) {
-      console.error(`${sym} hatası:`, e);
-    }
-  }
-  
-  rows.sort((a, b) => b.pct - a.pct);
-  draw(rows);
-  updateHighlight(rows);
-  elLast.textContent = nowStr();
-}
 
-function draw(rows) {
-  if(!rows.length) {
-    elBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--muted)">Şu anda fırsat yok</td></tr>';
-    return;
-  }
-  
-  const frag = document.createDocumentFragment();
-  rows.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    tr.style.animationDelay = (i * 0.05) + 's';
-    
-    const tdCoin = document.createElement('td');
-    tdCoin.className = 'coinCell';
-    tdCoin.innerHTML = `
-      <div class="coinIcon">${r.sym[0]}</div>
-      <span class="coinSym">${r.sym}</span>
-    `;
-    tr.appendChild(tdCoin);
-    
-    const tdL = document.createElement('td');
-    tdL.className = 'priceCell mono buy-binance';
-    tdL.textContent = fmt(r.low, 4);
-    tr.appendChild(tdL);
-    
-    const tdH = document.createElement('td');
-    tdH.className = 'priceCell mono buy-paribu';
-    tdH.textContent = fmt(r.high, 4);
-    tr.appendChild(tdH);
-    
-    const tdP = document.createElement('td');
-    tdP.className = 'pctCell mono';
-    tdP.textContent = fmtPct(r.pct, 2);
-    tr.appendChild(tdP);
-    
-    frag.appendChild(tr);
-  });
-  
-  elBody.innerHTML = '';
-  elBody.appendChild(frag);
-}
+        socket.on('baslangicVerileri', (data) => {
+            document.getElementById('kullaniciAdi').textContent = data.kullaniciAdi.replace('@', '');
+            document.getElementById('toplamBegeni').textContent = formatNumber(data.toplamBegeni);
+            document.getElementById('katilimci').textContent = data.siralama.length;
+            updateTime(data.sure);
+            renderLeaderboard(data.siralama);
+            
+            if (data.durum === 'bagli') {
+                document.getElementById('statusText').textContent = 'Live';
+            }
+        });
 
-function updateHighlight(rows) {
-  if(!hiOn || !rows.length) {
-    elHiWrap.classList.add('hidden');
-    return;
-  }
-  elHiWrap.classList.remove('hidden');
-  
-  const r = rows[0];
-  elHiCoin.textContent = r.sym;
-  elHiAct.textContent = `PARİBU • ${r.paribuAction}`;
-  elHiPrice.textContent = `${fmt(r.paribuPrice, 2)} TL`;
-  elHiPct.textContent = fmtPct(r.pct, 2);
-}
+        socket.on('hizliGuncelleme', (data) => {
+            updateQueue.push(data);
+            processQueue();
+        });
 
-function renderChips() {
-  const wrap = $('#chips');
-  wrap.innerHTML = '';
-  
-  if(watched.size === 0) {
-    wrap.innerHTML = '<span style="color:var(--muted); font-size:12px">Henüz coin yok</span>';
-    elCnt.textContent = 0;
-    return;
-  }
-  
-  Array.from(watched).sort().forEach(sym => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.innerHTML = `<span>${sym}</span>`;
-    const btn = document.createElement('button');
-    btn.textContent = '×';
-    btn.onclick = () => {
-      watched.delete(sym);
-      renderChips();
-      tick();
-    };
-    chip.appendChild(btn);
-    wrap.appendChild(chip);
-  });
-  elCnt.textContent = watched.size;
-}
+        socket.on('sureGuncelle', (data) => {
+            updateTime(data.sure);
+        });
 
-function schedule(ms) {
-  refreshMs = Math.max(1000, Math.min(10000, ms | 0));
-  elRng.value = refreshMs;
-  elRngLbl.textContent = (refreshMs / 1000).toFixed(1) + 's';
-  if(timer) clearInterval(timer);
-  timer = setInterval(tick, refreshMs);
-}
+        socket.on('durumGuncelle', (data) => {
+            const status = document.getElementById('statusText');
+            if (data.durum === 'bagli') {
+                status.textContent = 'Live';
+            } else if (data.durum === 'hata') {
+                status.textContent = 'Connection Error';
+            } else if (data.durum === 'bitti') {
+                status.textContent = 'Stream Ended';
+            }
+        });
 
-function applyTheme(mode) {
-  document.documentElement.classList.remove('theme-dark', 'theme-light');
-  document.documentElement.classList.add(mode === 'light' ? 'theme-light' : 'theme-dark');
-  elThemeSel.value = mode;
-}
+        function renderLeaderboard(data) {
+            const list = document.getElementById('leaderboardList');
+            
+            if (data.length === 0) {
+                list.innerHTML = '<div class="empty-state">⏳ Waiting for likes...<br><small style="font-size: 0.7em; opacity: 0.7;">Data will appear when viewers start liking</small></div>';
+                return;
+            }
 
-// ===== Events =====
-$('#add').onclick = () => {
-  const syms = $('#coinIn').value.split(',').map(s => norm(s)).filter(s => s);
-  syms.forEach(sym => watched.add(sym));
-  renderChips();
-  tick();
-  $('#coinIn').value = '';
-};
+            maxLikes = data[0].begeni;
+            
+            list.innerHTML = data.map((item, index) => {
+                const percentage = Math.min((item.begeni / maxLikes) * 100, 100);
+                let rankClass = '';
+                let badge = item.sira;
+                
+                if (item.sira === 1) {
+                    rankClass = 'rank-1';
+                    badge = '🥇';
+                } else if (item.sira === 2) {
+                    rankClass = 'rank-2';
+                    badge = '🥈';
+                } else if (item.sira === 3) {
+                    rankClass = 'rank-3';
+                    badge = '🥉';
+                } else {
+                    badge = item.sira + '.';
+                }
 
-$('#addDefaults').onclick = () => {
-  ['BTC', 'ETH', 'XRP', 'SOL', 'AVAX'].forEach(sym => watched.add(sym));
-  renderChips();
-  tick();
-};
+                return `
+                    <div class="leader-item ${rankClass}">
+                        <div class="rank-badge">${badge}</div>
+                        <div class="leader-info">
+                            <div class="leader-name">${item.kullanici}</div>
+                            <div class="leader-likes">
+                                <span>❤️</span>
+                                <span>${formatNumber(item.begeni)}</span>
+                            </div>
+                        </div>
+                        <div class="progress-wrapper">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-$('#clear').onclick = () => {
-  if(!confirm('Tüm coinleri sil?')) return;
-  watched.clear();
-  renderChips();
-  elBody.innerHTML = '';
-  elEmpty.classList.remove('hidden');
-};
+        function updateTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            let timeStr = '';
+            if (hrs > 0) {
+                timeStr = hrs + ':' + mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+            } else {
+                timeStr = mins + ':' + secs.toString().padStart(2, '0');
+            }
+            
+            document.getElementById('sure').textContent = timeStr;
+        }
 
-$('#toggleMode').onclick = () => {
-  demoMode = !demoMode;
-  $('#toggleMode').textContent = demoMode ? '🔄 Gerçek API\'ye Geç' : '🔄 Demo Mode\'a Geç';
-  elStatus.textContent = demoMode ? '🟢 Demo Mode' : '🟡 Gerçek API';
-  tick();
-};
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toLocaleString('en-US');
+        }
 
-$('#toggleHi').onclick = () => {
-  hiOn = !hiOn;
-  $('#toggleHi').textContent = (hiOn ? '💎' : '💤') + ' Highlight';
-  updateHighlight([]);
-};
-
-$('#coinIn').addEventListener('keydown', e => { if(e.key === 'Enter') $('#add').click(); });
-elRng.addEventListener('input', e => schedule(Number(e.target.value)));
-elMin.addEventListener('input', e => { minPctFilter = Number(e.target.value) || 0; tick(); });
-elThemeSel.addEventListener('change', e => applyTheme(e.target.value));
-
-// ===== Init =====
-applyTheme('dark');
-renderChips();
-schedule(3000);
-tick();
-setInterval(() => elLast.textContent = nowStr(), 1000);
-</script>
+        console.log('🚀 TikTok Live Dashboard Ready!');
+    </script>
 </body>
 </html>
