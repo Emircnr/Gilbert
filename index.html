@@ -1,462 +1,1222 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>XENAI — Intelligent Assistant</title>
-<meta name="theme-color" content="#0b0f14" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Paribu Arbitraj & Trading Sistemi</title>
 <style>
-  :root{
-    --bg:#070b10; --panel:#0d1420; --panel2:#0b1220; --line:#162233;
-    --text:#e6eef6; --muted:#9fb0c7; --acc:#22d3ee; --acc2:#7c3aed;
-    --chip:#0b1320; --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
+:root {
+  --bg: #0a0e1a;
+  --surface: #131826;
+  --surface-hover: #1a1f32;
+  --border: #1e2638;
+  --text: #e6edf6;
+  --text-muted: #8b95aa;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --success: #10b981;
+  --success-bg: #064e3b;
+  --danger: #ef4444;
+  --danger-bg: #7f1d1d;
+  --warning: #f59e0b;
+  --warning-bg: #78350f;
+  --green: #22c55e;
+  --green-bg: #052e16;
+  --red: #ef4444;
+  --red-bg: #450a0a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-right {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-dot.connected { background: var(--success); }
+.status-dot.disconnected { background: var(--danger); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-title-icon {
+  font-size: 1.25rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface-hover);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Forms */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* Trading Panel */
+.trading-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 968px) {
+  .trading-panel {
+    grid-template-columns: 1fr;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; color:var(--text);
-    background:
-      radial-gradient(1200px 800px at -10% -10%, rgba(34,211,238,.14), transparent 60%),
-      radial-gradient(1200px 800px at 110% 110%, rgba(124,58,237,.12), transparent 60%),
-      linear-gradient(180deg, #090d13, #0a0f15);
-    font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+}
+
+.trade-form {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.trade-form.buy-form {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.trade-form.sell-form {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.auto-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--warning);
+  font-weight: 600;
+}
+
+/* Alert Card */
+.alert-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-
-  /* Layout */
-  .shell{display:grid; grid-template-rows:64px 1fr 64px; height:100%}
-  .header{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:10px 14px; border-bottom:1px solid var(--line);
-    background: linear-gradient(180deg, rgba(34,211,238,.06), transparent);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  .brand{display:flex; align-items:center; gap:12px}
-  .logo{
-    width:36px; height:36px; border-radius:12px; position:relative;
-    background: conic-gradient(from 90deg, var(--acc), var(--acc2) 40%, #34d399 75%, var(--acc));
-    box-shadow: 0 0 28px rgba(34,211,238,.35), inset 0 0 18px rgba(0,0,0,.35);
-    overflow:hidden;
-  }
-  .logo::after{
-    content:""; position:absolute; inset:6px; border-radius:10px;
-    background: radial-gradient(120px 60px at 40% 30%, rgba(255,255,255,.25), transparent 40%);
-    filter: blur(8px);
-  }
-  .brand h1{font-size:16px; letter-spacing:.3px; margin:0}
+}
 
-  .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-  select{
-    background:#0b1320; color:var(--text); border:1px solid #223249; border-radius:12px;
-    height:38px; padding:6px 12px; outline:none
-  }
-  .btn{
-    height:38px; padding:0 14px; border-radius:12px; font-weight:700; cursor:pointer; border:1px solid #234;
-    color:#071a1a; background:linear-gradient(180deg,#27e0cc,#1bc2b5);
-  }
-  .btn.ghost{background:#0b1320; color:var(--text); border-color:#243247}
-  .avatar{width:34px; height:34px; border-radius:50%; border:1px solid #263b56; object-fit:cover}
+.alert-card.success {
+  background: var(--success-bg);
+  border-color: var(--success);
+  color: var(--success);
+}
 
-  /* Chat area */
-  .main{display:grid; grid-template-columns: minmax(0,1fr); height:100%}
-  #chatWrap{position:relative; height:100%; overflow:auto; scroll-behavior:smooth; padding:14px}
-  #chat{max-width:980px; margin:0 auto}
+.alert-card.warning {
+  background: var(--warning-bg);
+  border-color: var(--warning);
+  color: var(--warning);
+}
 
-  .msg{display:flex; gap:12px; margin:12px 0; align-items:flex-start}
-  .b{flex:0 0 40px; height:40px; border-radius:12px; display:grid; place-items:center; background:#0b1320; border:1px solid #213047}
-  .user .b{background:#192433}
-  .bot .b{background:#0b3b32; border-color:#0b3b32}
-  .bubble{padding:12px 14px; border-radius:16px; max-width:82%;
-          border:1px solid #1f2a3d; background:#0e1520}
-  .user .bubble{background:#131b2a}
-  .bot .bubble{background:#0a2e27; border-color:#0a3a33}
-  .meta{display:flex; gap:8px; align-items:center; color:#a2b5ca; font-size:12px; margin:6px 0 0 52px}
-  .act{display:flex; gap:6px; margin-left:auto}
-  .action{font-size:12px; padding:4px 8px; border-radius:8px; border:1px solid #264; background:#0d1b1a; color:#a7f3d0; cursor:pointer}
+.alert-card.danger {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  color: var(--danger);
+}
 
-  /* Composer */
-  .composer{display:flex; gap:10px; padding:12px; border-top:1px solid var(--line); background:#0e1520}
-  textarea{flex:1; min-height:52px; max-height:220px; resize:none; padding:12px; border-radius:14px;
-           background:#0b1320; color:var(--text); border:1px solid #243247; outline:none}
-  .send{min-width:140px}
-  .icbtn{height:44px; min-width:44px; display:grid; place-items:center; border-radius:12px;
-         border:1px solid #243247; background:#0b1320; color:#cce3ff; cursor:pointer}
+.alert-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
 
-  /* Code & markdown */
-  pre{background:#0b1320; border:1px solid #243247; padding:10px; border-radius:10px; overflow:auto}
-  code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
-  .bubble h1,.bubble h2,.bubble h3{margin:.4em 0}
-  .bubble ul{margin:.3em 0 .3em 1.2em}
-  a{color:#7dd3fc; text-decoration:none} a:hover{text-decoration:underline}
-  .spin{display:inline-block;width:16px;height:16px;border:2px solid #a7f3d0;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
+.alert-content {
+  flex: 1;
+}
 
-  /* Jump to latest */
-  #jump{position:sticky; bottom:12px; margin-top:-36px; display:none; z-index:2}
-  #jump button{margin:0 auto; display:block; background:#0b1320; border:1px solid #223047; color:#d2f3ff;
-               padding:8px 12px; border-radius:999px; cursor:pointer}
+.alert-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
 
-  /* Auth modal */
-  .modal{position:fixed; inset:0; background:rgba(3,6,10,.66); display:none; place-items:center; z-index:20}
-  .modal.show{display:grid}
-  .box{width:min(520px,92%); background:#0e1623; border:1px solid #203049; border-radius:16px; padding:18px}
-  .box h2{margin:0 0 8px 0; font-size:18px}
-  .row{display:flex; gap:10px; align-items:center; margin:10px 0}
-  .note{font-size:13px; color:var(--muted)}
-  .sep{height:1px; background:#1e2b40; margin:10px 0}
+.alert-message {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--bg);
+}
+
+th {
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+tbody tr {
+  transition: background 0.2s;
+}
+
+tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+.coin-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.coin-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.price-badge.buy {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.price-badge.sell {
+  background: var(--red-bg);
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.pct-badge {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  background: linear-gradient(135deg, var(--success) 0%, var(--green) 100%);
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Loading */
+.loading {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border);
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--success);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+.stat-change {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.stat-change.positive {
+  color: var(--success);
+}
+
+.stat-change.negative {
+  color: var(--danger);
+}
 </style>
 </head>
 <body>
-<div class="shell">
-  <!-- Header -->
-  <header class="header">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <h1>XENAI — Intelligent Assistant</h1>
-    </div>
-    <div class="controls">
-      <select id="model">
-        <option value="xen-5.1" selected>XEN 5.1 (Fast)</option>
-        <option value="xen-5.2">XEN 5.2 (Balanced)</option>
-        <option value="xen-5.3">XEN 5.3 (Advanced)</option>
-      </select>
-      <button class="btn ghost" id="resetBtn" title="Start fresh">Reset</button>
-      <img id="avatar" class="avatar" src="" alt="" style="display:none" />
-      <button class="btn" id="signinBtn">Sign in</button>
-      <button class="btn ghost" id="signoutBtn" style="display:none">Sign out</button>
-    </div>
-  </header>
 
-  <!-- Chat -->
-  <main class="main">
-    <div id="chatWrap">
-      <div id="chat" aria-live="polite"></div>
-      <div id="jump"><button id="jumpBtn">Jump to latest ↓</button></div>
+<!-- Header -->
+<div class="header">
+  <h1>🎯 Paribu Arbitraj & Trading Sistemi</h1>
+  <div class="header-right">
+    <div class="status-badge">
+      <div class="status-dot" id="apiStatus"></div>
+      <span id="apiStatusText">API: Bağlantı Yok</span>
     </div>
-  </main>
-
-  <!-- Composer -->
-  <footer class="composer">
-    <textarea id="input" placeholder="Type your message…" autocomplete="off"></textarea>
-    <button class="btn send" id="sendBtn">Send</button>
-  </footer>
-</div>
-
-<!-- Auth Modal -->
-<div class="modal" id="authModal">
-  <div class="box">
-    <h2>Welcome to XENAI</h2>
-    <p class="note">Sign in to sync your conversations across devices. You can also continue as a guest.</p>
-    <div class="row">
-      <button class="btn" id="googleBtn">Continue with Google</button>
-      <button class="btn ghost" id="anonBtn">Continue as Guest</button>
+    <div class="status-badge">
+      <span>⏱️ Son Güncelleme: <span id="lastUpdate">--:--:--</span></span>
     </div>
-    <div class="sep"></div>
-    <p class="note">By continuing you agree to our basic usage terms. You can sign out anytime.</p>
   </div>
 </div>
 
-<script type="module">
-/* ================== Firebase (Auth + Firestore + Analytics) ================== */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
-import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-import { getFirestore, enableIndexedDbPersistence, collection, addDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+<div class="container">
+  
+  <!-- API Ayarları -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <span class="card-title-icon">🔑</span>
+        API Ayarları
+      </div>
+    </div>
+    
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Paribu API Key</label>
+        <input type="text" class="form-input" id="apiKey" placeholder="API Key'inizi girin">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Paribu Secret Key</label>
+        <input type="password" class="form-input" id="secretKey" placeholder="Secret Key'inizi girin">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fark Eşiği (%)</label>
+        <input type="number" class="form-input" id="thresholdPct" value="0.5" step="0.1" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Yenileme Aralığı (saniye)</label>
+        <input type="number" class="form-input" id="refreshInterval" value="3" step="1" min="2" max="10">
+      </div>
+    </div>
+    
+    <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+      <button class="btn btn-primary" id="saveApiBtn">
+        💾 Kaydet ve Başlat
+      </button>
+      <button class="btn btn-secondary" id="clearApiBtn">
+        🗑️ Temizle
+      </button>
+    </div>
+  </div>
 
-/* ====== CONFIG: Replace with your Firebase project (provided) ====== */
-const firebaseConfig = {
-  apiKey: "AIzaSyDXQlb8jReShQmtOuCWPKg4G5ctO0kXE9E",
-  authDomain: "xenai-cf2ce.firebaseapp.com",
-  projectId: "xenai-cf2ce",
-  storageBucket: "xenai-cf2ce.firebasestorage.app",
-  messagingSenderId: "492168745931",
-  appId: "1:492168745931:web:32c153a356794621abdc4e",
-  measurementId: "G-EC555NNNY4"
+  <!-- Uyarı Kartı -->
+  <div id="alertContainer"></div>
+
+  <!-- İstatistikler -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">USDT/TRY Kuru</div>
+      <div class="stat-value" id="usdtryRate">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">BTC/USDT Fiyatı</div>
+      <div class="stat-value" id="btcPrice">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">İzlenen Coin</div>
+      <div class="stat-value" id="watchedCount">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Fırsat Sayısı</div>
+      <div class="stat-value" id="opportunityCount">0</div>
+      <div class="stat-change positive" id="opportunityChange">+0%</div>
+    </div>
+  </div>
+
+  <!-- Trading Panel -->
+  <div class="trading-panel">
+    
+    <!-- AL Formu -->
+    <div class="trade-form buy-form">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--success);">
+          📈 SATIN AL
+        </h3>
+        <div class="auto-indicator" id="buyAutoIndicator" style="display: none;">
+          ⚡ Otomatik
+        </div>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Coin</label>
+        <input type="text" class="form-input" id="buyCoin" placeholder="Örn: BTC" readonly>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Fiyat (TL)</label>
+        <input type="number" class="form-input" id="buyPrice" placeholder="0.00" readonly>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Miktar</label>
+        <input type="number" class="form-input" id="buyAmount" placeholder="0.00" step="0.0001">
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Toplam (TL)</label>
+        <input type="text" class="form-input" id="buyTotal" placeholder="0.00" readonly>
+      </div>
+      
+      <button class="btn btn-success" id="buyBtn" style="width: 100%; padding: 1rem; font-size: 1rem;" disabled>
+        <span id="buyBtnText">🛒 SATIN AL</span>
+      </button>
+    </div>
+
+    <!-- SAT Formu -->
+    <div class="trade-form sell-form">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--danger);">
+          📉 SAT
+        </h3>
+        <div class="auto-indicator" id="sellAutoIndicator" style="display: none;">
+          ⚡ Otomatik
+        </div>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Coin</label>
+        <input type="text" class="form-input" id="sellCoin" placeholder="Örn: BTC" readonly>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Fiyat (TL)</label>
+        <input type="number" class="form-input" id="sellPrice" placeholder="0.00" readonly>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Miktar</label>
+        <input type="number" class="form-input" id="sellAmount" placeholder="0.00" step="0.0001">
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Toplam (TL)</label>
+        <input type="text" class="form-input" id="sellTotal" placeholder="0.00" readonly>
+      </div>
+      
+      <button class="btn btn-danger" id="sellBtn" style="width: 100%; padding: 1rem; font-size: 1rem;" disabled>
+        <span id="sellBtnText">💰 SAT</span>
+      </button>
+    </div>
+    
+  </div>
+
+  <!-- Arbitraj Fırsatları -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <span class="card-title-icon">⚡</span>
+        Arbitraj Fırsatları
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <label class="form-label" style="margin: 0;">Coin Ekle:</label>
+        <input type="text" class="form-input" id="coinInput" placeholder="Örn: BTC, ETH" style="width: 200px; padding: 0.5rem 0.75rem;">
+        <button class="btn btn-primary" id="addCoinBtn" style="padding: 0.5rem 1rem;">
+          ➕ Ekle
+        </button>
+      </div>
+    </div>
+    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Coin</th>
+            <th>Paribu AL</th>
+            <th>Binance SAT</th>
+            <th>% Fark</th>
+            <th>Tavsiye</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="opportunitiesTable">
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+              Coin ekleyin ve fırsatları görün
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== STATE =====
+let state = {
+  apiKey: '',
+  secretKey: '',
+  threshold: 0.5,
+  refreshInterval: 3000,
+  coins: new Set(),
+  opportunities: [],
+  usdtry: null,
+  btcPrice: null,
+  isRunning: false,
+  timer: null,
+  selectedOpportunity: null
 };
 
-const app = initializeApp(firebaseConfig);
-try { getAnalytics(app); } catch(e) { /* analytics optional in some envs */ }
-
-const auth = getAuth(app);
-const db = getFirestore(app);
-enableIndexedDbPersistence(db).catch(()=>{});
-
-/* ================== OpenAI Call (stream) ================== */
-/* Replace the key below in CODE (no UI for key input) */
-const OPENAI_API_KEY = "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";
-
-/* Model mapping: never show real model names in UI */
-const MODEL_MAP = {
-  "xen-5.1": "gpt-4o-mini",
-  "xen-5.2": "gpt-4o",
-  "xen-5.3": "gpt-4.1-mini"
+// ===== DOM ELEMENTS =====
+const el = {
+  // API
+  apiKey: document.getElementById('apiKey'),
+  secretKey: document.getElementById('secretKey'),
+  thresholdPct: document.getElementById('thresholdPct'),
+  refreshInterval: document.getElementById('refreshInterval'),
+  saveApiBtn: document.getElementById('saveApiBtn'),
+  clearApiBtn: document.getElementById('clearApiBtn'),
+  apiStatus: document.getElementById('apiStatus'),
+  apiStatusText: document.getElementById('apiStatusText'),
+  
+  // Stats
+  lastUpdate: document.getElementById('lastUpdate'),
+  usdtryRate: document.getElementById('usdtryRate'),
+  btcPrice: document.getElementById('btcPrice'),
+  watchedCount: document.getElementById('watchedCount'),
+  opportunityCount: document.getElementById('opportunityCount'),
+  opportunityChange: document.getElementById('opportunityChange'),
+  
+  // Trading
+  buyCoin: document.getElementById('buyCoin'),
+  buyPrice: document.getElementById('buyPrice'),
+  buyAmount: document.getElementById('buyAmount'),
+  buyTotal: document.getElementById('buyTotal'),
+  buyBtn: document.getElementById('buyBtn'),
+  buyBtnText: document.getElementById('buyBtnText'),
+  buyAutoIndicator: document.getElementById('buyAutoIndicator'),
+  
+  sellCoin: document.getElementById('sellCoin'),
+  sellPrice: document.getElementById('sellPrice'),
+  sellAmount: document.getElementById('sellAmount'),
+  sellTotal: document.getElementById('sellTotal'),
+  sellBtn: document.getElementById('sellBtn'),
+  sellBtnText: document.getElementById('sellBtnText'),
+  sellAutoIndicator: document.getElementById('sellAutoIndicator'),
+  
+  // Table
+  coinInput: document.getElementById('coinInput'),
+  addCoinBtn: document.getElementById('addCoinBtn'),
+  opportunitiesTable: document.getElementById('opportunitiesTable'),
+  alertContainer: document.getElementById('alertContainer')
 };
 
-/* Hidden system behavior (not shown in UI) */
-const SYSTEM_DEFAULT = "You are XENAI. Reply in clear, helpful English. Use Markdown when it improves readability. Be concise.";
-
-/* ================== DOM refs ================== */
-const $ = s => document.querySelector(s);
-const chatWrap = $("#chatWrap");
-const chat = $("#chat");
-const input = $("#input");
-const sendBtn = $("#sendBtn");
-const modelSel = $("#model");
-const resetBtn = $("#resetBtn");
-const signinBtn = $("#signinBtn");
-const signoutBtn = $("#signoutBtn");
-const avatarImg = $("#avatar");
-const authModal = $("#authModal");
-const googleBtn = $("#googleBtn");
-const anonBtn = $("#anonBtn");
-const jump = $("#jump"), jumpBtn = $("#jumpBtn");
-
-/* ================== App State ================== */
-let uid = null;
-let messages = []; // {role, content, ts}
-let unsub = null;
-let isStreaming = false;
-
-/* ================== Utils ================== */
-function esc(s){ return (s||"").replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
-function mdLite(t){
-  t = (t||"");
-  t = t.replace(/```([\s\S]*?)```/g, (_, code)=> `<pre><code>${esc(code)}</code></pre>`);
-  t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
-  t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  t = t.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-  t = t.replace(/^\s*[-•]\s+(.*)$/gm, "<li>$1</li>");
-  t = t.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
-  t = t.replace(/(https?:\/\/[^\s)]+)|(www\.[^\s)]+)/g, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
-  t = t.replace(/\n/g, "<br>");
-  return t;
-}
-function addMsg(role, content){
-  const row = document.createElement("div");
-  row.className = "msg " + (role === "user" ? "user" : "bot");
-  row.innerHTML = `
-    <div class="b">${role==="user"?"🧑":"🤖"}</div>
-    <div class="bubble">${mdLite(content||"")}</div>
-  `;
-  chat.appendChild(row);
-  smartScroll();
-  const meta = document.createElement("div");
-  meta.className = "meta";
-  const actions = document.createElement("div"); actions.className = "act";
-  const copy = document.createElement("button"); copy.className="action"; copy.textContent="Copy";
-  copy.onclick = ()=> navigator.clipboard.writeText(content||"");
-  actions.appendChild(copy);
-  meta.innerHTML = `<span>${role==="user"?"You":"XENAI"}</span>`;
-  meta.appendChild(actions);
-  chat.appendChild(meta);
-  smartScroll();
-  return row;
-}
-let typingRow = null;
-function showTyping(){
-  typingRow = document.createElement("div");
-  typingRow.className = "msg bot";
-  typingRow.innerHTML = `
-    <div class="b">🤖</div>
-    <div class="bubble"><span class="spin"></span> Typing…</div>
-  `;
-  chat.appendChild(typingRow);
-  smartScroll();
-}
-function updateTyping(html){
-  if(!typingRow) return;
-  typingRow.querySelector(".bubble").innerHTML = html;
-  smartScroll();
-}
-function hideTyping(){ if(typingRow){ typingRow.remove(); typingRow=null } }
-
-/* Smart scroll: stick only if near bottom; show "Jump to latest" otherwise */
-function nearBottom(){
-  const delta = chatWrap.scrollHeight - chatWrap.scrollTop - chatWrap.clientHeight;
-  return delta < 120;
-}
-function smartScroll(){
-  if(nearBottom()){ chatWrap.scrollTop = chatWrap.scrollHeight; jump.style.display="none"; }
-  else { jump.style.display="block"; }
-}
-chatWrap.addEventListener("scroll", ()=>{
-  if(nearBottom()) jump.style.display="none";
-});
-jumpBtn.onclick = ()=>{ chatWrap.scrollTop = chatWrap.scrollHeight; };
-
-/* ================== OpenAI Streaming ================== */
-async function askXENAI(modelKey, msgs){
-  const apiModel = MODEL_MAP[modelKey] || MODEL_MAP["xen-5.1"];
-  const headers = { "Authorization":"Bearer "+OPENAI_API_KEY, "Content-Type":"application/json" };
-  const body = {
-    model: apiModel,
-    messages: [{ role:"system", content: SYSTEM_DEFAULT }, ...msgs],
-    temperature: 0.7,
-    stream: true
+// ===== HELPERS =====
+function showAlert(type, title, message) {
+  const icons = {
+    success: '✅',
+    warning: '⚠️',
+    danger: '❌'
   };
-
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method:"POST", headers, body: JSON.stringify(body)
-  });
-  if(!res.ok){
-    const txt = await res.text().catch(()=> "");
-    throw new Error("HTTP "+res.status+" — "+txt.slice(0,300));
-  }
-  return res.body.getReader();
+  
+  const alert = document.createElement('div');
+  alert.className = `alert-card ${type}`;
+  alert.innerHTML = `
+    <div class="alert-icon">${icons[type]}</div>
+    <div class="alert-content">
+      <div class="alert-title">${title}</div>
+      <div class="alert-message">${message}</div>
+    </div>
+  `;
+  
+  el.alertContainer.innerHTML = '';
+  el.alertContainer.appendChild(alert);
+  
+  setTimeout(() => alert.remove(), 5000);
 }
 
-/* ================== Firestore helpers ================== */
-function userPath(){
-  if(!uid) return null;
+function formatNumber(num, decimals = 2) {
+  if (!num || !isFinite(num)) return '0.00';
+  return Number(num).toLocaleString('tr-TR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function formatTime() {
+  return new Date().toLocaleTimeString('tr-TR');
+}
+
+// ===== PARIBU API =====
+async function paribuRequest(endpoint, method = 'GET', body = null) {
+  if (!state.apiKey || !state.secretKey) {
+    throw new Error('API bilgileri girilmedi');
+  }
+  
+  const timestamp = Date.now();
+  const url = `https://v3.paribu.com${endpoint}`;
+  
+  // HMAC signature oluştur (Paribu'nun gerçek imza algoritması buraya gelecek)
+  const signature = await createSignature(endpoint, timestamp, body);
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-API-KEY': state.apiKey,
+    'X-SIGNATURE': signature,
+    'X-TIMESTAMP': timestamp.toString(),
+    'User-Agent': 'ParibuApp/332'
+  };
+  
+  const options = {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : null
+  };
+  
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    throw new Error(`API Hatası: ${response.status}`);
+  }
+  
+  return response.json();
+}
+
+async function createSignature(endpoint, timestamp, body) {
+  // Bu fonksiyon Paribu'nun gerçek signature algoritmasını kullanmalı
+  // Şimdilik placeholder
+  const message = `${endpoint}${timestamp}${body ? JSON.stringify(body) : ''}`;
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message + state.secretKey);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ===== TRADING FUNCTIONS =====
+async function createOrder(side, coin, price, amount) {
+  try {
+    // Paribu order endpoint'i (gerçek endpoint buraya gelecek)
+    const orderData = {
+      market: `${coin.toUpperCase()}_TL`,
+      side: side, // 'buy' veya 'sell'
+      type: 'limit',
+      price: price,
+      amount: amount
+    };
+    
+    const result = await paribuRequest('/app/orders', 'POST', orderData);
+    
+    return result;
+  } catch (error) {
+    console.error('Order error:', error);
+    throw error;
+  }
+}
+
+// ===== DATA FETCHING =====
+async function fetchBinancePrice(symbol) {
+  const url = `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}USDT`;
+  const response = await fetch(url);
+  const data = await response.json();
   return {
-    convRef: doc(db, "users", uid, "conversations", "main"),
-    msgsRef: collection(db, "users", uid, "conversations", "main", "messages")
+    bid: parseFloat(data.bidPrice),
+    ask: parseFloat(data.askPrice)
   };
 }
-async function ensureUser(){
-  const u = auth.currentUser;
-  if(!u) return;
-  const userRef = doc(db, "users", u.uid);
-  const docSnap = await getDoc(userRef);
-  if(!docSnap.exists()){
-    await setDoc(userRef, { createdAt: serverTimestamp() });
+
+async function fetchParibuPrice(symbol) {
+  const url = `https://www.paribu.com/ticker`;
+  const response = await fetch(url);
+  const data = await response.json();
+  const key = `${symbol.toUpperCase()}_TL`;
+  
+  if (data[key]) {
+    return {
+      bid: data[key].highestBid,
+      ask: data[key].lowestAsk
+    };
   }
-  const { convRef } = userPath();
-  const convSnap = await getDoc(convRef);
-  if(!convSnap.exists()){
-    await setDoc(convRef, { title: "Main", createdAt: serverTimestamp() });
-  }
-}
-async function appendToFirestore(role, content){
-  if(!uid) return;
-  const { msgsRef } = userPath();
-  await addDoc(msgsRef, { role, content, ts: serverTimestamp() });
-}
-function startListening(){
-  if(!uid) return;
-  const { msgsRef } = userPath();
-  const q = query(msgsRef, orderBy("ts","asc"), limit(200));
-  unsub = onSnapshot(q, snap=>{
-    chat.innerHTML = "";
-    messages = [];
-    snap.forEach(d=>{
-      const m = d.data();
-      messages.push({ role: m.role, content: m.content, ts: m.ts?.toMillis?.() || Date.now() });
-    });
-    if(messages.length===0){
-      addMsg("assistant", "Hello, I'm <strong>XENAI</strong>. Ask me anything or paste your content. I’ll respond with clear, structured answers when helpful.");
-    }else{
-      for(const m of messages) addMsg(m.role==="user"?"user":"assistant", m.content);
-    }
-  });
+  return { bid: 0, ask: 0 };
 }
 
-/* ================== Auth ================== */
-onAuthStateChanged(auth, async (user)=>{
-  if(user){
-    uid = user.uid;
-    avatarImg.style.display = user.photoURL ? "inline-block" : "none";
-    if(user.photoURL){ avatarImg.src = user.photoURL; avatarImg.alt = user.displayName||"User"; }
-    signinBtn.style.display = "none";
-    signoutBtn.style.display = "inline-block";
-    authModal.classList.remove("show");
-    await ensureUser();
-    if(unsub) unsub();
-    startListening();
-  }else{
-    uid = null;
-    avatarImg.style.display = "none";
-    signinBtn.style.display = "inline-block";
-    signoutBtn.style.display = "none";
-    authModal.classList.add("show");
-    // clear local display (not Firestore)
-    chat.innerHTML = "";
-    messages = [];
-    addMsg("assistant", "Welcome to <strong>XENAI</strong>. Sign in or continue as guest to begin.");
-  }
-});
-
-signinBtn.onclick = ()=> authModal.classList.add("show");
-signoutBtn.onclick = ()=> signOut(auth);
-googleBtn.onclick = async ()=>{
-  const provider = new GoogleAuthProvider();
-  await signInWithPopup(auth, provider);
-};
-anonBtn.onclick = async ()=>{ await signInAnonymously(auth); };
-
-/* ================== Send flow ================== */
-sendBtn.onclick = async ()=>{
-  const text = input.value.trim();
-  if(!text) return;
-  input.value = "";
-
-  // local echo
-  addMsg("user", text);
-  appendToFirestore("user", text).catch(()=>{});
-
-  // build message history (limited)
-  const hist = [...messages, { role:"user", content:text }].slice(-20).map(m=>({ role: m.role==="assistant"?"assistant":"user", content:m.content }));
-
-  // call
-  showTyping();
-  isStreaming = true;
-  try{
-    const reader = await askXENAI(modelSel.value, hist);
-    const decoder = new TextDecoder("utf-8");
-    let done = false, buffer = "", acc = "";
-    while(!done){
-      const { value, done:doneNow } = await reader.read();
-      done = doneNow;
-      if(value){
-        buffer += decoder.decode(value, {stream:true});
-        const chunks = buffer.split("\n\n");
-        buffer = chunks.pop() || "";
-        for(const ch of chunks){
-          const line = ch.trim();
-          if(!line.startsWith("data:")) continue;
-          const jsonStr = line.slice(5).trim();
-          if(jsonStr === "[DONE]") continue;
-          try{
-            const evt = JSON.parse(jsonStr);
-            const delta = evt?.choices?.[0]?.delta?.content || "";
-            if(delta){
-              acc += delta;
-              updateTyping(mdLite(acc));
-            }
-          }catch{}
+async function updateData() {
+  try {
+    // USDT/TRY oranı
+    const usdtData = await fetchParibuPrice('USDT');
+    state.usdtry = usdtData.bid;
+    el.usdtryRate.textContent = formatNumber(state.usdtry, 4);
+    
+    // BTC fiyatı
+    const btcData = await fetchBinancePrice('BTC');
+    state.btcPrice = btcData.ask;
+    el.btcPrice.textContent = '$' + formatNumber(btcData.ask, 2);
+    
+    // Fırsatları hesapla
+    const opportunities = [];
+    
+    for (const coin of state.coins) {
+      try {
+        const [paribu, binance] = await Promise.all([
+          fetchParibuPrice(coin),
+          fetchBinancePrice(coin)
+        ]);
+        
+        if (!paribu.bid || !binance.ask || !state.usdtry) continue;
+        
+        const binanceAskTL = binance.ask * state.usdtry;
+        const paribuBid = paribu.bid;
+        const paribuAsk = paribu.ask;
+        const binanceBidTL = binance.bid * state.usdtry;
+        
+        // Paribu'dan al, Binance'de sat
+        const diff1 = binanceBidTL - paribuAsk;
+        const pct1 = (diff1 / paribuAsk) * 100;
+        
+        // Binance'den al, Paribu'da sat
+        const diff2 = paribuBid - binanceAskTL;
+        const pct2 = (diff2 / binanceAskTL) * 100;
+        
+        if (pct1 > state.threshold || pct2 > state.threshold) {
+          const bestStrategy = pct1 > pct2 ? 'paribu_buy' : 'binance_buy';
+          opportunities.push({
+            coin,
+            paribuBuy: paribuAsk,
+            binanceSell: binanceBidTL,
+            paribuSell: paribuBid,
+            binanceBuy: binanceAskTL,
+            pct: Math.max(pct1, pct2),
+            strategy: bestStrategy,
+            action: bestStrategy === 'paribu_buy' ? 'AL' : 'SAT',
+            price: bestStrategy === 'paribu_buy' ? paribuAsk : paribuBid
+          });
         }
+      } catch (err) {
+        console.error(`Error fetching ${coin}:`, err);
       }
     }
-    hideTyping();
-    if(!acc.trim()) acc = "(no content)";
-    addMsg("assistant", acc);
-    appendToFirestore("assistant", acc).catch(()=>{});
-  }catch(err){
-    hideTyping();
-    addMsg("assistant", "⚠️ Error<br><code>"+esc(err.message||String(err))+"</code>");
-  }finally{
-    isStreaming = false;
+    
+    opportunities.sort((a, b) => b.pct - a.pct);
+    state.opportunities = opportunities;
+    
+    // En iyi fırsatı otomatik seç
+    if (opportunities.length > 0) {
+      autoSelectBestOpportunity(opportunities[0]);
+    }
+    
+    renderOpportunities();
+    updateStats();
+    el.lastUpdate.textContent = formatTime();
+    
+    // API durumu
+    el.apiStatus.className = 'status-dot connected';
+    el.apiStatusText.textContent = 'API: Bağlı';
+    
+  } catch (error) {
+    console.error('Update error:', error);
+    el.apiStatus.className = 'status-dot disconnected';
+    el.apiStatusText.textContent = 'API: Hata';
+  }
+}
+
+function autoSelectBestOpportunity(opp) {
+  if (opp.action === 'AL') {
+    el.buyCoin.value = opp.coin;
+    el.buyPrice.value = formatNumber(opp.price, 2);
+    el.buyAutoIndicator.style.display = 'flex';
+    el.buyBtn.disabled = false;
+  } else {
+    el.sellCoin.value = opp.coin;
+    el.sellPrice.value = formatNumber(opp.price, 2);
+    el.sellAutoIndicator.style.display = 'flex';
+    el.sellBtn.disabled = false;
+  }
+  
+  state.selectedOpportunity = opp;
+}
+
+function renderOpportunities() {
+  if (state.opportunities.length === 0) {
+    el.opportunitiesTable.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          ${state.coins.size === 0 ? 'Coin ekleyin ve fırsatları görün' : 'Henüz fırsat bulunamadı'}
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  el.opportunitiesTable.innerHTML = state.opportunities.map(opp => `
+    <tr>
+      <td>
+        <div class="coin-cell">
+          <div class="coin-icon">${opp.coin.substring(0, 2)}</div>
+          ${opp.coin}
+        </div>
+      </td>
+      <td>
+        <div class="price-badge buy">
+          ${formatNumber(opp.paribuBuy, 2)} TL
+        </div>
+      </td>
+      <td>
+        <div class="price-badge sell">
+          ${formatNumber(opp.binanceSell, 2)} TL
+        </div>
+      </td>
+      <td>
+        <div class="pct-badge">
+          +${formatNumber(opp.pct, 2)}%
+        </div>
+      </td>
+      <td>
+        <strong style="color: ${opp.action === 'AL' ? 'var(--success)' : 'var(--danger)'}">
+          ${opp.action === 'AL' ? '📈 Paribu\'dan AL' : '📉 Paribu\'da SAT'}
+        </strong>
+      </td>
+      <td>
+        <button class="btn btn-${opp.action === 'AL' ? 'success' : 'danger'}" 
+                onclick="selectOpportunity('${opp.coin}')" 
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+          ${opp.action === 'AL' ? '🛒 AL' : '💰 SAT'}
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function updateStats() {
+  el.watchedCount.textContent = state.coins.size;
+  el.opportunityCount.textContent = state.opportunities.length;
+}
+
+// ===== EVENT HANDLERS =====
+el.saveApiBtn.addEventListener('click', () => {
+  state.apiKey = el.apiKey.value.trim();
+  state.secretKey = el.secretKey.value.trim();
+  state.threshold = parseFloat(el.thresholdPct.value) || 0.5;
+  state.refreshInterval = (parseFloat(el.refreshInterval.value) || 3) * 1000;
+  
+  if (!state.apiKey || !state.secretKey) {
+    showAlert('danger', 'Hata', 'API Key ve Secret Key girilmelidir!');
+    return;
+  }
+  
+  // Başlat
+  if (state.timer) clearInterval(state.timer);
+  state.timer = setInterval(updateData, state.refreshInterval);
+  updateData();
+  state.isRunning = true;
+  
+  showAlert('success', 'Başarılı', 'API ayarları kaydedildi ve sistem başlatıldı!');
+});
+
+el.clearApiBtn.addEventListener('click', () => {
+  el.apiKey.value = '';
+  el.secretKey.value = '';
+  state.apiKey = '';
+  state.secretKey = '';
+  
+  if (state.timer) {
+    clearInterval(state.timer);
+    state.timer = null;
+  }
+  
+  state.isRunning = false;
+  el.apiStatus.className = 'status-dot disconnected';
+  el.apiStatusText.textContent = 'API: Bağlantı Yok';
+  
+  showAlert('warning', 'Temizlendi', 'API ayarları temizlendi ve sistem durduruldu.');
+});
+
+el.addCoinBtn.addEventListener('click', () => {
+  const coins = el.coinInput.value.toUpperCase().split(',').map(c => c.trim()).filter(c => c);
+  
+  if (coins.length === 0) {
+    showAlert('warning', 'Uyarı', 'Lütfen en az bir coin girin!');
+    return;
+  }
+  
+  coins.forEach(coin => state.coins.add(coin));
+  el.coinInput.value = '';
+  
+  showAlert('success', 'Eklendi', `${coins.join(', ')} izlemeye alındı!`);
+  
+  if (state.isRunning) {
+    updateData();
+  }
+});
+
+// Miktar değişiminde toplam hesapla
+el.buyAmount.addEventListener('input', (e) => {
+  const amount = parseFloat(e.target.value) || 0;
+  const price = parseFloat(el.buyPrice.value) || 0;
+  const total = amount * price;
+  el.buyTotal.value = formatNumber(total, 2);
+});
+
+el.sellAmount.addEventListener('input', (e) => {
+  const amount = parseFloat(e.target.value) || 0;
+  const price = parseFloat(el.sellPrice.value) || 0;
+  const total = amount * price;
+  el.sellTotal.value = formatNumber(total, 2);
+});
+
+// AL butonu
+el.buyBtn.addEventListener('click', async () => {
+  const coin = el.buyCoin.value.trim();
+  const price = parseFloat(el.buyPrice.value);
+  const amount = parseFloat(el.buyAmount.value);
+  
+  if (!coin || !price || !amount) {
+    showAlert('warning', 'Uyarı', 'Lütfen tüm alanları doldurun!');
+    return;
+  }
+  
+  el.buyBtn.disabled = true;
+  el.buyBtnText.innerHTML = '<span class="loading"></span> İşleniyor...';
+  
+  try {
+    const result = await createOrder('buy', coin, price, amount);
+    showAlert('success', 'Başarılı', `${amount} ${coin} başarıyla satın alındı!`);
+    
+    // Formu temizle
+    el.buyAmount.value = '';
+    el.buyTotal.value = '';
+    
+  } catch (error) {
+    showAlert('danger', 'Hata', `İşlem başarısız: ${error.message}`);
+  } finally {
+    el.buyBtn.disabled = false;
+    el.buyBtnText.textContent = '🛒 SATIN AL';
+  }
+});
+
+// SAT butonu
+el.sellBtn.addEventListener('click', async () => {
+  const coin = el.sellCoin.value.trim();
+  const price = parseFloat(el.sellPrice.value);
+  const amount = parseFloat(el.sellAmount.value);
+  
+  if (!coin || !price || !amount) {
+    showAlert('warning', 'Uyarı', 'Lütfen tüm alanları doldurun!');
+    return;
+  }
+  
+  el.sellBtn.disabled = true;
+  el.sellBtnText.innerHTML = '<span class="loading"></span> İşleniyor...';
+  
+  try {
+    const result = await createOrder('sell', coin, price, amount);
+    showAlert('success', 'Başarılı', `${amount} ${coin} başarıyla satıldı!`);
+    
+    // Formu temizle
+    el.sellAmount.value = '';
+    el.sellTotal.value = '';
+    
+  } catch (error) {
+    showAlert('danger', 'Hata', `İşlem başarısız: ${error.message}`);
+  } finally {
+    el.sellBtn.disabled = false;
+    el.sellBtnText.textContent = '💰 SAT';
+  }
+});
+
+// Global function for table buttons
+window.selectOpportunity = function(coin) {
+  const opp = state.opportunities.find(o => o.coin === coin);
+  if (opp) {
+    autoSelectBestOpportunity(opp);
+    showAlert('success', 'Seçildi', `${coin} ${opp.action} işlemi için hazır!`);
   }
 };
 
-/* Enter shortcuts */
-input.addEventListener("keydown", e=>{
-  if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); sendBtn.click(); }
-  else if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendBtn.click(); }
-});
+// ===== BAŞLATMA =====
+// Örnek coinler ekle
+state.coins.add('BTC');
+state.coins.add('ETH');
+state.coins.add('XRP');
 
-/* Reset conversation (UI only + Firestore new thread) */
-resetBtn.onclick = async ()=>{
-  // Soft-clear UI
-  chat.innerHTML = "";
-  messages = [];
-  addMsg("assistant", "New conversation started. How can I help?");
-  // Persist a separator message (optional)
-  appendToFirestore("assistant", "— Conversation reset —").catch(()=>{});
-};
-
-/* Initial greet (if not signed) */
-addMsg("assistant", "Welcome to <strong>XENAI</strong>. Sign in to sync your chats, or continue as guest.");
-
-/* If user is already authenticated (e.g., returning) the listener will render messages */
+showAlert('warning', 'Hoş Geldiniz', 'Lütfen API Key ve Secret Key bilgilerinizi girerek sistemi başlatın.');
 </script>
+
 </body>
 </html>
